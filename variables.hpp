@@ -1,14 +1,29 @@
 #ifndef variables
 #define variables
 #include <string>
-using std::string;
+using namespace std;
 
-enum typeOfRestriction {NOT_EMPTY, PRIMARY_KEY, ANY};
-enum typeOfData {STRING, INT};
-enum typeRet {OK, ERROR, NOT_IMPLEMENTED};
+enum typeOfRestriction
+{
+  NOT_EMPTY,
+  PRIMARY_KEY,
+  ANY
+};
+enum typeOfData
+{
+  STRING,
+  INT
+};
+enum typeRet
+{
+  OK,
+  ERROR,
+  NOT_IMPLEMENTED
+};
 
 // template<typename values>  //It doesn't seem to work.
-struct nodeElement{
+struct nodeElement
+{
   string text;
   int number;
   typeOfData type;
@@ -16,27 +31,30 @@ struct nodeElement{
   unsigned int index; // to get the position for a simple find
   nodeElement *next;
 };
-typedef nodeElement* Tuple;
+typedef nodeElement *Tuple;
 
-struct nodeTuple{
+struct nodeTuple
+{
   Tuple *row;
+  int tuplesCount;
   nodeTuple *next;
 };
-typedef nodeTuple* Tuples;
+typedef nodeTuple *Tuples;
 
-struct nodeTable{
+struct nodeTable
+{
   string name;
-  unsigned int index;
   Tuple attributes;
   Tuples tuple;
   nodeTable *next;
 };
-typedef nodeTable* Tables;
+typedef nodeTable *Tables;
 
-struct nodeList{
+struct nodeList
+{
   string value;
   nodeList *next;
 };
-typedef nodeTable* List;
+typedef nodeTable *List;
 
 #endif // !variables
