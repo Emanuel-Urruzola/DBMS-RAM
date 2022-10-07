@@ -6,45 +6,44 @@
 #include <string>
 using namespace std;
 
-
-int main()
-{
+int main( ) {
   string opc;
-  do
-  {
+  do {
     cin >> opc;
-    if (opc.substr(0, opc.find("(")) == "createTable")
-    {
-      createTable(tablesList, opc.substr( opc.find("(") + 1 , opc.length() - opc.find("(") - 2));
+    if( opc.substr( 0, opc.find( "(" ) ) == "createTable" ) {
+      createTable( tablesList,
+                   opc.substr( opc.find( "(" ) + 1,
+                               opc.length( ) - opc.find( "(" ) - 2 ) );
     }
 
-    if (opc.substr(0, opc.find("(")) == "dropTable")
+    if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" )
       cout << "Not implemented yet" << endl;
-    if (opc.substr(0, opc.find("(")) == "alterTable")
+    if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" )
       cout << "Not implemented yet" << endl;
-    if (opc.substr(0, opc.find("(")) == "addCol"){
-      AddCol( "persona" , "color" , STRING , ANY );
-      AddCol( "persona" , "ci" , STRING , ANY );
-      AddCol( "persona" , "nombre" , STRING , ANY );
+    if( opc.substr( 0, opc.find( "(" ) ) == "addCol" ) {
+      AddCol( "persona", "color", STRING, ANY );
+      AddCol( "persona", "ci", STRING, ANY );
+      AddCol( "persona", "nombre", STRING, ANY );
     }
-    if (opc.substr(0, opc.find("(")) == "dropCol")
+    if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" )
       cout << "Not implemented yet" << endl;
-    if (opc.substr(0, opc.find("(")) == "alterCol")
+    if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" )
       cout << "Not implemented yet" << endl;
-    if (opc.substr(0, opc.find("(")) == "insertInto")
+    if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" )
       cout << "Not implemented yet" << endl;
-    if (opc.substr(0, opc.find("(")) == "delete")
+    if( opc.substr( 0, opc.find( "(" ) ) == "delete" )
       cout << "Not implemented yet" << endl;
-    if (opc.substr(0, opc.find("(")) == "update")
+    if( opc.substr( 0, opc.find( "(" ) ) == "update" )
       cout << "Not implemented yet" << endl;
-    if (opc.substr(0, opc.find("(")) == "printDataTable")
+    if( opc.substr( 0, opc.find( "(" ) ) == "printDataTable" )
       cout << "Not implemented yet" << endl;
-    if (opc.substr(0, opc.find("(")) == "find"){//test
-      if (validColumns("ci:nombre:color", findTable(tablesList, "persona")))
+    if( opc.substr( 0, opc.find( "(" ) ) == "find" ) {  // test
+      if( validColumns( "ci:nombre:color",
+                        findTable( tablesList, "persona" ) ) )
         cout << "true";
       else
         cout << "false";
     }
-    showTables(tablesList);
-  } while (opc != "exit");
+    showTables( tablesList );
+  } while( opc != "exit" );
 }
