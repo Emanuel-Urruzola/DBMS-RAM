@@ -1,13 +1,12 @@
 #ifndef tuples
 #define tuples
-#include "tables.hpp"
 #include "variables.hpp"
-
+#include "tables.hpp"
 bool validColumns( string columnsOrder, Tables table ) {
   size_t position;
   int userAttributesCounter = 0;
-  // TODO: Check possible double name in columns
-  // TODO: Validate types and restrictions
+  //  TODO: Check possible double name in columns
+  //  TODO: Validate types and restrictions
   while( ( position = columnsOrder.find( ":" ) ) != string::npos ) {
     userAttributesCounter++;
     int counter               = 0;
@@ -33,4 +32,4 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
     cout << "Exist";
   }
 }
-#endif  // !tuples
+#endif  // !tuples test
