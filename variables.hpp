@@ -24,6 +24,7 @@ enum typeRet
 // template<typename values>  //It doesn't seem to work.
 struct nodeElement
 {
+  string name;
   string text;
   int number;
   typeOfData type;
@@ -56,5 +57,7 @@ struct nodeList
   nodeList *next;
 };
 typedef nodeTable *List;
+
+Tables tablesList = NULL;
 
 #endif // !variables

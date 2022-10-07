@@ -1,3 +1,6 @@
+#ifndef tables
+#define tables 
+
 #include "variables.hpp"
 #include <iostream>
 #include <string>
@@ -22,3 +25,15 @@ void showTables(Tables tablesList)
         aux = aux->next;
     }
 }
+
+Tables findTable(Tables &tablesList, string tableName)
+{
+    Tables aux = tablesList;
+    while ( aux != NULL ){
+        if (aux->name == tableName)
+            return aux;
+        aux = aux->next;
+    }
+    return NULL;
+}
+#endif // !1
