@@ -52,21 +52,26 @@ void InsertInto( Tables &tablesList, string tableName, string columnsOrder,
         int columnIndex         = 0;
         while( ( position = columnsOrderCopy.find( ":" ) ) != string::npos &&
                ! finded ) {
-          columnIndex++;
-          if( tableAttributesCopy->name ==
-              columnsOrder.substr( 0, position ) ) {
+          if( ( tableAttributesCopy->name ==
+                columnsOrderCopy.substr(
+                    0, columnsOrderCopy.length( ) -
+                           ( columnsOrderCopy.length( ) -
+                             columnsOrderCopy.find( ":" ) ) ) ) ) {
             finded = true;
+          } else {
+            columnIndex++;
+            columnsOrderCopy.erase( 0, position + 1 );
           }
-          columnsOrderCopy.erase( 0, position + 1 );
         }
         string columnValuesCopy = columnValues;
         // TODO: Fix column values indexes
-        for( int i = 1; i < columnIndex; i++ ) {
+        for( int i = 0; i < columnIndex; i++ ) {
           position = columnValuesCopy.find( ":" );
           columnValuesCopy.erase( 0, position + 1 );
         }
         columnValuesCopy = columnValuesCopy.substr(
-            0, columnValuesCopy.length( ) - columnValuesCopy.find( ":" ) - 2 );
+            0, columnValuesCopy.length( ) - ( columnValuesCopy.length( ) -
+                                              columnValuesCopy.find( ":" ) ) );
         Tuple newTuple        = new nodeElement;
         newTuple->next        = NULL;
         newTuple->text        = columnValuesCopy;
