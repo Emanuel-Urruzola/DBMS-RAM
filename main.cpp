@@ -23,16 +23,22 @@ int main( ) {
     if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "addCol" ) {
-      AddCol( "persona", "color", STRING, ANY );
-      AddCol( "persona", "ci", STRING, ANY );
-      AddCol( "persona", "nombre", STRING, ANY );
+      AddCol( tablesList, "persona", "color", STRING, ANY );
+      AddCol( tablesList, "persona", "ci", STRING, ANY );
+      AddCol( tablesList, "persona", "nombre", STRING, ANY );
     }
     if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" )
       cout << "Not implemented yet" << endl;
-    if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" )
-      cout << "Not implemented yet" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" ) {
+      InsertInto( tablesList, "persona", "ci:nombre:color", "5555:Jona:Negro" );
+      cout << endl;
+      cout << tablesList->tuple->row->text << endl;
+      cout << tablesList->tuple->row->next->text << endl;
+      cout << tablesList->tuple->row->next->next->text << endl;
+      cout << "";
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "delete" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "update" )

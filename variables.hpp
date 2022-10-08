@@ -20,7 +20,7 @@ struct nodeElement {
 typedef nodeElement *Tuple;
 
 struct nodeTuple {
-  Tuple *row;
+  Tuple row;
   int tuplesCount;
   nodeTuple *next;
 };
@@ -38,7 +38,7 @@ struct nodeList {
   string value;
   nodeList *next;
 };
-typedef nodeTable *List;
+typedef nodeList *List;
 
 Tables tablesList = NULL;
 
