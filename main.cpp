@@ -13,11 +13,9 @@ int main( ) {
   do {
     cin >> opc;
     if( opc.substr( 0, opc.find( "(" ) ) == "createTable" ) {
-      createTable( tablesList,
-                   opc.substr( opc.find( "(" ) + 1,
+      createTable( opc.substr( opc.find( "(" ) + 1,
                                opc.length( ) - opc.find( "(" ) - 2 ) );
     }
-
     if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" )
@@ -26,6 +24,7 @@ int main( ) {
       AddCol( tablesList, "persona", "color", STRING, ANY );
       AddCol( tablesList, "persona", "ci", STRING, ANY );
       AddCol( tablesList, "persona", "nombre", STRING, ANY );
+      AddCol( tablesList, "persona", "combo", STRING, ANY );
     }
     if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" )
       cout << "Not implemented yet" << endl;
