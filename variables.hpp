@@ -46,6 +46,14 @@ struct nodeListInt {
 };
 typedef nodeListInt *ListInt;
 
+struct nodeTree {
+  int value;
+  string row;
+  nodeTree *right;
+  nodeTree *left;
+};
+typedef nodeTree *TreeInt;
+
 Tables tablesList = NULL;
 
 #endif  // !variables
