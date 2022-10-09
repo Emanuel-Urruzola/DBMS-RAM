@@ -130,33 +130,37 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
 
     switch( option ) {
       case 0:
-        if( tupleRowCopy->text == value ) return 0;
+        if( tupleRowCopy->text == value.substr( 1, value.length( ) - 2 ) )
+          return 0;
         break;
       case 1:
-        if( tupleRowCopy->text < value ) return 0;
+        if( tupleRowCopy->text < value.substr( 1, value.length( ) - 2 ) )
+          return 0;
         break;
       case 2:
-        if( tupleRowCopy->text != value ) return 0;
+        if( tupleRowCopy->text != value.substr( 1, value.length( ) - 2 ) )
+          return 0;
         break;
       case 3:
-        if( tupleRowCopy->text > value ) return 0;
+        if( tupleRowCopy->text > value.substr( 1, value.length( ) - 2 ) )
+          return 0;
         break;
     }
   } else {
-    return 3;
+    return 2;
   }
   return 1;
 }
 
 typeRet deleteQuery( string tableName, string condition ) {
   if( tableName.length( ) == 0 ) {
-    cout << "The column name must be specified.";
+    cout << "La columna debe ser especificada." << endl;
     return ERROR;
   }
 
   Tables table = findTable( tableName );
   if( table == NULL ) {
-    cout << "The table '" << tableName << "' doesn't exists.";
+    cout << "La tabla '" << tableName << "' no existe." << endl;
     return ERROR;
   }
 
@@ -181,7 +185,7 @@ typeRet deleteQuery( string tableName, string condition ) {
     splitCondition( condition, column, value, ">", 1 );
     option = 3;
   } else {
-    cout << "Bad request";
+    cout << "Debe ingresar un operador valido ('=', '<', '>' o '<>')." << endl;
   }
 
   bool first = true;
@@ -194,8 +198,8 @@ typeRet deleteQuery( string tableName, string condition ) {
       delete aux;
     } else if( conditionStatus == 1 )
       first = false;
-    else {
-      cout << "The column '" << column << "' doesn't exists.";
+    else if( conditionStatus == 2 ) {
+      cout << "La columna '" << column << "' no existe." << endl;
       return ERROR;
     }
   }
@@ -208,8 +212,8 @@ typeRet deleteQuery( string tableName, string condition ) {
       deleteNextTuple( tableTuplesCopy );
     } else if( conditionStatus == 1 ) {
       tableTuplesCopy = tableTuplesCopy->next;
-    } else {
-      cout << "The column '" << column << "' doesn't exists.";
+    } else if( conditionStatus == 2 ) {
+      cout << "La columna '" << column << "' no existe." << endl;
       return ERROR;
     }
   }
@@ -220,8 +224,8 @@ typeRet deleteQuery( string tableName, string condition ) {
     Tuples aux   = table->tuple;
     table->tuple = table->tuple->next;
     delete aux;
-  } else {
-    cout << "The column '" << column << "' doesn't exists.";
+  } else if( conditionStatus == 2 ) {
+    cout << "La columna '" << column << "' no existe." << endl;
     return ERROR;
   }
 
