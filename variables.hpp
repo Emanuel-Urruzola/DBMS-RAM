@@ -40,6 +40,12 @@ struct nodeList {
 };
 typedef nodeList *List;
 
+struct nodeListInt {
+  int value;
+  nodeListInt *next;
+};
+typedef nodeListInt *ListInt;
+
 Tables tablesList = NULL;
 
 #endif  // !variables

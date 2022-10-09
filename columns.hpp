@@ -3,9 +3,9 @@
 #include "tables.hpp"
 #include "variables.hpp"
 
-void AddCol( Tables &tablesList, string tableName, string columnName,
-             typeOfData columnType, typeOfRestriction restriction ) {
-  Tables table = findTable( tablesList, tableName );
+void AddCol( string tableName, string columnName, typeOfData columnType,
+             typeOfRestriction restriction ) {
+  Tables table = findTable( tableName );
   if( table == NULL ) cout << "What table?";
   else {
     Tuple column        = new nodeElement;

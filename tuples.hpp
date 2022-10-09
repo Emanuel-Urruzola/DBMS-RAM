@@ -1,8 +1,10 @@
 #ifndef tuples
 #define tuples
 #include <iostream>
+#include <regex>
 #include "variables.hpp"
 #include "tables.hpp"
+#include "operations.hpp"
 using namespace std;
 bool validColumns( string columnsOrder, Tables table ) {
   size_t position;
@@ -25,9 +27,8 @@ bool validColumns( string columnsOrder, Tables table ) {
   return false;
 }
 
-void InsertInto( Tables &tablesList, string tableName, string columnsOrder,
-                 string columnValues ) {
-  Tables table = findTable( tablesList, tableName );
+void InsertInto( string tableName, string columnsOrder, string columnValues ) {
+  Tables table = findTable( tableName );
   if( table == NULL ) {
     cout << "Doesn't exist";
   } else {
@@ -64,7 +65,6 @@ void InsertInto( Tables &tablesList, string tableName, string columnsOrder,
           }
         }
         string columnValuesCopy = columnValues;
-        // TODO: Fix column values indexes
         for( int i = 0; i < columnIndex; i++ ) {
           position = columnValuesCopy.find( ":" );
           columnValuesCopy.erase( 0, position + 1 );
@@ -91,5 +91,72 @@ void InsertInto( Tables &tablesList, string tableName, string columnsOrder,
     }
   }
   cout << "";
+}
+
+int WhereConditionColumn( Tables table, string columnName ) {
+  if( table == NULL ) return -1;
+  while( table->attributes != NULL ) {
+    if( table->attributes->name == columnName ) {
+      return table->attributes->index;
+    }
+    table->attributes = table->attributes->next;
+  }
+  return -1;
+}
+
+typeRet findColumn( Tables table, string columnName ) {
+  if( table == NULL ) return ERROR;
+  Tuple attributes = table->attributes;
+  while( attributes != NULL ) {
+    if( attributes->name == columnName ) return OK;
+    attributes = attributes->next;
+  }
+  return ERROR;
+}
+
+ListInt findMatches( Tables table, int index, string value ) {
+  ListInt indexes = new nodeListInt;
+  Tuples tuple    = table->tuple;
+  Tuple row       = tuple->row;
+  while( tuple != NULL ) {
+    for( int i = 1; i <= index; i++ ) {
+      row = row->next;
+    }
+    if( row->text == value ) {
+      InsBackInt( indexes, row->index );
+    }
+    tuple = tuple->next;
+  }
+  return indexes;
+}
+
+// update (Personas,Nombre=”Pepe”,CI,1555000);
+typeRet update( string tableName, string whereCondition, string columnToModify,
+                string newValue ) {
+  Tables table = findTable( tableName );
+  if( table == NULL ) return ERROR;  // if table no exist
+  if( findColumn( table, columnToModify ) == ERROR )
+    return ERROR;  // if column to modify no exist
+  int index = WhereConditionColumn(
+      table,
+      whereCondition.substr(
+          0, whereCondition.find( "=" ) ) );  // Get the position of attribute
+  if( index == -1 ) return ERROR;             // If the position doesn't found
+  const regex regExp( "[\"'”][A-Za-z\\d]+[\"'”]" );
+  cout << whereCondition.substr(
+      whereCondition.find( "=" ) + 1,
+      whereCondition.length( ) - whereCondition.find( "=" ) + 1 );
+  ListInt indexes = NULL;
+  if( regex_match( whereCondition.substr( whereCondition.find( "=" ) + 1,
+                                          whereCondition.length( ) -
+                                              whereCondition.find( "=" ) + 1 ),
+                   regExp ) ) {
+    indexes =
+        findMatches( table, index,
+                     whereCondition.substr( whereCondition.find( "=" ) + 2,
+                                            whereCondition.length( ) -
+                                                whereCondition.find( "=" ) ) );
+  }
+  return OK;
 }
 #endif  // !tuples test

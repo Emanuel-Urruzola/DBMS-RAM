@@ -13,8 +13,7 @@ int main( ) {
   do {
     cin >> opc;
     if( opc.substr( 0, opc.find( "(" ) ) == "createTable" ) {
-      createTable( tablesList,
-                   opc.substr( opc.find( "(" ) + 1,
+      createTable( opc.substr( opc.find( "(" ) + 1,
                                opc.length( ) - opc.find( "(" ) - 2 ) );
     }
 
@@ -23,16 +22,16 @@ int main( ) {
     if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "addCol" ) {
-      AddCol( tablesList, "persona", "color", STRING, ANY );
-      AddCol( tablesList, "persona", "ci", STRING, ANY );
-      AddCol( tablesList, "persona", "nombre", STRING, ANY );
+      AddCol( "persona", "color", STRING, ANY );
+      AddCol( "persona", "ci", STRING, ANY );
+      AddCol( "persona", "nombre", STRING, ANY );
     }
     if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" ) {
-      InsertInto( tablesList, "persona", "ci:nombre:color", "5555:Jona:Negro" );
+      InsertInto( "persona", "ci:nombre:color", "5555:Jona:Negro" );
       cout << endl;
       cout << tablesList->tuple->row->text << endl;
       cout << tablesList->tuple->row->next->text << endl;
@@ -42,15 +41,33 @@ int main( ) {
     if( opc.substr( 0, opc.find( "(" ) ) == "delete" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "update" )
-      cout << "Not implemented yet" << endl;
+      if( update( "persona", "nombre='Pepe'", "ci", "1555000" ) == OK ) {
+        cout << "Column modified successfully" << endl;
+      } else {
+        cout << "An error occurred, please check the instruction" << endl;
+      }
     if( opc.substr( 0, opc.find( "(" ) ) == "printDataTable" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "find" ) {  // test
-      if( validColumns( "ci:nombre:color",
-                        findTable( tablesList, "persona" ) ) )
+      if( validColumns( "ci:nombre:color", findTable( "persona" ) ) )
         cout << "true";
       else
         cout << "false";
+    }
+    if( opc.substr( 0, opc.find( "(" ) ) == "test" ) {
+      createTable( "persona" );
+      AddCol( "persona", "color", STRING, ANY );
+      AddCol( "persona", "ci", STRING, ANY );
+      AddCol( "persona", "nombre", STRING, ANY );
+      cout << tablesList->attributes->index;
+      cout << tablesList->attributes->next->index;
+      cout << tablesList->attributes->next->next->index;
+      InsertInto( "persona", "ci:nombre:color", "5555:Jona:Negro" );
+      if( update( "persona", "nombre='Pepe'", "ci", "1555000" ) == OK ) {
+        cout << "Column modified successfully" << endl;
+      } else {
+        cout << "An error occurred, please check the instruction" << endl;
+      }
     }
     showTables( tablesList );
   } while( opc != "exit" );

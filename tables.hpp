@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void createTable( Tables &tablesList, string tableName ) {
+void createTable( string tableName ) {
   Tables newTable      = new nodeTable;
   newTable->name       = tableName;
   newTable->attributes = NULL;
@@ -25,7 +25,7 @@ void showTables( Tables tablesList ) {
   }
 }
 
-Tables findTable( Tables &tablesList, string tableName ) {
+Tables findTable( string tableName ) {
   Tables aux = tablesList;
   while( aux != NULL ) {
     if( aux->name == tableName ) return aux;
