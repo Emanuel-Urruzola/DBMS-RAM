@@ -13,12 +13,11 @@ void createTable( string tableName ) {
   if( tablesList != NULL ) {
     Tables aux  = tablesList;
     bool finded = false;
-    cout<<"";
     while( aux != NULL && ! finded ) {
       if( aux->name == tableName ) {
-        cout << "Error" << endl;
+        cout << "Error" << endl; //retornar tipoRet
         finded = true;
-      } else /**/ {
+      } else{
         if( aux->next != NULL ) {
           aux = aux->next;
         } else {
