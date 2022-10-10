@@ -10,12 +10,36 @@
 using namespace std;
 
 void createTable( string tableName ) {
-  Tables newTable      = new nodeTable;
-  newTable->name       = tableName;
-  newTable->attributes = NULL;
-  newTable->tuple      = NULL;
-  newTable->next       = tablesList;
-  tablesList           = newTable;
+  if( tablesList != NULL ) {
+    Tables aux  = tablesList;
+    bool finded = false;
+    while( aux != NULL && ! finded ) {
+      if( aux->name == tableName ) {
+        cout << "Error" << endl; //retornar tipoRet
+        finded = true;
+      } else{
+        if( aux->next != NULL ) {
+          aux = aux->next;
+        } else {
+          cout << "";
+          Tables newTable      = new nodeTable;
+          newTable->name       = tableName;
+          newTable->attributes = NULL;
+          newTable->tuple      = NULL;
+          newTable->next       = tablesList;
+          tablesList           = newTable;
+          aux                  = aux->next;
+        }
+      }
+    }
+  } else {
+    Tables newTable      = new nodeTable;
+    newTable->name       = tableName;
+    newTable->attributes = NULL;
+    newTable->tuple      = NULL;
+    newTable->next       = tablesList;
+    tablesList           = newTable;
+  }
 }
 
 void showTables( Tables tablesList ) {

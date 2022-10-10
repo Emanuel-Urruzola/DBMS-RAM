@@ -27,8 +27,9 @@ bool validColumns( string columnsOrder, Tables table ) {
   return false;
 }
 
-void InsertInto( string tableName, string columnsOrder, string columnValues ) {
-  Tables table = findTable( tableName );
+void InsertInto( string tableName, string columnsOrder,
+                 string columnValues ) {
+  Tables table = findTable(  tableName );
   if( table == NULL ) {
     cout << "Doesn't exist";
   } else {
