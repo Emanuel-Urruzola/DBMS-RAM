@@ -12,21 +12,29 @@ int main( ) {
   string opc;
   do {
     cin >> opc;
-    if( opc.substr( 0, opc.find( "(" ) ) == "createTable" ) {
-      createTable( tablesList,
-                   opc.substr( opc.find( "(" ) + 1,
+    if( opc == "createTable()" ){
+      cout<<"ERROR"<<endl;
+    }
+    else{
+      if(( opc.substr( 0, opc.find( "(" ) ) == "createTable" ))
+      createTable( opc.substr( opc.find( "(" ) + 1,
                                opc.length( ) - opc.find( "(" ) - 2 ) );
     }
-
     if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" )
       cout << "Not implemented yet" << endl;
-    if( opc.substr( 0, opc.find( "(" ) ) == "addCol" ) {
-      AddCol( tablesList, "persona", "color", STRING, ANY );
-      AddCol( tablesList, "persona", "ci", STRING, ANY );
-      AddCol( tablesList, "persona", "nombre", STRING, ANY );
-    }
+    // if( opc == "addCol()" || opc == "addCol"){
+    //   cout<<"ERROR"<<endl;
+    // }
+    // else{
+      if( opc.substr( 0, opc.find( "(" ) ) == "addCol" ) {
+         AddCol( tablesList, "persona", "color", STRING, ANY );
+         AddCol( tablesList, "persona", "color", INT, PRIMARY_KEY );
+         AddCol( tablesList, "persona", "nombre", STRING, ANY );
+         AddCol( tablesList, "persona", "combo", STRING, ANY );
+      }
+    
     if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" )
@@ -53,5 +61,6 @@ int main( ) {
         cout << "false";
     }
     showTables( tablesList );
+    showColumns(tablesList);
   } while( opc != "exit" );
 }

@@ -7,14 +7,37 @@
 #include "variables.hpp"
 
 using namespace std;
-
-void createTable( Tables &tablesList, string tableName ) {
-  Tables newTable      = new nodeTable;
-  newTable->name       = tableName;
-  newTable->attributes = NULL;
-  newTable->tuple      = NULL;
-  newTable->next       = tablesList;
-  tablesList           = newTable;
+void createTable( string tableName ) {
+  if( tablesList != NULL ) {
+    Tables aux  = tablesList;
+    bool finded = false;
+    while( aux != NULL && ! finded ) {
+      if( aux->name == tableName ) {
+        cout << "Error" << endl; //retornar tipoRet
+        finded = true;
+      } else{
+        if( aux->next != NULL ) {
+          aux = aux->next;
+        } else {
+          cout << "";
+          Tables newTable      = new nodeTable;
+          newTable->name       = tableName;
+          newTable->attributes = NULL;
+          newTable->tuple      = NULL;
+          newTable->next       = tablesList;
+          tablesList           = newTable;
+          aux                  = aux->next;
+        }
+      }
+    }
+  } else {
+    Tables newTable      = new nodeTable;
+    newTable->name       = tableName;
+    newTable->attributes = NULL;
+    newTable->tuple      = NULL;
+    newTable->next       = tablesList;
+    tablesList           = newTable;
+  }
 }
 
 void showTables( Tables tablesList ) {
@@ -25,7 +48,7 @@ void showTables( Tables tablesList ) {
   }
 }
 
-Tables findTable( Tables &tablesList, string tableName ) {
+Tables findTable( Tables tablesList, string tableName ) {
   Tables aux = tablesList;
   while( aux != NULL ) {
     if( aux->name == tableName ) return aux;

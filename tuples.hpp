@@ -25,7 +25,7 @@ bool validColumns( string columnsOrder, Tables table ) {
   return false;
 }
 
-void InsertInto( Tables &tablesList, string tableName, string columnsOrder,
+void InsertInto( Tables tablesList, string tableName, string columnsOrder,
                  string columnValues ) {
   Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {

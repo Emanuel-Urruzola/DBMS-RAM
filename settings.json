@@ -1,0 +1,5 @@
+{
+  "editor.formatOnSave": true,
+  "clang-format.executable": "C:/Program Files/LLVM/bin",
+  "C_Cpp.intelliSenseEngineFallback": "Enabled"
+}
