@@ -10,8 +10,10 @@ using namespace std;
 
 int main( ) {
   string opc;
+
   do {
     cin >> opc;
+
     if( opc == "createTable()" ){
       cout<<"ERROR"<<endl;
     }
@@ -20,8 +22,11 @@ int main( ) {
       createTable( opc.substr( opc.find( "(" ) + 1,
                                opc.length( ) - opc.find( "(" ) - 2 ) );
     }
-    if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" )
-      cout << "Not implemented yet" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" ) {
+      typeRet response = dropTable( opc.substr(
+          opc.find( "(" ) + 1, opc.find( ")" ) - opc.find( "(" ) - 1 ) );
+      if( response == OK ) cout << "Operación realizada con éxito";
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" )
       cout << "Not implemented yet" << endl;
     // if( opc == "addCol()" || opc == "addCol"){
@@ -37,30 +42,32 @@ int main( ) {
     
     if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" )
       cout << "Not implemented yet" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" ) {
+      typeRet response =
+          dropCol( opc.substr( opc.find( "(" ) + 1,
+                               opc.find( "," ) - opc.find( "(" ) - 1 ),
+                   opc.substr( opc.find( "," ) + 1,
+                               opc.find( ")" ) - opc.find( "," ) - 1 ) );
+      if( response == OK ) cout << "Operación realizada con éxito";
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" )
       cout << "Not implemented yet" << endl;
-    if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" ) {
-      InsertInto( tablesList, "persona", "ci:nombre:color", "5555:Jona:Negro" );
-      cout << endl;
-      cout << tablesList->tuple->row->text << endl;
-      cout << tablesList->tuple->row->next->text << endl;
-      cout << tablesList->tuple->row->next->next->text << endl;
-      cout << "";
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "delete" )
+    if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" )
       cout << "Not implemented yet" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "delete" ) {
+      typeRet response =
+          deleteQuery( opc.substr( opc.find( "(" ) + 1,
+                                   opc.find( "," ) - opc.find( "(" ) - 1 ),
+                       opc.substr( opc.find( "," ) + 1,
+                                   opc.find( ")" ) - opc.find( "," ) - 1 ) );
+      if( response == OK ) cout << "Operación realizada con éxito";
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "update" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "printDataTable" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "find" ) {  // test
-      if( validColumns( "ci:nombre:color",
-                        findTable( tablesList, "persona" ) ) )
-        cout << "true";
-      else
-        cout << "false";
+      showTables( tablesList );
     }
-    showTables( tablesList );
-    showColumns(tablesList);
   } while( opc != "exit" );
 }
