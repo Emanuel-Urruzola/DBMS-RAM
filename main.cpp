@@ -27,13 +27,14 @@ void seedTable( ) {
   InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "4:OS:2:10" );
 
-  Tables aux = tablesList;
-
-  // deleteQuery( "Subject", "Name=PP" );
+  // deleteQuery( "Subject", "Name=\"PP\"" );
 
   // dropCol( "Subject", "Credits" );
 
-  cout << "";
+  // dropTable( "Student" );
+
+  // Tables tablesCopy = tablesList;
+  // cout << "";
 }
 
 int main( ) {
@@ -47,8 +48,11 @@ int main( ) {
                                opc.length( ) - opc.find( "(" ) - 2 ) );
     }
 
-    if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" )
-      cout << "Not implemented yet" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" ) {
+      typeRet response = dropTable( opc.substr(
+          opc.find( "(" ) + 1, opc.find( ")" ) - opc.find( "(" ) - 1 ) );
+      if( response == OK ) cout << "Operación realizada con éxito";
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "addCol" )

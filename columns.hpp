@@ -65,6 +65,7 @@ typeRet dropCol( string tableName, string columnName ) {
          << endl;
     return ERROR;
   }
+
   int findedColumnIndex = 0;
   bool finded           = false;
   tableAttributesCopy   = table->attributes;
@@ -76,6 +77,7 @@ typeRet dropCol( string tableName, string columnName ) {
       tableAttributesCopy = tableAttributesCopy->next;
     }
   }
+
   tableAttributesCopy = table->attributes;
   for( int i = 0; i < findedColumnIndex - 1; i++ ) {
     tableAttributesCopy = tableAttributesCopy->next;

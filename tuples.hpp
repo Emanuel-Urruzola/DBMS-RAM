@@ -3,6 +3,7 @@
 #include <iostream>
 #include "variables.hpp"
 #include "tables.hpp"
+#include "deleteHelpers.hpp"
 using namespace std;
 
 bool validColumns( string columnsOrder, Tables table ) {
@@ -92,20 +93,6 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
   cout << "";
 }
 
-void deleteAllTuples( Tuples &tuple ) {
-  if( tuple != NULL ) {
-    deleteAllTuples( tuple->next );
-    delete tuple;
-    tuple = NULL;
-  }
-}
-
-void deleteNextTuple( Tuples &tuple ) {
-  Tuples aux  = tuple->next;
-  tuple->next = tuple->next->next;
-  delete aux;
-}
-
 void splitCondition( string condition, string &column, string &value,
                      string splitter, int add ) {
   column = condition.substr( 0, condition.find( splitter ) );
@@ -171,21 +158,22 @@ typeRet deleteQuery( string tableName, string condition ) {
 
   string column, value;
   int option;
-  if( condition.find( '=' ) != std::string::npos ) {
+  if( condition.find( '=' ) != string::npos ) {
     splitCondition( condition, column, value, "=", 1 );
     option = 0;
-  } else if( condition.find( '<' ) != std::string::npos &&
-             condition.find( '>' ) != std::string::npos ) {
+  } else if( condition.find( '<' ) != string::npos &&
+             condition.find( '>' ) != string::npos ) {
     splitCondition( condition, column, value, "<", 2 );
     option = 1;
-  } else if( condition.find( '<' ) != std::string::npos ) {
+  } else if( condition.find( '<' ) != string::npos ) {
     splitCondition( condition, column, value, "<", 1 );
     option = 2;
-  } else if( condition.find( '>' ) != std::string::npos ) {
+  } else if( condition.find( '>' ) != string::npos ) {
     splitCondition( condition, column, value, ">", 1 );
     option = 3;
   } else {
     cout << "Debe ingresar un operador valido ('=', '<', '>' o '<>')." << endl;
+    return ERROR;
   }
 
   bool first = true;
@@ -193,6 +181,7 @@ typeRet deleteQuery( string tableName, string condition ) {
     int conditionStatus =
         validCondition( table, table->tuple, option, column, value );
     if( conditionStatus == 0 ) {
+      deleteAllRows( table->tuple->row );
       Tuples aux   = table->tuple;
       table->tuple = table->tuple->next;
       delete aux;
@@ -221,6 +210,7 @@ typeRet deleteQuery( string tableName, string condition ) {
   int conditionStatus =
       validCondition( table, table->tuple, option, column, value );
   if( conditionStatus == 0 ) {
+    deleteAllRows( table->tuple->row );
     Tuples aux   = table->tuple;
     table->tuple = table->tuple->next;
     delete aux;

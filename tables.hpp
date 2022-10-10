@@ -5,6 +5,7 @@
 #include <string>
 
 #include "variables.hpp"
+#include "deleteHelpers.hpp"
 
 using namespace std;
 
@@ -32,5 +33,38 @@ Tables findTable( string tableName ) {
     aux = aux->next;
   }
   return NULL;
+}
+
+typeRet dropTable( string tableName ) {
+  if( tableName.length( ) == 0 ) {
+    cout << "La tabla debe ser especificada." << endl;
+    return ERROR;
+  }
+
+  Tables table = findTable( tableName );
+  if( table == NULL ) {
+    cout << "La tabla " << tableName << " no existe." << endl;
+    return ERROR;
+  }
+  // Delete table tuples
+  deleteAllTuples( table->tuple );
+
+  // Delete table attributes
+  deleteAllRows( table->attributes );
+
+  // Delete table
+  if( tablesList == table ) {
+    Tables tableCopy = tablesList;
+    tablesList       = tablesList->next;
+    delete tableCopy;
+  } else {
+    Tables tablesListCopy = tablesList;
+    while( tablesListCopy->next != table )
+      tablesListCopy = tablesListCopy->next;
+    Tables tableCopy     = tablesListCopy->next;
+    tablesListCopy->next = tablesListCopy->next->next;
+    delete tableCopy;
+  }
+  return OK;
 }
 #endif  // !1
