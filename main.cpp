@@ -49,7 +49,9 @@ int main( ) {
                                         ( opc.length( ) - opc.find( "," ) ) ) );
       string orderBy = opc.substr(
           opc.find( "," ) + 1, ( opc.length( ) - ( opc.find( "," ) + 2 ) ) );
-      PrintDataTable( column, orderBy );
+      if( PrintDataTable( column, orderBy ) == ERROR ) {
+        cout << "Ocurrio un error, revise el nombre de la tabla" << endl;
+      }
     }
     if( opc.substr( 0, opc.find( "(" ) ) == "find" ) {  // test
       if( validColumns( "ci:nombre:color", findTable( "persona" ) ) )
