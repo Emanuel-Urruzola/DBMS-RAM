@@ -40,6 +40,28 @@ struct nodeList {
 };
 typedef nodeList *List;
 
+struct nodeListInt {
+  int value;
+  nodeListInt *next;
+};
+typedef nodeListInt *ListInt;
+
+struct nodeTree {
+  int value;
+  string row;
+  nodeTree *right;
+  nodeTree *left;
+};
+typedef nodeTree *TreeInt;
+
+struct nodeTreeStr {
+  string value;
+  string row;
+  nodeTreeStr *right;
+  nodeTreeStr *left;
+};
+typedef nodeTreeStr *TreeStr;
+
 Tables tablesList = NULL;
 
 #endif  // !variables

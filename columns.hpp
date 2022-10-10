@@ -3,7 +3,6 @@
 #include "tables.hpp"
 #include "variables.hpp"
 
-
 void AddCol( string tableName, string columnName, typeOfData columnType,
              typeOfRestriction restriction ) {
   Tables table = findTable( tableName );

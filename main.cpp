@@ -5,6 +5,7 @@
 #include "tables.hpp"
 #include "tuples.hpp"
 #include "variables.hpp"
+#include "print.hpp"
 
 using namespace std;
 
@@ -13,7 +14,6 @@ int main( ) {
 
   do {
     cin >> opc;
-
     if( opc == "createTable()" ){
       cout<<"ERROR"<<endl;
     }
@@ -63,11 +63,21 @@ int main( ) {
       if( response == OK ) cout << "Operación realizada con éxito";
     }
     if( opc.substr( 0, opc.find( "(" ) ) == "update" )
-      cout << "Not implemented yet" << endl;
-    if( opc.substr( 0, opc.find( "(" ) ) == "printDataTable" )
-      cout << "Not implemented yet" << endl;
-    if( opc.substr( 0, opc.find( "(" ) ) == "find" ) {  // test
-      showTables( tablesList );
+      if( update( "persona", "nombre='Pepe'", "ci", "1555000" ) == OK ) {
+        cout << "Columna mofidicada sastifactoriamente" << endl;
+      } else {
+        cout << "Ocurrio un error, por favor revise la instruccion" << endl;
+      }
+    if( opc.substr( 0, opc.find( "(" ) ) == "printDataTable" ) {
+      string column =
+          opc.substr( opc.find( "(" ) + 1,
+                      opc.length( ) - ( ( opc.find( "(" ) + 1 ) +
+                                        ( opc.length( ) - opc.find( "," ) ) ) );
+      string orderBy = opc.substr(
+          opc.find( "," ) + 1, ( opc.length( ) - ( opc.find( "," ) + 2 ) ) );
+      if( PrintDataTable( column, orderBy ) == ERROR ) {
+        cout << "Ocurrio un error, revise el nombre de la tabla" << endl;
+      }
     }
   } while( opc != "exit" );
 }
