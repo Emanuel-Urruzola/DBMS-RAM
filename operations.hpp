@@ -1,6 +1,7 @@
 #ifndef operations
 #define operations
 #include "variables.hpp"
+#include "operations.hpp"
 using namespace std;
 void InsBack( List &initialList, string value ) {
   List newNode   = new nodeList;
@@ -32,15 +33,6 @@ void InsBackInt( ListInt &initialList, int value ) {
   }
 }
 
-typeRet printDataTable( string tableName, string ordeyBy ) {
-  Tables table = findTable( tableName );
-  if( table == NULL ) return ERROR;
-  if( table->attributes == NULL ) {
-    cout << "No hay tuplas en " << tableName << endl;
-    return OK;
-  }
-}
-
 TreeInt NewNode( int value, string row ) {
   TreeInt newNode = new nodeTree;
   newNode->value  = value;
@@ -50,24 +42,52 @@ TreeInt NewNode( int value, string row ) {
   return newNode;
 }
 
-void insert( TreeInt &tree, int value ) {
+TreeStr NewNodeStr( string value, string row ) {
+  TreeStr newNode = new nodeTreeStr;
+  newNode->value  = value;
+  newNode->row    = row;
+  newNode->right  = NULL;
+  newNode->left   = NULL;
+  return newNode;
+}
+
+void Insert( TreeInt &tree, int value, string row ) {
   if( tree == NULL ) {
-    TreeInt newTree = NewNode( value, "" );
+    TreeInt newTree = NewNode( value, row );
     tree            = newTree;
   } else {
     if( value < tree->value ) {
-      insert( tree->left, value );
+      Insert( tree->left, value, row );
     } else {
-      insert( tree->right, value );
+      Insert( tree->right, value, row );
     }
   }
 }
 
-void showTree( TreeInt tree ) {
-  if( tree == NULL ) return;
-  showTree( tree->left );
-  cout << tree->row << endl;
-  showTree( tree->right );
+void InsertText( TreeStr &tree, string value, string row ) {
+  if( tree == NULL ) {
+    TreeStr newTree = NewNodeStr( value, row );
+    tree            = newTree;
+  } else {
+    if( value.compare( tree->value ) < 0 ) {
+      InsertText( tree->left, value, row );
+    } else {
+      InsertText( tree->right, value, row );
+    }
+  }
 }
 
+void ShowTreeStr( TreeStr tree ) {
+  if( tree == NULL ) return;
+  ShowTreeStr( tree->left );
+  cout << tree->row << endl;
+  ShowTreeStr( tree->right );
+}
+
+void ShowTree( TreeInt tree ) {
+  if( tree == NULL ) return;
+  ShowTree( tree->left );
+  cout << tree->row << endl;
+  ShowTree( tree->right );
+}
 #endif

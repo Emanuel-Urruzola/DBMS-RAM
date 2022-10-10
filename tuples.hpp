@@ -90,14 +90,15 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
       }
     }
   }
-  cout << "";
 }
 
 int WhereConditionColumn( Tables table, string columnName ) {
   if( table == NULL ) return -1;
+  int index = 0;
   while( table->attributes != NULL ) {
+    index++;
     if( table->attributes->name == columnName ) {
-      return table->attributes->index;
+      return index;
     }
     table->attributes = table->attributes->next;
   }
@@ -114,16 +115,30 @@ typeRet findColumn( Tables table, string columnName ) {
   return ERROR;
 }
 
-ListInt findMatches( Tables table, int index, string value ) {
-  ListInt indexes = new nodeListInt;
+int findIndexColumn( Tables table, string columnName ) {
+  if( table == NULL ) return 0;
+  int index        = 0;
+  Tuple attributes = table->attributes;
+  while( attributes != NULL ) {
+    index++;
+    if( attributes->name == columnName ) return index;
+    attributes = attributes->next;
+  }
+  return 0;
+}
+
+ListInt findMatches( Tables table, int index, string value,
+                     string columnToModify, string newValueInColumn ) {
+  ListInt indexes = NULL;
   Tuples tuple    = table->tuple;
-  Tuple row       = tuple->row;
   while( tuple != NULL ) {
-    for( int i = 1; i <= index; i++ ) {
+    Tuple row = tuple->row;
+    for( int i = 1; i < index; i++ ) {
       row = row->next;
     }
     if( row->text == value ) {
-      InsBackInt( indexes, row->index );
+      Tuple rowAgain = tuple->row;
+      // TODO: Insert directly new value
     }
     tuple = tuple->next;
   }
@@ -151,11 +166,12 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
                                           whereCondition.length( ) -
                                               whereCondition.find( "=" ) + 1 ),
                    regExp ) ) {
-    indexes =
-        findMatches( table, index,
-                     whereCondition.substr( whereCondition.find( "=" ) + 2,
-                                            whereCondition.length( ) -
-                                                whereCondition.find( "=" ) ) );
+    indexes = findMatches(
+        table, index,
+        whereCondition.substr(
+            whereCondition.find( "=" ) + 2,
+            whereCondition.length( ) - ( whereCondition.find( "=" ) + 3 ) ),
+        columnToModify, newValue );
   }
   return OK;
 }
