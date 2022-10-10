@@ -28,8 +28,10 @@ void AddCol( Tables tablesList, string tableName, string columnName,
         }
         tableAttributesCopy = tableAttributesCopy->next;
       }
+      if(!finded){
       tableAttributesCopy->next        = column;
       tableAttributesCopy->next->index = tableAttributesCopy->index + 1;
+      }
     }
   }
 }

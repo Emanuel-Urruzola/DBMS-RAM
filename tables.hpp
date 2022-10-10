@@ -7,8 +7,6 @@
 #include "variables.hpp"
 
 using namespace std;
-// Esta pasando que tira el error, pero sigue iterando y comparando, preciso que
-// no lo haga, si no me va a crear la tabla de igual manera
 void createTable( string tableName ) {
   if( tablesList != NULL ) {
     Tables aux  = tablesList;
