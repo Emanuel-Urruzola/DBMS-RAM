@@ -5,16 +5,41 @@
 #include <string>
 
 #include "variables.hpp"
+#include "deleteHelpers.hpp"
 
 using namespace std;
 
 void createTable( string tableName ) {
-  Tables newTable      = new nodeTable;
-  newTable->name       = tableName;
-  newTable->attributes = NULL;
-  newTable->tuple      = NULL;
-  newTable->next       = tablesList;
-  tablesList           = newTable;
+  if( tablesList != NULL ) {
+    Tables aux  = tablesList;
+    bool finded = false;
+    while( aux != NULL && ! finded ) {
+      if( aux->name == tableName ) {
+        cout << "Error" << endl; //retornar tipoRet
+        finded = true;
+      } else{
+        if( aux->next != NULL ) {
+          aux = aux->next;
+        } else {
+          cout << "";
+          Tables newTable      = new nodeTable;
+          newTable->name       = tableName;
+          newTable->attributes = NULL;
+          newTable->tuple      = NULL;
+          newTable->next       = tablesList;
+          tablesList           = newTable;
+          aux                  = aux->next;
+        }
+      }
+    }
+  } else {
+    Tables newTable      = new nodeTable;
+    newTable->name       = tableName;
+    newTable->attributes = NULL;
+    newTable->tuple      = NULL;
+    newTable->next       = tablesList;
+    tablesList           = newTable;
+  }
 }
 
 void showTables( Tables tablesList ) {
@@ -33,6 +58,37 @@ Tables findTable( string tableName ) {
   }
   return NULL;
 }
-#endif  // !1
 
-// Prueba branches
+typeRet dropTable( string tableName ) {
+  if( tableName.length( ) == 0 ) {
+    cout << "La tabla debe ser especificada." << endl;
+    return ERROR;
+  }
+
+  Tables table = findTable( tableName );
+  if( table == NULL ) {
+    cout << "La tabla " << tableName << " no existe." << endl;
+    return ERROR;
+  }
+  // Delete table tuples
+  deleteAllTuples( table->tuple );
+
+  // Delete table attributes
+  deleteAllRows( table->attributes );
+
+  // Delete table
+  if( tablesList == table ) {
+    Tables tableCopy = tablesList;
+    tablesList       = tablesList->next;
+    delete tableCopy;
+  } else {
+    Tables tablesListCopy = tablesList;
+    while( tablesListCopy->next != table )
+      tablesListCopy = tablesListCopy->next;
+    Tables tableCopy     = tablesListCopy->next;
+    tablesListCopy->next = tablesListCopy->next->next;
+    delete tableCopy;
+  }
+  return OK;
+}
+#endif  // !1

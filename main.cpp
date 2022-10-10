@@ -11,31 +11,57 @@ using namespace std;
 
 int main( ) {
   string opc;
+
   do {
     cin >> opc;
-    if( opc.substr( 0, opc.find( "(" ) ) == "createTable" ) {
+    if( opc == "createTable()" ){
+      cout<<"ERROR"<<endl;
+    }
+    else{
+      if(( opc.substr( 0, opc.find( "(" ) ) == "createTable" ))
       createTable( opc.substr( opc.find( "(" ) + 1,
                                opc.length( ) - opc.find( "(" ) - 2 ) );
     }
-
-    if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" )
-      cout << "No implementado" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" ) {
+      typeRet response = dropTable( opc.substr(
+          opc.find( "(" ) + 1, opc.find( ")" ) - opc.find( "(" ) - 1 ) );
+      if( response == OK ) cout << "Operación realizada con éxito";
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" )
-      cout << "No implementado" << endl;
-    if( opc.substr( 0, opc.find( "(" ) ) == "addCol" ) {
-      AddCol( "persona", "color", STRING, ANY );
-      AddCol( "persona", "ci", STRING, ANY );
-      AddCol( "persona", "nombre", STRING, ANY );
-    }
+      cout << "Not implemented yet" << endl;
+    // if( opc == "addCol()" || opc == "addCol"){
+    //   cout<<"ERROR"<<endl;
+    // }
+    // else{
+      if( opc.substr( 0, opc.find( "(" ) ) == "addCol" ) {
+         AddCol( tablesList, "persona", "color", STRING, ANY );
+         AddCol( tablesList, "persona", "color", INT, PRIMARY_KEY );
+         AddCol( tablesList, "persona", "nombre", STRING, ANY );
+         AddCol( tablesList, "persona", "combo", STRING, ANY );
+      }
+    
     if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" )
-      cout << "No implementado" << endl;
-    if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" )
-      cout << "No implementado" << endl;
-    if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" ) {
-      InsertInto( "persona", "ci:nombre:color", "5555:Jona:Negro" );
+      cout << "Not implemented yet" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" ) {
+      typeRet response =
+          dropCol( opc.substr( opc.find( "(" ) + 1,
+                               opc.find( "," ) - opc.find( "(" ) - 1 ),
+                   opc.substr( opc.find( "," ) + 1,
+                               opc.find( ")" ) - opc.find( "," ) - 1 ) );
+      if( response == OK ) cout << "Operación realizada con éxito";
     }
-    if( opc.substr( 0, opc.find( "(" ) ) == "delete" )
-      cout << "No implementado" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" )
+      cout << "Not implemented yet" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" )
+      cout << "Not implemented yet" << endl;
+    if( opc.substr( 0, opc.find( "(" ) ) == "delete" ) {
+      typeRet response =
+          deleteQuery( opc.substr( opc.find( "(" ) + 1,
+                                   opc.find( "," ) - opc.find( "(" ) - 1 ),
+                       opc.substr( opc.find( "," ) + 1,
+                                   opc.find( ")" ) - opc.find( "," ) - 1 ) );
+      if( response == OK ) cout << "Operación realizada con éxito";
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "update" )
       if( update( "persona", "nombre='Pepe'", "ci", "1555000" ) == OK ) {
         cout << "Columna mofidicada sastifactoriamente" << endl;
@@ -52,28 +78,6 @@ int main( ) {
       if( PrintDataTable( column, orderBy ) == ERROR ) {
         cout << "Ocurrio un error, revise el nombre de la tabla" << endl;
       }
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "find" ) {  // test
-      if( validColumns( "ci:nombre:color", findTable( "persona" ) ) )
-        cout << "true";
-      else
-        cout << "false";
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "test" ) {
-      createTable( "persona" );
-      AddCol( "persona", "color", STRING, ANY );
-      AddCol( "persona", "ci", STRING, ANY );
-      AddCol( "persona", "nombre", STRING, ANY );
-      InsertInto( "persona", "ci:nombre:color", "5555:Jona:Negro" );
-      InsertInto( "persona", "ci:nombre:color", "4444:Steven:Azul" );
-      InsertInto( "persona", "ci:nombre:color", "3233:Emanuel:Amarillo" );
-      InsertInto( "persona", "ci:nombre:color", "3333:Juan:Verde" );
-      InsertInto( "persona", "ci:nombre:color", "9969:Cintya:Rosada" );
-      // if( update( "persona", "nombre='Emanuel'", "ci", "1555000" ) == OK ) {
-      //   cout << "Column modified successfully" << endl;
-      // } else {
-      //   cout << "An error occurred, please check the instruction" << endl;
-      // }
     }
   } while( opc != "exit" );
 }
