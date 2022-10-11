@@ -16,7 +16,7 @@ string getRowString( Tuple row, int index, typeOfData &type, int &number,
       element.resize( 20, ' ' );
       rowString += element + "\t";
     } else {
-      string element = row->number + "";
+      string element = to_string( row->number ) + "";
       element.resize( 20, ' ' );
       rowString += element + "\t";
     }
