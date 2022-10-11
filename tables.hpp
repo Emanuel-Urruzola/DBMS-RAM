@@ -15,9 +15,9 @@ void createTable( string tableName ) {
     bool finded = false;
     while( aux != NULL && ! finded ) {
       if( aux->name == tableName ) {
-        cout << "Error" << endl; //retornar tipoRet
+        cout << "Error" << endl;  // retornar tipoRet
         finded = true;
-      } else{
+      } else {
         if( aux->next != NULL ) {
           aux = aux->next;
         } else {

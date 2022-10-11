@@ -16,8 +16,7 @@ void AddCol( string tableName, string columnName, typeOfData columnType,
     if( table->attributes == NULL ) {
       table->attributes = column;
       column->index     = 0;
-    }
-    if( table->attributes != NULL ) {
+    } else {
       Tuple tableAttributesCopy = table->attributes;
       bool finded               = false;
       while( tableAttributesCopy->next != NULL && ! finded ) {
@@ -25,12 +24,13 @@ void AddCol( string tableName, string columnName, typeOfData columnType,
           cout << "No se puede ingresar dos veces la misma columna"
                << endl;  // retornar tipoRet
           finded = true;
+        } else {
+          tableAttributesCopy = tableAttributesCopy->next;
         }
-        tableAttributesCopy = tableAttributesCopy->next;
       }
-      if(!finded){
-      tableAttributesCopy->next        = column;
-      tableAttributesCopy->next->index = tableAttributesCopy->index + 1;
+      if( ! finded ) {
+        tableAttributesCopy->next        = column;
+        tableAttributesCopy->next->index = tableAttributesCopy->index + 1;
       }
     }
   }
@@ -77,7 +77,7 @@ typeRet dropCol( string tableName, string columnName ) {
          << endl;
     return ERROR;
   }
-
+  // TODO: Set columns index after deleteing one
   int findedColumnIndex = 0;
   bool finded           = false;
   tableAttributesCopy   = table->attributes;
@@ -90,23 +90,43 @@ typeRet dropCol( string tableName, string columnName ) {
     }
   }
 
-  tableAttributesCopy = table->attributes;
-  for( int i = 0; i < findedColumnIndex - 1; i++ ) {
-    tableAttributesCopy = tableAttributesCopy->next;
+  if( findedColumnIndex == 0 ) {
+    Tuple attributeCopy = table->attributes;
+    table->attributes   = table->attributes->next;
+    delete attributeCopy;
+  } else {
+    tableAttributesCopy = table->attributes;
+    for( int i = 0; i < findedColumnIndex - 1; i++ ) {
+      tableAttributesCopy = tableAttributesCopy->next;
+    }
+    Tuple attributeCopy       = tableAttributesCopy->next;
+    tableAttributesCopy->next = tableAttributesCopy->next->next;
+    delete attributeCopy;
   }
-  Tuple attributeCopy       = tableAttributesCopy->next;
-  tableAttributesCopy->next = tableAttributesCopy->next->next;
-  delete attributeCopy;
 
   Tuples tableTuplesCopy = table->tuple;
+  bool firstChanged      = false;
   while( tableTuplesCopy != NULL ) {
-    Tuple tupleRowCopy = tableTuplesCopy->row;
-    for( int i = 0; i < findedColumnIndex - 1; i++ ) {
-      tupleRowCopy = tupleRowCopy->next;
+    if( findedColumnIndex == 0 ) {
+      if( ! firstChanged ) {
+        Tuple tupleCopy   = table->tuple->row;
+        table->tuple->row = table->tuple->row->next;
+        delete tupleCopy;
+        firstChanged = true;
+      } else {
+        Tuple tupleCopy      = tableTuplesCopy->row;
+        tableTuplesCopy->row = tableTuplesCopy->row->next;
+        delete tupleCopy;
+      }
+    } else {
+      Tuple tupleRowCopy = tableTuplesCopy->row;
+      for( int i = 0; i < findedColumnIndex - 1; i++ )
+        tupleRowCopy = tupleRowCopy->next;
+
+      Tuple rowCopy      = tupleRowCopy->next;
+      tupleRowCopy->next = tupleRowCopy->next->next;
+      delete rowCopy;
     }
-    Tuple rowCopy      = tupleRowCopy->next;
-    tupleRowCopy->next = tupleRowCopy->next->next;
-    delete rowCopy;
     tableTuplesCopy = tableTuplesCopy->next;
   }
 

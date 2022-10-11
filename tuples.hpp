@@ -13,6 +13,7 @@ bool validColumns( string columnsOrder, Tables table ) {
   int userAttributesCounter = 0;
   //  TODO: Check possible double name in columns
   //  TODO: Validate types and restrictions
+  // TODO: Last column from columnsOrder is not entering
   while( ( position = columnsOrder.find( ":" ) ) != string::npos ) {
     userAttributesCounter++;
     int counter               = 0;
@@ -25,10 +26,13 @@ bool validColumns( string columnsOrder, Tables table ) {
     if( counter != 1 ) return false;
     columnsOrder.erase( 0, position + 1 );
   }
-  if( userAttributesCounter == table->attributes->index ) return true;
+  Tuple tableAttributesCopy = table->attributes;
+  while( tableAttributesCopy->next != NULL )
+    tableAttributesCopy = tableAttributesCopy->next;
+
+  if( userAttributesCounter == tableAttributesCopy->index ) return true;
   return false;
 }
-
 
 void InsertInto( string tableName, string columnsOrder, string columnValues ) {
   Tables table = findTable( tableName );
@@ -179,6 +183,7 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
   return OK;
 }
 
+// DELETE QUERY
 void splitCondition( string condition, string &column, string &value,
                      string splitter, int add ) {
   column = condition.substr( 0, condition.find( splitter ) );
@@ -189,7 +194,6 @@ void splitCondition( string condition, string &column, string &value,
 int validCondition( Tables table, Tuples tuple, int option, string column,
                     string value ) {
   bool columnExists         = false;
-  int firstIndex            = table->attributes->index;
   Tuple tableAttributesCopy = table->attributes;
   while( tableAttributesCopy != NULL && ! columnExists ) {
     if( tableAttributesCopy->name == column ) columnExists = true;
@@ -198,7 +202,7 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
   }
   if( columnExists ) {
     Tuple tupleRowCopy = tuple->row;
-    for( int i = firstIndex; i > tableAttributesCopy->index; i-- )
+    for( int i = 0; i < tableAttributesCopy->index; i++ )
       tupleRowCopy = tupleRowCopy->next;
 
     switch( option ) {
