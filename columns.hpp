@@ -2,38 +2,71 @@
 #define columns
 #include "tables.hpp"
 #include "variables.hpp"
-
-void AddCol( string tableName, string columnName, typeOfData columnType,
-             typeOfRestriction restriction ) {
+// TODO: Validar el caso de que ya exista una PRIMARY_KEY, el caso de que
+// exista almenos una tupla. Tambien validar que en el caso de que existan
+// tuplas no pueden tener restriction != de ANY
+typeRet AddCol( string tableName, string columnName, string columnType,
+                typeOfRestriction restriction ) {
+  typeOfData colType;
+  if( columnType == "STRING" ) {
+    colType = STRING;
+  } else if( columnType == "INT" ) {
+    colType = INT;
+  } else {
+    cout << "Tipo de dato invalido." << endl;
+    return ERROR;
+  }
+  if( columnType != "STRING" && columnType != "INT" ) {
+    cout << "ERROR: Ingrese tipo de dato válido." << endl;
+    return ERROR;
+  }
+  if( tableName.length( ) == 0 ) {
+    cout << "ERROR: Ingrese un nombre de tabla." << endl;
+    return ERROR;
+  }
+  // Si nombre de la columna no se especifica.
+  if( columnName.length( ) == 0 ) {
+    cout << "ERROR: Ingrese un nombre de columna." << endl;
+    return ERROR;
+  }
   Tables table = findTable( tableName );
-  if( table == NULL ) cout << "What table?";
-  else {
+  if( table == NULL ) {
+    cout << "ERROR: La tabla no existe.";
+    return ERROR;
+  } else {
     Tuple column        = new nodeElement;
     column->name        = columnName;
-    column->type        = columnType;
+    column->type        = colType;
     column->restriction = restriction;
     column->next        = NULL;
     if( table->attributes == NULL ) {
       table->attributes = column;
       column->index     = 0;
     } else {
+      // Si nombre de la columna ya existe.
+      if( table->attributes->next == NULL &&
+          table->attributes->name == columnName ) {
+        cout << "ERROR: El nombre de columna ya existe." << endl;
+        return ERROR;
+      }
       Tuple tableAttributesCopy = table->attributes;
       bool finded               = false;
       while( tableAttributesCopy->next != NULL && ! finded ) {
         if( tableAttributesCopy->name == columnName ) {
-          cout << "No se puede ingresar dos veces la misma columna"
-               << endl;  // retornar tipoRet
+          cout << "ERROR: El nombre de columna ya existe." << endl;
+          return ERROR;
           finded = true;
         } else {
           tableAttributesCopy = tableAttributesCopy->next;
         }
       }
-      if( ! finded ) {
+      if( tableAttributesCopy->next == NULL && ! finded ) {
         tableAttributesCopy->next        = column;
         tableAttributesCopy->next->index = tableAttributesCopy->index + 1;
       }
     }
   }
+  return OK;
 }
 
 typeRet dropCol( string tableName, string columnName ) {
