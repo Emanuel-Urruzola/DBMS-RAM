@@ -8,6 +8,13 @@
 #include "deleteHelpers.hpp"
 using namespace std;
 
+void splitCondition( string condition, string &column, string &value,
+                     string splitter, int add ) {
+  column = condition.substr( 0, condition.find( splitter ) );
+  value  = condition.substr( condition.find( splitter ) + add,
+                            condition.length( ) - condition.find( splitter ) );
+}
+
 bool validColumns( string columnsOrder, Tables table ) {
   size_t position;
   int userAttributesCounter = 0;
@@ -84,6 +91,7 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
         newTuple->text        = columnValuesCopy;
         newTuple->type        = tableAttributesCopy->type;
         newTuple->restriction = tableAttributesCopy->restriction;
+        newTuple->name        = tableAttributesCopy->name;
         if( newRow->row == NULL ) {
           newRow->row = newTuple;
         } else {
@@ -101,13 +109,12 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
 
 int WhereConditionColumn( Tables table, string columnName ) {
   if( table == NULL ) return -1;
-  int index = 0;
-  while( table->attributes != NULL ) {
+  int index        = 0;
+  Tuple attributes = table->attributes;
+  while( attributes != NULL ) {
     index++;
-    if( table->attributes->name == columnName ) {
-      return index;
-    }
-    table->attributes = table->attributes->next;
+    if( attributes->name == columnName ) return index;
+    attributes = attributes->next;
   }
   return -1;
 }
@@ -134,22 +141,36 @@ int findIndexColumn( Tables table, string columnName ) {
   return 0;
 }
 
-ListInt findMatches( Tables table, int index, string value,
-                     string columnToModify, string newValueInColumn ) {
-  ListInt indexes = NULL;
-  Tuples tuple    = table->tuple;
+void findMatches( Tables table, int index, string value, typeOfData type,
+                  string columnToModify, string valueModified ) {
+  // TODO: Evaluate other conditions apart from row->text == value, ("" - all
+  // tuples)(<> - not equal)( > - greater than)( < - smaller than), include
+  // other parameter with type of condition
+  // TODO: If type is STRING save in text, else save in number
+  Tuples tuple = table->tuple;
+  bool finded;
   while( tuple != NULL ) {
-    Tuple row = tuple->row;
-    for( int i = 1; i < index; i++ ) {
-      row = row->next;
-    }
+    Tuple row     = tuple->row;
+    Tuple rowCopy = tuple->row;
+    for( int i = 1; i < index; i++ ) row = row->next;
     if( row->text == value ) {
-      Tuple rowAgain = tuple->row;
-      // TODO: Insert directly new value
+      bool modified = false;
+      while( rowCopy != NULL && ! modified ) {
+        if( rowCopy->name == columnToModify ) {
+          rowCopy->text = valueModified;
+          modified      = true;
+        }
+        rowCopy = rowCopy->next;
+      }
     }
     tuple = tuple->next;
   }
-  return indexes;
+}
+
+typeOfData findTypeColumn( Tables table, int index ) {
+  Tuple attributes = table->attributes;
+  for( int i = 1; i < index; i++ ) attributes = attributes->next;
+  return attributes->type;
 }
 
 // update (Personas,Nombre=”Pepe”,CI,1555000);
@@ -164,32 +185,28 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
       whereCondition.substr(
           0, whereCondition.find( "=" ) ) );  // Get the position of attribute
   if( index == -1 ) return ERROR;             // If the position doesn't found
+  // TODO: More regular expression, if not "", if only number, if are numbers
+  // with "" in int and evaluate in that cases are allowed
   const regex regExp( "[\"'”][A-Za-z\\d]+[\"'”]" );
   cout << whereCondition.substr(
       whereCondition.find( "=" ) + 1,
       whereCondition.length( ) - whereCondition.find( "=" ) + 1 );
-  ListInt indexes = NULL;
+  typeOfData type = findTypeColumn( table, index );
   if( regex_match( whereCondition.substr( whereCondition.find( "=" ) + 1,
                                           whereCondition.length( ) -
                                               whereCondition.find( "=" ) + 1 ),
                    regExp ) ) {
-    indexes = findMatches(
+    findMatches(
         table, index,
         whereCondition.substr(
             whereCondition.find( "=" ) + 2,
             whereCondition.length( ) - ( whereCondition.find( "=" ) + 3 ) ),
-        columnToModify, newValue );
+        type, columnToModify, newValue );
   }
   return OK;
 }
 
 // DELETE QUERY
-void splitCondition( string condition, string &column, string &value,
-                     string splitter, int add ) {
-  column = condition.substr( 0, condition.find( splitter ) );
-  value  = condition.substr( condition.find( splitter ) + add,
-                             condition.length( ) - condition.find( splitter ) );
-}
 
 int validCondition( Tables table, Tuples tuple, int option, string column,
                     string value ) {

@@ -92,7 +92,7 @@ int main( ) {
       if( response == OK ) cout << "Operación realizada con éxito";
     }
     if( opc.substr( 0, opc.find( "(" ) ) == "update" )
-      if( update( "persona", "nombre='Pepe'", "ci", "1555000" ) == OK ) {
+      if( update( "Subject", "Name='EDA'", "ID", "5" ) == OK ) {
         cout << "Columna mofidicada sastifactoriamente" << endl;
       } else {
         cout << "Ocurrio un error, por favor revise la instruccion" << endl;
