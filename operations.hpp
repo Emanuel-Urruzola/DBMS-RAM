@@ -51,26 +51,33 @@ TreeStr NewNodeStr( string value, string row ) {
   return newNode;
 }
 
-void Insert( TreeInt &tree, int value, string row ) {
+// TODO: review returns when testable
+typeRet Insert( TreeInt &tree, int value, string row ) {
   if( tree == NULL ) {
     TreeInt newTree = NewNode( value, row );
     tree            = newTree;
   } else {
     if( value < tree->value ) {
       Insert( tree->left, value, row );
+    } else if( value = tree->value ) {
+      Insert( tree->right, value, row );
+      return ERROR;
     } else {
       Insert( tree->right, value, row );
     }
   }
 }
 
-void InsertText( TreeStr &tree, string value, string row ) {
+typeRet InsertText( TreeStr &tree, string value, string row ) {
   if( tree == NULL ) {
     TreeStr newTree = NewNodeStr( value, row );
     tree            = newTree;
   } else {
     if( value.compare( tree->value ) < 0 ) {
       InsertText( tree->left, value, row );
+    } else if( value.compare( tree->value ) == 0 ) {
+      InsertText( tree->right, value, row );
+      return ERROR;
     } else {
       InsertText( tree->right, value, row );
     }

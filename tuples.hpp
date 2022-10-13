@@ -217,6 +217,7 @@ typeOfData findTypeColumn( Tables table, int index ) {
 // update (Personas,Nombre=”Pepe”,CI,1555000);
 typeRet update( string tableName, string whereCondition, string columnToModify,
                 string newValue ) {
+  // TODO: PRIMARY KEY cannot be repeated
   Tables table = findTable( tableName );
   if( table == NULL ) return ERROR;  // if table no exist
   if( findColumn( table, columnToModify ) == ERROR )
@@ -244,7 +245,10 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
   }
   int index = WhereConditionColumn( table,
                                     column );  // Get the position of attribute
-  if( index == -1 ) return ERROR;              // If the position doesn't found
+  if( index == -1 ) {                          // If the position doesn't found
+    cout << "La columna asociada a la condicion no se encontro" << endl;
+    return ERROR;
+  }
   typeOfData type = findTypeColumn( table, index );
   if( ( type == INT && regex_match( value, regExpNumber ) ) ||
       ( type == STRING && regex_match( value, regExpString ) ) ) {

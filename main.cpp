@@ -19,7 +19,7 @@ void seedTable( ) {
   InsertInto( "Student", "Lastname:ID:Name", "Acosta:33:Steven" );
 
   createTable( "Subject" );
-  AddCol( "Subject", "Credits", INT, ANY );
+  AddCol( "Subject", "Credits", STRING, ANY );
   AddCol( "Subject", "Semester", STRING, ANY );
   AddCol( "Subject", "Name", STRING, ANY );
   AddCol( "Subject", "ID", STRING, PRIMARY_KEY );
@@ -79,8 +79,26 @@ int main( ) {
                                opc.find( ")" ) - opc.find( "," ) - 1 ) );
       if( response == OK ) cout << "Operación realizada con éxito";
     }
-    if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" )
-      cout << "Not implemented yet" << endl;
+    // alterCol (Personas,Name,string,NOT EMPTY, Nombre)
+    if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" ) {
+      opc                      = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table             = opc.substr( 0, opc.find( "," ) );
+      opc                      = opc.erase( 0, opc.find( "," ) + 1 );
+      string columnName        = opc.substr( 0, opc.find( "," ) );
+      opc                      = opc.erase( 0, opc.find( "," ) + 1 );
+      string typeOfData        = opc.substr( 0, opc.find( "," ) );
+      opc                      = opc.erase( 0, opc.find( "," ) + 1 );
+      string typeOfRestriction = opc.substr( 0, opc.find( "," ) );
+      opc                      = opc.erase( 0, opc.find( "," ) + 1 );
+      string newColumnName     = opc.substr( 0, opc.find( ")" ) );
+      // TODO: Evaluate if a string is ""
+      if( alterCol( table, columnName, typeOfData, typeOfRestriction,
+                    newColumnName ) == OK ) {
+        cout << "Columna modificada correctamente" << endl;
+      } else {
+        cout << "Ocurrio un error" << endl;
+      }
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "delete" ) {

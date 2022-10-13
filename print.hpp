@@ -50,6 +50,7 @@ void LoopInRows( Tuples rows, TreeInt &treeQuerie, TreeStr &treeQuerieStr,
 
 typeRet PrintDataTable( string tableName, string ordeyBy ) {
   // TODO: column maximum size and "..." to string more large
+  // TODO: If "" order by Primary or any in ascending order
   Tables table = findTable( tableName );
   typeOfData type;  // To select type of sort
   if( table == NULL ) return ERROR;
