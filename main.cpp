@@ -91,12 +91,22 @@ int main( ) {
                                    opc.find( ")" ) - opc.find( "," ) - 1 ) );
       if( response == OK ) cout << "Operación realizada con éxito";
     }
-    if( opc.substr( 0, opc.find( "(" ) ) == "update" )
-      if( update( "Subject", "Name='EDA'", "ID", "5" ) == OK ) {
+    if( opc.substr( 0, opc.find( "(" ) ) == "update" ) {
+      opc          = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table = opc.substr( 0, opc.find( "," ) );
+      opc          = opc.erase( 0, opc.find( "," ) + 1 );
+      string condition =
+          opc.substr( 0, opc.find( "," ) );  // TODO: If the string has , ?
+      opc             = opc.erase( 0, opc.find( "," ) + 1 );
+      string column   = opc.substr( 0, opc.find( "," ) );
+      opc             = opc.erase( 0, opc.find( "," ) + 1 );
+      string newValue = opc.substr( 0, opc.find( ")" ) );
+      if( update( table, condition, column, newValue ) == OK ) {
         cout << "Columna mofidicada sastifactoriamente" << endl;
       } else {
         cout << "Ocurrio un error, por favor revise la instruccion" << endl;
       }
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "printDataTable" ) {
       string column =
           opc.substr( opc.find( "(" ) + 1,
