@@ -1,7 +1,10 @@
 #ifndef columns
 #define columns
+#include <regex>
 #include "tables.hpp"
 #include "variables.hpp"
+#include "tuples.hpp"
+
 // TODO: Validar el caso de que
 // exista almenos una tupla. Tambien validar que en el caso de que existan
 // tuplas no pueden tener restriction != de ANY
@@ -30,6 +33,7 @@ typeRet AddCol( string tableName, string columnName, string columnType,
     cout << "ERROR: Ingrese un nombre de columna." << endl;
     return ERROR;
   }
+
   Tables table = findTable( tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla no existe.";
@@ -106,6 +110,128 @@ typeRet AddCol( string tableName, string columnName, string columnType,
   return OK;
 }
 
+void setColumnIndexes( Tuple &attributes ) {
+  int index            = 0;
+  Tuple attributesCopy = attributes;
+  while( attributesCopy != NULL ) {
+    attributesCopy->index = index;
+    index++;
+    attributesCopy = attributesCopy->next;
+  }
+  
+// alterCol (Personas,Name,string,NOT EMPTY, Nombre)
+typeRet alterCol( string tableName, string columnName, string typeOfDataP,
+                  string typeOfRestrictionP, string newColumnName ) {
+  Tables table = findTable( tableName );
+  if( table == NULL ) {
+    cout << "Tabla no encontrada" << endl;
+    return ERROR;
+  }
+  int index = WhereConditionColumn( table, columnName );
+  if( index == -1 ) {
+    cout << "La columna no existe" << endl;
+    return ERROR;
+  }
+  const regex regExpString( "^[sS][tT][rR][iI][nN][gG]$" );
+  const regex regExpInteger( "^[iI][nN][tT][eE][gG][eE][rR]$" );
+  const regex regExpInt( "^[iI][nN][tT]$" );
+  Tuple row   = table->tuple->row;
+  bool change = false;
+  typeOfData newType;
+  if( regex_match( typeOfDataP, regExpInteger ) ||
+      regex_match( typeOfDataP, regExpInt ) ) {
+    newType = INT;
+    if( row->type == STRING ) {
+      cout << "No esta permitido cambiar de STRING a INT" << endl;
+      return ERROR;
+    }
+  }
+  if( regex_match( typeOfDataP, regExpString ) ) {
+    newType = STRING;
+    if( row->type == INT ) change = true;
+  }
+  // Check if columnName is Primary key and there is more than one column
+  bool minimumTwoElements = ( row->next != NULL );
+  for( int i = 1; i < index; i++ ) row = row->next;
+  cout << row->name << "Es el row que quiero analizar" << endl;
+  typeOfData initialType = row->type;  // for condition on primary key later
+  if( ( row->restriction == PRIMARY_KEY ) && minimumTwoElements ) {
+    cout << row->name << " es la PRIMARY KEY y la tabla tiene más columnas.";
+    return ERROR;
+  }
+  // Check if newColumnName exist previously (I allow it if it is the same
+  // column)
+  row           = table->tuple->row;
+  int indexCopy = index;
+  while( row != NULL ) {
+    indexCopy--;
+    if( row->name == newColumnName && index != 0 ) {
+      cout << newColumnName << " ya existe en la tabla" << endl;
+      return ERROR;
+    }
+    row = row->next;
+  }
+  // Check if typeOfRestriction parameter is primary key that there are no
+  // duplicates
+  Tuples tuplesCopy = table->tuple;
+  typeOfRestriction newRestriction;
+  const regex regExpPrimary(
+      "^[Pp][Rr][Ii][Mm][Aa][Rr][Yy][ _-][Kk][Ee][Yy]$" );
+  if( regex_match( typeOfRestrictionP, regExpPrimary ) ) {
+    newRestriction  = PRIMARY_KEY;
+    typeRet primary = OK;
+    TreeInt treeInt;
+    TreeStr treeStr;
+    if( initialType == STRING ) {
+      while( tuplesCopy != NULL ) {
+        Tuple rowCopy = tuplesCopy->row;
+        for( int i = 1; i < index; i++ ) rowCopy = rowCopy->next;
+        if( InsertText( treeStr, row->text, "" ) == ERROR ) {
+          cout << "Hay datos en duplicados " << row->name
+               << " no se puede cambiar a PRIMARY KEY" << endl;
+        }
+        tuplesCopy = tuplesCopy->next;
+      }
+    } else {
+      while( tuplesCopy != NULL ) {
+        Tuple rowCopy = tuplesCopy->row;
+        for( int i = 1; i < index; i++ ) rowCopy = rowCopy->next;
+        if( Insert( treeInt, row->number, "" ) == ERROR ) {
+          cout << "Hay datos en duplicados " << row->name
+               << " no se puede cambiar a PRIMARY KEY" << endl;
+        }
+        tuplesCopy = tuplesCopy->next;
+      }
+    }
+  }
+  // Store the other types of restrictions
+  const regex regExpAny( "^[Aa][Nn][Yy]$" );
+  const regex regExpNEmpty( "^[Nn][Oo][Tt][-_ ][Ee][Mm][Pp][Tt][Yy]$" );
+  if( regex_match( typeOfRestrictionP, regExpAny ) ) newRestriction = ANY;
+  if( regex_match( typeOfRestrictionP, regExpNEmpty ) )
+    newRestriction = NOT_EMPTY;
+  // If it don't throw an error still means I can set without errors.
+  tuplesCopy = table->tuple;
+  while( tuplesCopy != NULL ) {
+    Tuple rowCopy = tuplesCopy->row;
+    for( int i = 1; i < index; i++ ) rowCopy = rowCopy->next;
+    if( rowCopy->type == INT && newType == STRING ) {
+      rowCopy->text = to_string( row->number );
+      rowCopy->type = newType;
+    }
+    rowCopy->restriction = newRestriction;
+    rowCopy->name        = newColumnName;
+    tuplesCopy           = tuplesCopy->next;
+  }
+  // TODO: Delete if we delete attributes list
+  Tuple attributesCopy = table->attributes;
+  for( int i = 1; i < index; i++ ) attributesCopy = attributesCopy->next;
+  attributesCopy->type        = newType;
+  attributesCopy->restriction = newRestriction;
+  attributesCopy->name        = newColumnName;
+  return OK;
+}
+
 typeRet dropCol( string tableName, string columnName ) {
   if( tableName.length( ) == 0 ) {
     cout << "El nombre de la tabla debe ser especificado." << endl;
@@ -147,7 +273,7 @@ typeRet dropCol( string tableName, string columnName ) {
          << endl;
     return ERROR;
   }
-  // TODO: Set columns index after deleteing one
+
   int findedColumnIndex = 0;
   bool finded           = false;
   tableAttributesCopy   = table->attributes;
@@ -200,6 +326,8 @@ typeRet dropCol( string tableName, string columnName ) {
     tableTuplesCopy = tableTuplesCopy->next;
   }
 
+  setColumnIndexes( table->attributes );
+
   return OK;
 }
 
@@ -211,16 +339,4 @@ void showColumns( Tables tablesList ) {
   }
 }
 
-/** PARTE VIEJA DEL INSFRONT**/
-//     if( table->attributes == NULL ) {
-//       column->next  = NULL;
-//       column->index = 0;
-//     } else {
-//       column->next  = table->attributes;
-//       column->index = column->next->index + 1;  // descendent order
-//     }
-//     table->attributes = column;
-//     cout << "";
-//   }
-// }
 #endif  // !columns

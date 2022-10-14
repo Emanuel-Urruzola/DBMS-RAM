@@ -19,8 +19,15 @@ void deleteAllTuples( Tuples &tuple ) {
   }
 }
 
-void deleteNextTuple( Tuples &tuple ) {
+void deleteTuple( Tuples &tuple ) {
   deleteAllRows( tuple->row );
+  Tuples aux = tuple;
+  tuple      = tuple->next;
+  delete aux;
+}
+
+void deleteNextTuple( Tuples &tuple ) {
+  deleteAllRows( tuple->next->row );
   Tuples aux  = tuple->next;
   tuple->next = tuple->next->next;
   delete aux;
