@@ -10,23 +10,31 @@
 using namespace std;
 
 void seedTable( ) {
-  createTable( "Student" );
-  AddCol( "Student", "Lastname", STRING, ANY );
-  AddCol( "Student", "Name", STRING, ANY );
-  AddCol( "Student", "ID", STRING, PRIMARY_KEY );
-  InsertInto( "Student", "ID:Lastname:Name", "11:Netto:Jona" );
-  InsertInto( "Student", "ID:Name:Lastname", "22:Emanuel:Urruzola" );
-  InsertInto( "Student", "Lastname:ID:Name", "Acosta:33:Steven" );
+  createTable("Student");
+  createTable("Tools");
+  createTable("Teachers");
+  modifyTable("Teacher", "Profesoreeeee");
+  createTable("Student2");
+  createTable("Student2");
 
-  createTable( "Subject" );
-  AddCol( "Subject", "Credits", STRING, ANY );
-  AddCol( "Subject", "Semester", STRING, ANY );
-  AddCol( "Subject", "ID", STRING, PRIMARY_KEY );
-  AddCol( "Subject", "Name", STRING, ANY );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "2:EDA:1:13" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "4:OS:2:11" );
+  // AddCol( "Student", "Name", "STRING",  ANY);
+  // AddCol( "Student", "Lastname", "STRING", ANY );
+  // AddCol( "Student", "ID", "INT", PRIMARY_KEY );
+  //  InsertInto( "Student", "ID:Lastname:Name", "11:Netto:Jona" );
+  // // AddCol( "Student", "ID2", "INT", ANY );
+  //  InsertInto( "Student", "ID:Name:Lastname", "22:Emanuel:Urruzola" );
+  //  InsertInto( "Student", "Lastname:ID:Name", "Acosta:33:Steven" );
+  PrintDataTable( "Student", "" );
+  // createTable( "Subject" );
+  // AddCol( "Subject", "Credits", INT, ANY );
+  // AddCol( "Subject", "Semester", STRING, ANY );
+  // AddCol( "Subject", "Name", STRING, ANY );
+  // AddCol( "Subject", "ID", STRING, PRIMARY_KEY );
+  // InsertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
+  // InsertInto( "Subject", "ID:Name:Semester:Credits", "2:EDA:2:13" );
+  // InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
+  // InsertInto( "Subject", "ID:Name:Semester:Credits", "4:OS:2:10" );
+
 
   // deleteQuery( "Subject", "Semester=\"1\"" );
 

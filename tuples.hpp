@@ -41,10 +41,16 @@ bool validColumns( string columnsOrder, Tables table ) {
   return false;
 }
 
-void InsertInto( string tableName, string columnsOrder, string columnValues ) {
+typeRet InsertInto( string tableName, string columnsOrder,
+                    string columnValues ) {
+  if( tableName.length( ) == 0 ) {
+    cout << "La tabla ingresada no existe!." << endl;
+    return ERROR;
+  }
   Tables table = findTable( tableName );
   if( table == NULL ) {
-    cout << "Doesn't exist";
+    cout << "ERROR: La tabla ingresada no existe!." << endl;
+    return ERROR;
   } else {
     if( validColumns( columnsOrder, table ) ) {
       Tuples newRow = new nodeTuple;
@@ -57,6 +63,7 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
         }
         tableRows->next = newRow;
       } else {
+        // caso de que sea la primer tupla a ingresar.
         table->tuple = newRow;
       }
       Tuple tableAttributesCopy = table->attributes;
@@ -86,10 +93,14 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
         columnValuesCopy = columnValuesCopy.substr(
             0, columnValuesCopy.length( ) - ( columnValuesCopy.length( ) -
                                               columnValuesCopy.find( ":" ) ) );
-        Tuple newTuple        = new nodeElement;
-        newTuple->next        = NULL;
-        newTuple->text        = columnValuesCopy;
-        newTuple->type        = tableAttributesCopy->type;
+        Tuple newTuple = new nodeElement;
+        newTuple->next = NULL;
+        newTuple->type = tableAttributesCopy->type;
+        if( tableAttributesCopy->type == INT ) {
+          newTuple->number = stoi( columnValuesCopy );
+        } else {
+          newTuple->text = columnValuesCopy;
+        }
         newTuple->restriction = tableAttributesCopy->restriction;
         newTuple->name        = tableAttributesCopy->name;
         if( newRow->row == NULL ) {
@@ -105,6 +116,7 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
       }
     }
   }
+  return OK;
 }
 
 int WhereConditionColumn( Tables table, string columnName ) {
@@ -264,8 +276,6 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
   }
   return OK;
 }
-
-// DELETE QUERY
 
 int columnExists( Tables table, string columnName ) {
   Tuple tableAttributesCopy = table->attributes;

@@ -9,14 +9,18 @@
 
 using namespace std;
 
-void createTable( string tableName ) {
+typeRet createTable( string tableName ) {
+  if( tableName.length( ) == 0 ) {
+    cout << "ERROR: Nombre vacio!." << endl;
+    return ERROR;
+  }
   if( tablesList != NULL ) {
     Tables aux  = tablesList;
     bool finded = false;
-    while( aux != NULL && ! finded ) {
+    while( aux != NULL ) {
       if( aux->name == tableName ) {
-        cout << "Error" << endl;  // retornar tipoRet
-        finded = true;
+        cout << "ERROR: El nombre de tabla ya existe!." << endl;
+        return ERROR;
       } else {
         if( aux->next != NULL ) {
           aux = aux->next;
@@ -40,6 +44,7 @@ void createTable( string tableName ) {
     newTable->next       = tablesList;
     tablesList           = newTable;
   }
+  return OK;
 }
 
 void showTables( Tables tablesList ) {
@@ -88,6 +93,33 @@ typeRet dropTable( string tableName ) {
     Tables tableCopy     = tablesListCopy->next;
     tablesListCopy->next = tablesListCopy->next->next;
     delete tableCopy;
+  }
+  return OK;
+}
+
+typeRet modifyTable( string tableName, string newName ) {
+  if( tableName.length( ) == 0 ) {
+    cout << "ERROR: Ingrese el nombre de tabla a modificar." << endl;
+    return ERROR;
+  }
+  if( tablesList == NULL ) {
+    cout << "ERROR: No existen tablas aun." << endl;
+    return ERROR;
+  } else {
+    Tables aux = tablesList;
+    while( aux != NULL ) {
+      if( aux->name == tableName ) {
+        aux->name = newName;
+        cout << "Nombre cambiado con exito!." << endl;
+        return OK;
+      } else {
+        aux = aux->next;
+      }
+    }
+    if(aux == NULL){
+      cout <<"ERROR: Nombre de tabla no valido." << endl;
+      return ERROR;
+    }
   }
   return OK;
 }

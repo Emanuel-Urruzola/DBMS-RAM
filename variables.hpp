@@ -14,7 +14,7 @@ struct nodeElement {
   int number;
   typeOfData type;
   typeOfRestriction restriction;
-  unsigned int index;  // to get the position for a simple find
+  unsigned int index;  // hay que borrarlo.
   nodeElement *next;
 };
 typedef nodeElement *Tuple;
