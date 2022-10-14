@@ -10,14 +10,21 @@
 using namespace std;
 
 void seedTable( ) {
-  createTable( "Student" );
-  AddCol( "Student", "Name", "STRING", ANY );
-  AddCol( "Student", "Age", "PEPE", ANY );
-  AddCol( "Student", "ID", "INT", PRIMARY_KEY );
-  // InsertInto( "Student", "ID:Lastname:Name", "11:Netto:Jona" );
-  // InsertInto( "Student", "ID:Name:Lastname", "22:Emanuel:Urruzola" );
-  // InsertInto( "Student", "Lastname:ID:Name", "Acosta:33:Steven" );
+  createTable("Student");
+  createTable("Student");
+  createTable("Student");
+  createTable("Students");
+  createTable("Student2");
+  createTable("Student2");
 
+  // AddCol( "Student", "Name", "STRING",  ANY);
+  // AddCol( "Student", "Lastname", "STRING", ANY );
+  // AddCol( "Student", "ID", "INT", PRIMARY_KEY );
+  //  InsertInto( "Student", "ID:Lastname:Name", "11:Netto:Jona" );
+  // // AddCol( "Student", "ID2", "INT", ANY );
+  //  InsertInto( "Student", "ID:Name:Lastname", "22:Emanuel:Urruzola" );
+  //  InsertInto( "Student", "Lastname:ID:Name", "Acosta:33:Steven" );
+  PrintDataTable( "Student", "" );
   // createTable( "Subject" );
   // AddCol( "Subject", "Credits", INT, ANY );
   // AddCol( "Subject", "Semester", STRING, ANY );
@@ -32,7 +39,7 @@ void seedTable( ) {
 
   // dropCol( "Subject", "Name" );
 
-  dropTable( "Student" );
+  //dropTable( "Student" );
 
   Tables tablesCopy = tablesList;
   cout << "";

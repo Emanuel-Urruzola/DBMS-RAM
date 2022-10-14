@@ -9,13 +9,18 @@
 
 using namespace std;
 
-void createTable( string tableName ) {
+typeRet createTable( string tableName ) {
+  if(tableName.length() == 0){
+    cout << "ERROR: Nombre vacio!." << endl;
+    return ERROR;
+  }
   if( tablesList != NULL ) {
     Tables aux  = tablesList;
     bool finded = false;
     while( aux != NULL && ! finded ) {
       if( aux->name == tableName ) {
-        cout << "Error" << endl;  // retornar tipoRet
+        cout << "ERROR: El nombre de tabla ya existe!." << endl;
+        return ERROR;
         finded = true;
       } else {
         if( aux->next != NULL ) {
@@ -40,6 +45,7 @@ void createTable( string tableName ) {
     newTable->next       = tablesList;
     tablesList           = newTable;
   }
+  return OK;
 }
 
 void showTables( Tables tablesList ) {

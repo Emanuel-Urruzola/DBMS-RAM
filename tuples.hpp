@@ -34,11 +34,19 @@ bool validColumns( string columnsOrder, Tables table ) {
   return false;
 }
 
-void InsertInto( string tableName, string columnsOrder, string columnValues ) {
+typeRet InsertInto( string tableName, string columnsOrder, string columnValues ) {
+  if(tableName.length() == 0){
+    cout << "La tabla ingresada no existe!."<<endl;
+    return ERROR;
+  }
   Tables table = findTable( tableName );
   if( table == NULL ) {
-    cout << "Doesn't exist";
+    // TODO: Cambiar tipos de retorno.
+    cout << "La tabla ingresada no existe!."<<endl;
+    return ERROR;
   } else {
+    // Veo si las columnas son validas, creo la nueva row y la vinculo al ultimo
+    // elemento de table->tuples de ser necesario
     if( validColumns( columnsOrder, table ) ) {
       Tuples newRow = new nodeTuple;
       newRow->next  = NULL;
@@ -50,6 +58,7 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
         }
         tableRows->next = newRow;
       } else {
+        // caso de que sea la primer tupla a ingresar.
         table->tuple = newRow;
       }
       Tuple tableAttributesCopy = table->attributes;
@@ -81,8 +90,12 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
                                               columnValuesCopy.find( ":" ) ) );
         Tuple newTuple        = new nodeElement;
         newTuple->next        = NULL;
-        newTuple->text        = columnValuesCopy;
         newTuple->type        = tableAttributesCopy->type;
+        if(tableAttributesCopy->type == INT){
+          newTuple->number = stoi(columnValuesCopy);
+        } else{
+        newTuple->text        = columnValuesCopy;
+        }
         newTuple->restriction = tableAttributesCopy->restriction;
         if( newRow->row == NULL ) {
           newRow->row = newTuple;
@@ -97,6 +110,7 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
       }
     }
   }
+  return OK;
 }
 
 int WhereConditionColumn( Tables table, string columnName ) {
@@ -188,7 +202,7 @@ void splitCondition( string condition, string &column, string &value,
                      string splitter, int add ) {
   column = condition.substr( 0, condition.find( splitter ) );
   value  = condition.substr( condition.find( splitter ) + add,
-                             condition.length( ) - condition.find( splitter ) );
+                            condition.length( ) - condition.find( splitter ) );
 }
 
 int validCondition( Tables table, Tuples tuple, int option, string column,
