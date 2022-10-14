@@ -10,12 +10,12 @@
 using namespace std;
 
 void seedTable( ) {
-  createTable("Student");
-  createTable("Tools");
-  createTable("Teachers");
-  modifyTable("Teacher", "Profesoreeeee");
-  createTable("Student2");
-  createTable("Student2");
+  createTable( "Student" );
+  createTable( "Tools" );
+  createTable( "Teachers" );
+  modifyTable( "Teacher", "Profesoreeeee" );
+  createTable( "Student2" );
+  createTable( "Student2" );
 
   // AddCol( "Student", "Name", "STRING",  ANY);
   // AddCol( "Student", "Lastname", "STRING", ANY );
@@ -24,7 +24,7 @@ void seedTable( ) {
   // // AddCol( "Student", "ID2", "INT", ANY );
   //  InsertInto( "Student", "ID:Name:Lastname", "22:Emanuel:Urruzola" );
   //  InsertInto( "Student", "Lastname:ID:Name", "Acosta:33:Steven" );
-  PrintDataTable( "Student", "" );
+  // PrintDataTable( "Student", "" );
   // createTable( "Subject" );
   // AddCol( "Subject", "Credits", INT, ANY );
   // AddCol( "Subject", "Semester", STRING, ANY );
@@ -34,7 +34,6 @@ void seedTable( ) {
   // InsertInto( "Subject", "ID:Name:Semester:Credits", "2:EDA:2:13" );
   // InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
   // InsertInto( "Subject", "ID:Name:Semester:Credits", "4:OS:2:10" );
-
 
   // deleteQuery( "Subject", "Semester=\"1\"" );
 
