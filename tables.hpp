@@ -98,23 +98,22 @@ typeRet dropTable( string tableName ) {
 }
 
 typeRet modifyTable( string tableName, string newName ) {
-  if(tableName.length() == 0){
-    cout<<"ERROR: Ingrese el nombre de tabla a modificar."<<endl;
+  if( tableName.length( ) == 0 ) {
+    cout << "ERROR: Ingrese el nombre de tabla a modificar." << endl;
     return ERROR;
   }
-  if(tablesList == NULL){
-    cout<<"ERROR: No existen tablas aun."<<endl;
+  if( tablesList == NULL ) {
+    cout << "ERROR: No existen tablas aun." << endl;
     return ERROR;
-  }else{
+  } else {
     Tables aux = tablesList;
-    while(aux != NULL){
-      if(aux->name == tableName){
+    while( aux != NULL ) {
+      if( aux->name == tableName ) {
         aux->name = newName;
-        cout<<"Nombre cambiado con exito!."<<endl;
+        cout << "Nombre cambiado con exito!." << endl;
         return OK;
-      }
-      else{
-      aux = aux->next;
+      } else {
+        aux = aux->next;
       }
     }
   }

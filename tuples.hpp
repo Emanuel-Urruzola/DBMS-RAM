@@ -34,19 +34,17 @@ bool validColumns( string columnsOrder, Tables table ) {
   return false;
 }
 
-typeRet InsertInto( string tableName, string columnsOrder, string columnValues ) {
-  if(tableName.length() == 0){
-    cout << "La tabla ingresada no existe!."<<endl;
+typeRet InsertInto( string tableName, string columnsOrder,
+                    string columnValues ) {
+  if( tableName.length( ) == 0 ) {
+    cout << "La tabla ingresada no existe!." << endl;
     return ERROR;
   }
   Tables table = findTable( tableName );
   if( table == NULL ) {
-    // TODO: Cambiar tipos de retorno.
-    cout << "ERROR: La tabla ingresada no existe!."<<endl;
+    cout << "ERROR: La tabla ingresada no existe!." << endl;
     return ERROR;
   } else {
-    // Veo si las columnas son validas, creo la nueva row y la vinculo al ultimo
-    // elemento de table->tuples de ser necesario
     if( validColumns( columnsOrder, table ) ) {
       Tuples newRow = new nodeTuple;
       newRow->next  = NULL;
@@ -88,13 +86,13 @@ typeRet InsertInto( string tableName, string columnsOrder, string columnValues )
         columnValuesCopy = columnValuesCopy.substr(
             0, columnValuesCopy.length( ) - ( columnValuesCopy.length( ) -
                                               columnValuesCopy.find( ":" ) ) );
-        Tuple newTuple        = new nodeElement;
-        newTuple->next        = NULL;
-        newTuple->type        = tableAttributesCopy->type;
-        if(tableAttributesCopy->type == INT){
-          newTuple->number = stoi(columnValuesCopy);
-        } else{
-        newTuple->text        = columnValuesCopy;
+        Tuple newTuple = new nodeElement;
+        newTuple->next = NULL;
+        newTuple->type = tableAttributesCopy->type;
+        if( tableAttributesCopy->type == INT ) {
+          newTuple->number = stoi( columnValuesCopy );
+        } else {
+          newTuple->text = columnValuesCopy;
         }
         newTuple->restriction = tableAttributesCopy->restriction;
         if( newRow->row == NULL ) {
