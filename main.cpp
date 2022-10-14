@@ -21,18 +21,18 @@ void seedTable( ) {
   createTable( "Subject" );
   AddCol( "Subject", "Credits", STRING, ANY );
   AddCol( "Subject", "Semester", STRING, ANY );
-  AddCol( "Subject", "Name", STRING, ANY );
   AddCol( "Subject", "ID", STRING, PRIMARY_KEY );
+  AddCol( "Subject", "Name", STRING, ANY );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "2:EDA:2:13" );
+  InsertInto( "Subject", "ID:Name:Semester:Credits", "2:EDA:1:13" );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "4:OS:2:10" );
+  InsertInto( "Subject", "ID:Name:Semester:Credits", "4:OS:2:11" );
 
-  // deleteQuery( "Subject", "Name=\"PP\"" );
+  // deleteQuery( "Subject", "Semester=\"1\"" );
 
   // dropCol( "Subject", "Name" );
 
-  dropTable( "Student" );
+  // dropTable( "Student" );
 
   Tables tablesCopy = tablesList;
   cout << "";
