@@ -10,18 +10,17 @@
 using namespace std;
 
 typeRet createTable( string tableName ) {
-  if(tableName.length() == 0){
+  if( tableName.length( ) == 0 ) {
     cout << "ERROR: Nombre vacio!." << endl;
     return ERROR;
   }
   if( tablesList != NULL ) {
     Tables aux  = tablesList;
     bool finded = false;
-    while( aux != NULL && ! finded ) {
+    while( aux != NULL ) {
       if( aux->name == tableName ) {
         cout << "ERROR: El nombre de tabla ya existe!." << endl;
         return ERROR;
-        finded = true;
       } else {
         if( aux->next != NULL ) {
           aux = aux->next;
@@ -94,6 +93,30 @@ typeRet dropTable( string tableName ) {
     Tables tableCopy     = tablesListCopy->next;
     tablesListCopy->next = tablesListCopy->next->next;
     delete tableCopy;
+  }
+  return OK;
+}
+
+typeRet modifyTable( string tableName, string newName ) {
+  if(tableName.length() == 0){
+    cout<<"ERROR: Ingrese el nombre de tabla a modificar."<<endl;
+    return ERROR;
+  }
+  if(tablesList == NULL){
+    cout<<"ERROR: No existen tablas aun."<<endl;
+    return ERROR;
+  }else{
+    Tables aux = tablesList;
+    while(aux != NULL){
+      if(aux->name == tableName){
+        aux->name = newName;
+        cout<<"Nombre cambiado con exito!."<<endl;
+        return OK;
+      }
+      else{
+      aux = aux->next;
+      }
+    }
   }
   return OK;
 }

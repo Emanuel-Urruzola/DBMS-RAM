@@ -42,7 +42,7 @@ typeRet InsertInto( string tableName, string columnsOrder, string columnValues )
   Tables table = findTable( tableName );
   if( table == NULL ) {
     // TODO: Cambiar tipos de retorno.
-    cout << "La tabla ingresada no existe!."<<endl;
+    cout << "ERROR: La tabla ingresada no existe!."<<endl;
     return ERROR;
   } else {
     // Veo si las columnas son validas, creo la nueva row y la vinculo al ultimo

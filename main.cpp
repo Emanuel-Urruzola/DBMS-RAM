@@ -11,9 +11,9 @@ using namespace std;
 
 void seedTable( ) {
   createTable("Student");
-  createTable("Student");
-  createTable("Student");
-  createTable("Students");
+  createTable("Tools");
+  createTable("Teachers");
+  modifyTable("Teachers", "Profesoreeeee");
   createTable("Student2");
   createTable("Student2");
 
