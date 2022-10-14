@@ -8,6 +8,13 @@
 #include "deleteHelpers.hpp"
 using namespace std;
 
+void splitCondition( string condition, string &column, string &value,
+                     string splitter, int add ) {
+  column = condition.substr( 0, condition.find( splitter ) );
+  value  = condition.substr( condition.find( splitter ) + add,
+                            condition.length( ) - condition.find( splitter ) );
+}
+
 bool validColumns( string columnsOrder, Tables table ) {
   size_t position;
   int userAttributesCounter = 0;
@@ -84,6 +91,7 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
         newTuple->text        = columnValuesCopy;
         newTuple->type        = tableAttributesCopy->type;
         newTuple->restriction = tableAttributesCopy->restriction;
+        newTuple->name        = tableAttributesCopy->name;
         if( newRow->row == NULL ) {
           newRow->row = newTuple;
         } else {
@@ -101,13 +109,12 @@ void InsertInto( string tableName, string columnsOrder, string columnValues ) {
 
 int WhereConditionColumn( Tables table, string columnName ) {
   if( table == NULL ) return -1;
-  int index = 0;
-  while( table->attributes != NULL ) {
+  int index        = 0;
+  Tuple attributes = table->attributes;
+  while( attributes != NULL ) {
     index++;
-    if( table->attributes->name == columnName ) {
-      return index;
-    }
-    table->attributes = table->attributes->next;
+    if( attributes->name == columnName ) return index;
+    attributes = attributes->next;
   }
   return -1;
 }
@@ -134,62 +141,131 @@ int findIndexColumn( Tables table, string columnName ) {
   return 0;
 }
 
-ListInt findMatches( Tables table, int index, string value,
-                     string columnToModify, string newValueInColumn ) {
-  ListInt indexes = NULL;
-  Tuples tuple    = table->tuple;
-  while( tuple != NULL ) {
-    Tuple row = tuple->row;
-    for( int i = 1; i < index; i++ ) {
-      row = row->next;
+typeRet replaceInRow( Tuple rowCopy, string columnToModify,
+                      string valueModified, typeOfData type ) {
+  bool modified = false;
+  const regex regExpNumber( "^[\\d]+$" );
+  while( rowCopy != NULL && ! modified ) {
+    if( rowCopy->name == columnToModify ) {
+      if( rowCopy->type == STRING ) {
+        rowCopy->text = valueModified;
+        modified      = true;
+      } else {
+        if( regex_match( valueModified, regExpNumber ) ) {
+          rowCopy->number = stoi( valueModified );
+          modified        = true;
+        } else {
+          return ERROR;
+        }
+      }
     }
-    if( row->text == value ) {
-      Tuple rowAgain = tuple->row;
-      // TODO: Insert directly new value
+    rowCopy = rowCopy->next;
+  }
+  return OK;
+}
+
+typeRet findMatches( Tables table, int index, string value, typeOfData type,
+                     string columnToModify, string valueModified,
+                     int condition ) {
+  Tuples tuple = table->tuple;
+  bool finded;
+  if( type == STRING ) value = value.substr( 1, value.length( ) - 2 );
+  while( tuple != NULL ) {
+    Tuple row     = tuple->row;
+    Tuple rowCopy = tuple->row;
+    for( int i = 1; i < index; i++ ) row = row->next;
+    switch( condition ) {
+      case 0:
+        if( row->text == value ) {
+          if( replaceInRow( rowCopy, columnToModify, valueModified, type ) ==
+              ERROR )
+            return ERROR;
+        }
+        break;
+      case 1:
+        if( row->text != value )
+          if( replaceInRow( rowCopy, columnToModify, valueModified, type ) ==
+              ERROR )
+            return ERROR;
+        break;
+      case 2:
+        if( row->text < value )
+          if( replaceInRow( rowCopy, columnToModify, valueModified, type ) ==
+              ERROR )
+            return ERROR;
+        break;
+      case 3:
+        if( row->text < value )
+          if( replaceInRow( rowCopy, columnToModify, valueModified, type ) ==
+              ERROR )
+            return ERROR;
+        break;
+      default:
+        break;
     }
     tuple = tuple->next;
   }
-  return indexes;
+  return OK;
+}
+
+typeOfData findTypeColumn( Tables table, int index ) {
+  Tuple attributes = table->attributes;
+  for( int i = 1; i < index; i++ ) attributes = attributes->next;
+  return attributes->type;
 }
 
 // update (Personas,Nombre=”Pepe”,CI,1555000);
 typeRet update( string tableName, string whereCondition, string columnToModify,
                 string newValue ) {
+  // TODO: PRIMARY KEY cannot be repeated
   Tables table = findTable( tableName );
   if( table == NULL ) return ERROR;  // if table no exist
   if( findColumn( table, columnToModify ) == ERROR )
     return ERROR;  // if column to modify no exist
-  int index = WhereConditionColumn(
-      table,
-      whereCondition.substr(
-          0, whereCondition.find( "=" ) ) );  // Get the position of attribute
-  if( index == -1 ) return ERROR;             // If the position doesn't found
-  const regex regExp( "[\"'”][A-Za-z\\d]+[\"'”]" );
-  cout << whereCondition.substr(
-      whereCondition.find( "=" ) + 1,
-      whereCondition.length( ) - whereCondition.find( "=" ) + 1 );
-  ListInt indexes = NULL;
-  if( regex_match( whereCondition.substr( whereCondition.find( "=" ) + 1,
-                                          whereCondition.length( ) -
-                                              whereCondition.find( "=" ) + 1 ),
-                   regExp ) ) {
-    indexes = findMatches(
-        table, index,
-        whereCondition.substr(
-            whereCondition.find( "=" ) + 2,
-            whereCondition.length( ) - ( whereCondition.find( "=" ) + 3 ) ),
-        columnToModify, newValue );
+  const regex regExpString( "[\"'”].+[\"'”]" );
+  const regex regExpNumber( "^[\\d]+$" );
+  string column, value;
+  int option;
+  if( whereCondition.find( '=' ) != string::npos ) {
+    splitCondition( whereCondition, column, value, "=", 1 );
+    option = 0;
+  } else if( whereCondition.find( '<' ) != string::npos &&
+             whereCondition.find( '>' ) != string::npos ) {
+    splitCondition( whereCondition, column, value, "<", 2 );
+    option = 1;
+  } else if( whereCondition.find( '<' ) != string::npos ) {
+    splitCondition( whereCondition, column, value, "<", 1 );
+    option = 2;
+  } else if( whereCondition.find( '>' ) != string::npos ) {
+    splitCondition( whereCondition, column, value, ">", 1 );
+    option = 3;
+  } else {
+    cout << "Debe ingresar un operador valido ('=', '<', '>' o '<>')." << endl;
+    return ERROR;
+  }
+  int index = WhereConditionColumn( table,
+                                    column );  // Get the position of attribute
+  if( index == -1 ) {                          // If the position doesn't found
+    cout << "La columna asociada a la condicion no se encontro" << endl;
+    return ERROR;
+  }
+  typeOfData type = findTypeColumn( table, index );
+  if( ( type == INT && regex_match( value, regExpNumber ) ) ||
+      ( type == STRING && regex_match( value, regExpString ) ) ) {
+    if( findMatches( table, index, value, type, columnToModify, newValue,
+                     option ) == ERROR )
+      return ERROR;
+  } else {
+    cout << "Recuerde poner comillas para columnas de tipo STRING y no "
+            "poner "
+            "comillas para tipo INT"
+         << endl;
+    return ERROR;
   }
   return OK;
 }
 
 // DELETE QUERY
-void splitCondition( string condition, string &column, string &value,
-                     string splitter, int add ) {
-  column = condition.substr( 0, condition.find( splitter ) );
-  value  = condition.substr( condition.find( splitter ) + add,
-                             condition.length( ) - condition.find( splitter ) );
-}
 
 int columnExists( Tables table, string columnName ) {
   Tuple tableAttributesCopy = table->attributes;

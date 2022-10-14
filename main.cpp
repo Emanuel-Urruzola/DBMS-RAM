@@ -79,8 +79,26 @@ int main( ) {
                                opc.find( ")" ) - opc.find( "," ) - 1 ) );
       if( response == OK ) cout << "Operación realizada con éxito";
     }
-    if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" )
-      cout << "Not implemented yet" << endl;
+    // alterCol (Personas,Name,string,NOT EMPTY, Nombre)
+    if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" ) {
+      opc                      = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table             = opc.substr( 0, opc.find( "," ) );
+      opc                      = opc.erase( 0, opc.find( "," ) + 1 );
+      string columnName        = opc.substr( 0, opc.find( "," ) );
+      opc                      = opc.erase( 0, opc.find( "," ) + 1 );
+      string typeOfData        = opc.substr( 0, opc.find( "," ) );
+      opc                      = opc.erase( 0, opc.find( "," ) + 1 );
+      string typeOfRestriction = opc.substr( 0, opc.find( "," ) );
+      opc                      = opc.erase( 0, opc.find( "," ) + 1 );
+      string newColumnName     = opc.substr( 0, opc.find( ")" ) );
+      // TODO: Evaluate if a string is ""
+      if( alterCol( table, columnName, typeOfData, typeOfRestriction,
+                    newColumnName ) == OK ) {
+        cout << "Columna modificada correctamente" << endl;
+      } else {
+        cout << "Ocurrio un error" << endl;
+      }
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" )
       cout << "Not implemented yet" << endl;
     if( opc.substr( 0, opc.find( "(" ) ) == "delete" ) {
@@ -91,12 +109,22 @@ int main( ) {
                                    opc.find( ")" ) - opc.find( "," ) - 1 ) );
       if( response == OK ) cout << "Operación realizada con éxito";
     }
-    if( opc.substr( 0, opc.find( "(" ) ) == "update" )
-      if( update( "persona", "nombre='Pepe'", "ci", "1555000" ) == OK ) {
+    if( opc.substr( 0, opc.find( "(" ) ) == "update" ) {
+      opc          = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table = opc.substr( 0, opc.find( "," ) );
+      opc          = opc.erase( 0, opc.find( "," ) + 1 );
+      string condition =
+          opc.substr( 0, opc.find( "," ) );  // TODO: If the string has , ?
+      opc             = opc.erase( 0, opc.find( "," ) + 1 );
+      string column   = opc.substr( 0, opc.find( "," ) );
+      opc             = opc.erase( 0, opc.find( "," ) + 1 );
+      string newValue = opc.substr( 0, opc.find( ")" ) );
+      if( update( table, condition, column, newValue ) == OK ) {
         cout << "Columna mofidicada sastifactoriamente" << endl;
       } else {
         cout << "Ocurrio un error, por favor revise la instruccion" << endl;
       }
+    }
     if( opc.substr( 0, opc.find( "(" ) ) == "printDataTable" ) {
       string column =
           opc.substr( opc.find( "(" ) + 1,
