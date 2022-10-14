@@ -116,6 +116,10 @@ typeRet modifyTable( string tableName, string newName ) {
         aux = aux->next;
       }
     }
+    if(aux == NULL){
+      cout <<"ERROR: Nombre de tabla no valido." << endl;
+      return ERROR;
+    }
   }
   return OK;
 }

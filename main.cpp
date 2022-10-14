@@ -13,7 +13,7 @@ void seedTable( ) {
   createTable("Student");
   createTable("Tools");
   createTable("Teachers");
-  modifyTable("Teachers", "Profesoreeeee");
+  modifyTable("Teacher", "Profesoreeeee");
   createTable("Student2");
   createTable("Student2");
 
