@@ -47,22 +47,22 @@ typeRet AddCol( string tableName, string columnName, string columnType,
         cout << "ERROR: El calificador debe ser ANY!." << endl;
         return ERROR;
       } else {
-        //TODO: verificar porque cuando itero me va borrando las row.
-      column->restriction = restriction;
-      Tuple newTuple        = new nodeElement;
-      newTuple->next        = NULL;
-      newTuple->text        = "empty";
-      newTuple->type        = colType;
-      newTuple->restriction = restriction;
-        while(table->tuple != NULL){
-      Tuples tupleCopy = table->tuple;
-          while(tupleCopy->row->next != NULL){
+        // TODO: verificar porque cuando itero me va borrando las row.
+        column->restriction   = restriction;
+        Tuple newTuple        = new nodeElement;
+        newTuple->next        = NULL;
+        newTuple->text        = "empty";
+        newTuple->type        = colType;
+        newTuple->restriction = restriction;
+        while( table->tuple != NULL ) {
+          Tuples tupleCopy = table->tuple;
+          while( tupleCopy->row->next != NULL ) {
             tupleCopy->row = tupleCopy->row->next;
           }
-          if(tupleCopy->row->next == NULL){
+          if( tupleCopy->row->next == NULL ) {
             tupleCopy->row->next = newTuple;
           }
-          table->tuple=table->tuple->next;
+          table->tuple = table->tuple->next;
         }
       }
     } else {
@@ -118,7 +118,8 @@ void setColumnIndexes( Tuple &attributes ) {
     index++;
     attributesCopy = attributesCopy->next;
   }
-  
+}
+
 // alterCol (Personas,Name,string,NOT EMPTY, Nombre)
 typeRet alterCol( string tableName, string columnName, string typeOfDataP,
                   string typeOfRestrictionP, string newColumnName ) {
