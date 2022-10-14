@@ -191,41 +191,73 @@ void splitCondition( string condition, string &column, string &value,
                              condition.length( ) - condition.find( splitter ) );
 }
 
-int validCondition( Tables table, Tuples tuple, int option, string column,
-                    string value ) {
-  bool columnExists         = false;
+int columnExists( Tables table, string columnName ) {
   Tuple tableAttributesCopy = table->attributes;
-  while( tableAttributesCopy != NULL && ! columnExists ) {
-    if( tableAttributesCopy->name == column ) columnExists = true;
+  while( tableAttributesCopy != NULL ) {
+    if( tableAttributesCopy->name == columnName )
+      return tableAttributesCopy->index;
     else
       tableAttributesCopy = tableAttributesCopy->next;
   }
-  if( columnExists ) {
-    Tuple tupleRowCopy = tuple->row;
-    for( int i = 0; i < tableAttributesCopy->index; i++ )
-      tupleRowCopy = tupleRowCopy->next;
+  return -1;
+}
 
-    switch( option ) {
-      case 0:
-        if( tupleRowCopy->text == value.substr( 1, value.length( ) - 2 ) )
-          return 0;
-        break;
-      case 1:
-        if( tupleRowCopy->text < value.substr( 1, value.length( ) - 2 ) )
-          return 0;
-        break;
-      case 2:
-        if( tupleRowCopy->text != value.substr( 1, value.length( ) - 2 ) )
-          return 0;
-        break;
-      case 3:
-        if( tupleRowCopy->text > value.substr( 1, value.length( ) - 2 ) )
-          return 0;
-        break;
+int validCondition( Tables table, Tuples tuple, int option, string column,
+                    string value ) {
+  int columnIndex = columnExists( table, column );
+  if( columnIndex != -1 ) {
+    Tuple tupleRowCopy = tuple->row;
+    for( int i = 0; i < columnIndex; i++ ) tupleRowCopy = tupleRowCopy->next;
+    if( value != "EMPTY" ) {
+      value = value.substr( 1, value.length( ) - 2 );
+      switch( option ) {
+        case 0:
+          if( tupleRowCopy->type == STRING ) {
+            if( tupleRowCopy->text == value ) return 0;
+          } else if( tupleRowCopy->number == stoi( value ) )
+            return 0;
+          break;
+        case 1:
+          if( tupleRowCopy->type == STRING ) {
+            if( tupleRowCopy->text < value ) return 0;
+          } else if( tupleRowCopy->number < stoi( value ) )
+            return 0;
+          break;
+        case 2:
+          if( tupleRowCopy->type == STRING ) {
+            if( tupleRowCopy->text != value ) return 0;
+          } else if( tupleRowCopy->number != stoi( value ) )
+            return 0;
+          break;
+        case 3:
+          if( tupleRowCopy->type == STRING ) {
+            if( tupleRowCopy->text > value.substr( 1, value.length( ) - 2 ) )
+              return 0;
+          } else if( tupleRowCopy->number >
+                     stoi( value.substr( 1, value.length( ) - 2 ) ) )
+            return 0;
+          break;
+      }
+    } else {
+      // TODO: Empty INT
+      switch( option ) {
+        case 0:
+          if( tupleRowCopy->type == STRING ) {
+            if( tupleRowCopy->text.compare( NULL ) == 0 ) return 0;
+          } else if( tupleRowCopy->number == stoi( value ) )
+            return 0;
+          break;
+        case 2:
+          if( tupleRowCopy->type == STRING ) {
+            if( tupleRowCopy->text.compare( NULL ) != 0 ) return 0;
+          } else if( tupleRowCopy->number != stoi( value ) )
+            return 0;
+          break;
+      }
     }
-  } else {
+
+  } else
     return 2;
-  }
   return 1;
 }
 
@@ -270,12 +302,8 @@ typeRet deleteQuery( string tableName, string condition ) {
   while( first ) {
     int conditionStatus =
         validCondition( table, table->tuple, option, column, value );
-    if( conditionStatus == 0 ) {
-      deleteAllRows( table->tuple->row );
-      Tuples aux   = table->tuple;
-      table->tuple = table->tuple->next;
-      delete aux;
-    } else if( conditionStatus == 1 )
+    if( conditionStatus == 0 ) deleteTuple( table->tuple );
+    else if( conditionStatus == 1 )
       first = false;
     else if( conditionStatus == 2 ) {
       cout << "La columna '" << column << "' no existe." << endl;
@@ -284,29 +312,28 @@ typeRet deleteQuery( string tableName, string condition ) {
   }
 
   Tuples tableTuplesCopy = table->tuple;
-  while( tableTuplesCopy->next != NULL ) {
-    int conditionStatus =
-        validCondition( table, tableTuplesCopy->next, option, column, value );
-    if( conditionStatus == 0 ) {
-      deleteNextTuple( tableTuplesCopy );
-    } else if( conditionStatus == 1 ) {
-      tableTuplesCopy = tableTuplesCopy->next;
-    } else if( conditionStatus == 2 ) {
-      cout << "La columna '" << column << "' no existe." << endl;
-      return ERROR;
+  while( tableTuplesCopy != NULL ) {
+    if( tableTuplesCopy->next != NULL ) {
+      int conditionStatus =
+          validCondition( table, tableTuplesCopy->next, option, column, value );
+      if( conditionStatus == 0 ) {
+        deleteNextTuple( tableTuplesCopy );
+      } else if( conditionStatus == 1 ) {
+        tableTuplesCopy = tableTuplesCopy->next;
+      } else if( conditionStatus == 2 ) {
+        cout << "La columna '" << column << "' no existe." << endl;
+        return ERROR;
+      }
+    } else {
+      int conditionStatus =
+          validCondition( table, tableTuplesCopy, option, column, value );
+      if( conditionStatus == 0 ) deleteTuple( tableTuplesCopy );
+      else if( conditionStatus == 2 ) {
+        cout << "La columna '" << column << "' no existe." << endl;
+        return ERROR;
+      }
     }
-  }
-
-  int conditionStatus =
-      validCondition( table, table->tuple, option, column, value );
-  if( conditionStatus == 0 ) {
-    deleteAllRows( table->tuple->row );
-    Tuples aux   = table->tuple;
-    table->tuple = table->tuple->next;
-    delete aux;
-  } else if( conditionStatus == 2 ) {
-    cout << "La columna '" << column << "' no existe." << endl;
-    return ERROR;
+    tableTuplesCopy = tableTuplesCopy->next;
   }
 
   return OK;

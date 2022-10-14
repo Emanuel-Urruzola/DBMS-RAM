@@ -36,6 +36,16 @@ void AddCol( string tableName, string columnName, typeOfData columnType,
   }
 }
 
+void setColumnIndexes( Tuple &attributes ) {
+  int index            = 0;
+  Tuple attributesCopy = attributes;
+  while( attributesCopy != NULL ) {
+    attributesCopy->index = index;
+    index++;
+    attributesCopy = attributesCopy->next;
+  }
+}
+
 typeRet dropCol( string tableName, string columnName ) {
   if( tableName.length( ) == 0 ) {
     cout << "El nombre de la tabla debe ser especificado." << endl;
@@ -77,7 +87,7 @@ typeRet dropCol( string tableName, string columnName ) {
          << endl;
     return ERROR;
   }
-  // TODO: Set columns index after deleteing one
+
   int findedColumnIndex = 0;
   bool finded           = false;
   tableAttributesCopy   = table->attributes;
@@ -129,6 +139,8 @@ typeRet dropCol( string tableName, string columnName ) {
     }
     tableTuplesCopy = tableTuplesCopy->next;
   }
+
+  setColumnIndexes( table->attributes );
 
   return OK;
 }
