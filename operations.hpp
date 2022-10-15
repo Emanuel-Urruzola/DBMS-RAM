@@ -59,7 +59,7 @@ typeRet Insert( TreeInt &tree, int value, string row ) {
   } else {
     if( value < tree->value ) {
       Insert( tree->left, value, row );
-    } else if( value = tree->value ) {
+    } else if( value == tree->value ) {
       Insert( tree->right, value, row );
       return ERROR;
     } else {
