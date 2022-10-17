@@ -44,10 +44,14 @@ bool validColumns( string columnsOrder, Tables table ) {
 typeRet InsertInto( string tableName, string columnsOrder,
                     string columnValues ) {
   if( tableName.length( ) == 0 ) {
-    cout << "La tabla ingresada no existe!." << endl;
+    cout << "ERROR: Ingrese un nombre de tabla!." << endl;
     return ERROR;
   }
   Tables table = findTable( tableName );
+  if(table->attributes == NULL){
+    cout<<"ERROR: La tabla ingresada no tiene columnas!."<<endl;
+    return ERROR;
+  }
   if( table == NULL ) {
     cout << "ERROR: La tabla ingresada no existe!." << endl;
     return ERROR;
@@ -102,6 +106,26 @@ typeRet InsertInto( string tableName, string columnsOrder,
           newTuple->text = columnValuesCopy;
         }
         newTuple->restriction = tableAttributesCopy->restriction;
+        // Chequea si la PRIMARY KEY ya existe.
+        if(tableAttributesCopy->restriction == PRIMARY_KEY){
+          Tuples tupleCopy = table->tuple;
+          while(tupleCopy != NULL){
+            Tuple rowCopy = table->tuple->row;
+            while(rowCopy != NULL){
+              if(rowCopy->restriction == PRIMARY_KEY){
+                if(rowCopy->number == newTuple->number){
+                  cout<<"ERROR: Primary key existente!."<<endl;
+                  return ERROR;
+                }else{
+                  rowCopy = rowCopy->next;
+                }
+              }else{
+                rowCopy = rowCopy->next;
+              }
+            }
+            tupleCopy = tupleCopy->next;
+          }
+        }
         newTuple->name        = tableAttributesCopy->name;
         if( newRow->row == NULL ) {
           newRow->row = newTuple;
