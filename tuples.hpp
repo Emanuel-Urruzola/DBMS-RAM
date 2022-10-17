@@ -145,10 +145,19 @@ int findIndexColumn( Tables table, string columnName ) {
   if( table == NULL ) return 0;
   int index        = 0;
   Tuple attributes = table->attributes;
-  while( attributes != NULL ) {
-    index++;
-    if( attributes->name == columnName ) return index;
-    attributes = attributes->next;
+  if( columnName != "" ) {
+    while( attributes != NULL ) {
+      index++;
+      if( attributes->name == columnName ) return index;
+      attributes = attributes->next;
+    }
+  } else {
+    while( attributes->next != NULL ) {
+      index++;
+      if( attributes->restriction == PRIMARY_KEY ) return index;
+      attributes = attributes->next;
+    }
+    return index++;
   }
   return 0;
 }
@@ -181,33 +190,39 @@ typeRet findMatches( Tables table, int index, string value, typeOfData type,
                      int condition ) {
   Tuples tuple = table->tuple;
   bool finded;
-  if( type == STRING ) value = value.substr( 1, value.length( ) - 2 );
+  bool isEmpty = ! value.compare( "\"\"" );
+  if( type == STRING && ! isEmpty )
+    value = value.substr( 1, value.length( ) - 2 );
   while( tuple != NULL ) {
     Tuple row     = tuple->row;
     Tuple rowCopy = tuple->row;
     for( int i = 1; i < index; i++ ) row = row->next;
     switch( condition ) {
       case 0:
-        if( row->text == value ) {
+        if( type == STRING && ! row->text.compare( value ) || isEmpty ||
+            type == INT && row->number == stoi( value ) ) {
           if( replaceInRow( rowCopy, columnToModify, valueModified, type ) ==
               ERROR )
             return ERROR;
         }
         break;
       case 1:
-        if( row->text != value )
+        if( type == STRING && row->text.compare( value ) || isEmpty ||
+            type == INT && row->number != stoi( value ) )
           if( replaceInRow( rowCopy, columnToModify, valueModified, type ) ==
               ERROR )
             return ERROR;
         break;
       case 2:
-        if( row->text < value )
+        if( type == STRING && row->text.compare( value ) == -1 || isEmpty ||
+            type == INT && row->number < stoi( value ) )
           if( replaceInRow( rowCopy, columnToModify, valueModified, type ) ==
               ERROR )
             return ERROR;
         break;
       case 3:
-        if( row->text < value )
+        if( type == STRING && row->text.compare( value ) == 1 || isEmpty ||
+            type == INT && row->number > stoi( value ) )
           if( replaceInRow( rowCopy, columnToModify, valueModified, type ) ==
               ERROR )
             return ERROR;
@@ -226,7 +241,6 @@ typeOfData findTypeColumn( Tables table, int index ) {
   return attributes->type;
 }
 
-// update (Personas,Nombre=”Pepe”,CI,1555000);
 typeRet update( string tableName, string whereCondition, string columnToModify,
                 string newValue ) {
   // TODO: PRIMARY KEY cannot be repeated
@@ -234,8 +248,10 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
   if( table == NULL ) return ERROR;  // if table no exist
   if( findColumn( table, columnToModify ) == ERROR )
     return ERROR;  // if column to modify no exist
-  const regex regExpString( "[\"'”].+[\"'”]" );
-  const regex regExpNumber( "^[\\d]+$" );
+  const regex regExpString(
+      "[\"'”].+[\"'”]" );  // Checking that string is between different types of
+                           // quotes
+  const regex regExpNumber( "^[\\d]+$" );  // Start and end with number
   string column, value;
   int option;
   if( whereCondition.find( '=' ) != string::npos ) {
@@ -263,7 +279,10 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
   }
   typeOfData type = findTypeColumn( table, index );
   if( ( type == INT && regex_match( value, regExpNumber ) ) ||
-      ( type == STRING && regex_match( value, regExpString ) ) ) {
+      ( type == STRING && regex_match( value, regExpString ) ) ||
+      ! value.compare(
+          "\"\"" ) ) {  // if is int it can only have number, if is string has
+                        // to have quotes, or if is "" it passes
     if( findMatches( table, index, value, type, columnToModify, newValue,
                      option ) == ERROR )
       return ERROR;

@@ -139,6 +139,7 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
   Tuple row   = table->tuple->row;
   bool change = false;
   typeOfData newType;
+  for( int i = 1; i < index; i++ ) row = row->next;
   if( regex_match( typeOfDataP, regExpInteger ) ||
       regex_match( typeOfDataP, regExpInt ) ) {
     newType = INT;
@@ -151,6 +152,7 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
     newType = STRING;
     if( row->type == INT ) change = true;
   }
+  row = table->tuple->row;
   // Check if columnName is Primary key and there is more than one column
   bool minimumTwoElements = ( row->next != NULL );
   for( int i = 1; i < index; i++ ) row = row->next;
