@@ -9,16 +9,28 @@ using namespace std;
 
 string getRowString( Tuple row, int index, typeOfData &type, int &number,
                      string &text ) {
-  string rowString = "";
+  string rowString = "|";
   while( row != NULL ) {
     if( row->type == STRING ) {
-      string element = row->text;
-      element.resize( 20, ' ' );
-      rowString += element + "\t";
+      if( row->text == "EMPTY" ) {
+        string element = "EMPTY";
+        element.resize( 20, ' ' );
+        rowString += element + "\t" + "|";
+      } else {
+        string element = row->text;
+        element.resize( 20, ' ' );
+        rowString += element + "\t" + "|";
+      }
     } else {
-      string element = to_string( row->number ) + "";
-      element.resize( 20, ' ' );
-      rowString += element + "\t";
+      if( row->number == -1 ) {  // nc
+        string element = "EMPTY";
+        element.resize( 20, ' ' );
+        rowString += element + "\t" + "|";
+      } else {
+        string element = to_string( row->number ) + "";
+        element.resize( 20, ' ' );
+        rowString += element + "\t" + "|";
+      }
     }
     index--;
     if( index == 0 ) {
@@ -36,6 +48,7 @@ void LoopInRows( Tuples rows, TreeInt &treeQuerie, TreeStr &treeQuerieStr,
                  int indexInParameter, typeOfData &type ) {
   int number;   // To sort by number
   string text;  // To sort by text
+  // TODO: union?
   while( rows != NULL ) {
     int index        = indexInParameter;
     string rowString = getRowString( rows->row, index, type, number, text );
@@ -50,7 +63,6 @@ void LoopInRows( Tuples rows, TreeInt &treeQuerie, TreeStr &treeQuerieStr,
 
 typeRet PrintDataTable( string tableName, string ordeyBy ) {
   // TODO: column maximum size and "..." to string more large
-  // TODO: If "" order by Primary or any in ascending order
   Tables table = findTable( tableName );
   typeOfData type;  // To select type of sort
   if( table == NULL ) return ERROR;
@@ -65,10 +77,12 @@ typeRet PrintDataTable( string tableName, string ordeyBy ) {
   // system( "clear" );
   cout << endl << "Tabla " << table->name << ":" << endl;
   Tuple attributes = table->attributes;
+  cout << "|";
   while( attributes != NULL ) {
     string attribute = attributes->name;
     attribute.resize( 20, ' ' );
-    cout << attribute << "\t";
+    cout << attribute << "\t"
+         << "|";
     attributes = attributes->next;
   }
   cout << endl;
