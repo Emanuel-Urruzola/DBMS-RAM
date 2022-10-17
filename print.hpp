@@ -10,6 +10,7 @@ using namespace std;
 string getRowString( Tuple row, int index, typeOfData &type, int &number,
                      string &text ) {
   string rowString = "|";
+  bool noExist     = index == 0;
   while( row != NULL ) {
     if( row->type == STRING ) {
       if( row->text == "EMPTY" ) {
@@ -34,6 +35,11 @@ string getRowString( Tuple row, int index, typeOfData &type, int &number,
     }
     index--;
     if( index == 0 ) {
+      type = row->type;
+      if( row->type == INT ) number = row->number;
+      else
+        text = row->text;
+    } else if( row->next == NULL && noExist ) {
       type = row->type;
       if( row->type == INT ) number = row->number;
       else
@@ -73,6 +79,10 @@ typeRet PrintDataTable( string tableName, string ordeyBy ) {
   TreeInt treeQuerie    = NULL;  // To save the int column in a tree
   TreeStr treeQuerieStr = NULL;  // To save the string column in a tree
   int n = findIndexColumn( table, ordeyBy );  // Save the index of column ordeby
+  if( ! n > 0 && ordeyBy.compare( "\"\"" ) ) {
+    cout << "No existe la columna" << endl;
+    return ERROR;
+  }
   LoopInRows( table->tuple, treeQuerie, treeQuerieStr, n, type );
   // system( "clear" );
   cout << endl << "Tabla " << table->name << ":" << endl;

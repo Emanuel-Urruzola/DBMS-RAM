@@ -145,7 +145,9 @@ int findIndexColumn( Tables table, string columnName ) {
   if( table == NULL ) return 0;
   int index        = 0;
   Tuple attributes = table->attributes;
-  if( columnName != "" ) {
+  cout << columnName << " and "
+       << "\"\"" << endl;
+  if( columnName.compare( "\"\"" ) ) {
     while( attributes != NULL ) {
       index++;
       if( attributes->name == columnName ) return index;
@@ -157,7 +159,8 @@ int findIndexColumn( Tables table, string columnName ) {
       if( attributes->restriction == PRIMARY_KEY ) return index;
       attributes = attributes->next;
     }
-    return index++;
+    index++;
+    return index;
   }
   return 0;
 }

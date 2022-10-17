@@ -27,9 +27,9 @@ void seedTable( ) {
   // PrintDataTable( "Student", "" );
   createTable( "Subject" );
   AddCol( "Subject", "Credits", "INT", ANY );
-  AddCol( "Subject", "Semester", "STRING", ANY );
+  AddCol( "Subject", "Semester", "INT", ANY );
   AddCol( "Subject", "Name", "STRING", ANY );
-  AddCol( "Subject", "ID", "INT", PRIMARY_KEY );
+  AddCol( "Subject", "ID", "INT", ANY );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );

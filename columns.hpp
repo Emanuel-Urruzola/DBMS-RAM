@@ -147,13 +147,16 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
       cout << "No esta permitido cambiar de STRING a INT" << endl;
       return ERROR;
     }
+  } else if( ! regex_match( typeOfDataP, regExpString ) ) {
+    cout << "Tipo de dato incorrecto, debe ser INT o STRING" << endl;
+    return ERROR;
   }
   if( regex_match( typeOfDataP, regExpString ) ) {
     newType = STRING;
     if( row->type == INT ) change = true;
   }
-  row = table->tuple->row;
   // Check if columnName is Primary key and there is more than one column
+  row                     = table->tuple->row;
   bool minimumTwoElements = ( row->next != NULL );
   for( int i = 1; i < index; i++ ) row = row->next;
   cout << row->name << "Es el row que quiero analizar" << endl;
@@ -199,7 +202,7 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
       while( tuplesCopy != NULL ) {
         Tuple rowCopy = tuplesCopy->row;
         for( int i = 1; i < index; i++ ) rowCopy = rowCopy->next;
-        if( Insert( treeInt, row->number, "" ) == ERROR ) {
+        if( Insert( treeInt, rowCopy->number, "" ) == ERROR ) {
           cout << "Hay datos en duplicados " << row->name
                << " no se puede cambiar a PRIMARY KEY" << endl;
         }
