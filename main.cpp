@@ -33,7 +33,7 @@ void seedTable( ) {
   InsertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "4:EMPTY:2:10" );
+  InsertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
 
   // deleteQuery( "Subject", "Semester=\"1\"" );
 

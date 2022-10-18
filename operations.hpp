@@ -3,6 +3,10 @@
 #include "variables.hpp"
 #include "operations.hpp"
 using namespace std;
+union tree {
+  TreeInt treeInt;
+  TreeStr treeStr;
+};
 void InsBack( List &initialList, string value ) {
   List newNode   = new nodeList;
   newNode->value = value;
