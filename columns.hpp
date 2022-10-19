@@ -47,22 +47,27 @@ typeRet AddCol( string tableName, string columnName, string columnType,
         cout << "ERROR: El calificador debe ser ANY!." << endl;
         return ERROR;
       } else {
-        // TODO: verificar porque cuando itero me va borrando las row.
         column->restriction   = restriction;
         Tuple newTuple        = new nodeElement;
         newTuple->next        = NULL;
-        newTuple->text        = "empty";
+        newTuple->name        = columnName;
         newTuple->type        = colType;
         newTuple->restriction = restriction;
-        while( table->tuple != NULL ) {
-          Tuples tupleCopy = table->tuple;
-          while( tupleCopy->row->next != NULL ) {
-            tupleCopy->row = tupleCopy->row->next;
+        if( colType == INT ) {
+          newTuple->number = -1;
+        } else {
+          newTuple->text = "";
+        }
+        Tuples aux = table->tuple;
+        while( aux != NULL ) {
+          Tuple tupleCopy = aux->row;
+          while( tupleCopy->next != NULL ) {
+            tupleCopy = tupleCopy->next;
           }
-          if( tupleCopy->row->next == NULL ) {
-            tupleCopy->row->next = newTuple;
+          if( tupleCopy->next == NULL ) {
+            tupleCopy->next = newTuple;
           }
-          table->tuple = table->tuple->next;
+          aux = aux->next;
         }
       }
     } else {
@@ -71,7 +76,6 @@ typeRet AddCol( string tableName, string columnName, string columnType,
     column->next = NULL;
     if( table->attributes == NULL ) {
       table->attributes = column;
-      column->index     = 0;
     } else {
       // Si nombre de la columna ya existe.
       if( table->attributes->next == NULL &&
@@ -86,8 +90,7 @@ typeRet AddCol( string tableName, string columnName, string columnType,
         return ERROR;
       }
       Tuple tableAttributesCopy = table->attributes;
-      bool finded               = false;
-      while( tableAttributesCopy->next != NULL && ! finded ) {
+      while( tableAttributesCopy->next != NULL ) {
         if( tableAttributesCopy->restriction == PRIMARY_KEY &&
             column->restriction == tableAttributesCopy->restriction ) {
           cout << "ERROR: Ya existe una PRIMARY_KEY." << endl;
@@ -96,14 +99,12 @@ typeRet AddCol( string tableName, string columnName, string columnType,
         if( tableAttributesCopy->name == columnName ) {
           cout << "ERROR: El nombre de columna ya existe." << endl;
           return ERROR;
-          finded = true;
         } else {
           tableAttributesCopy = tableAttributesCopy->next;
         }
       }
-      if( tableAttributesCopy->next == NULL && ! finded ) {
+      if( tableAttributesCopy->next == NULL ) {
         tableAttributesCopy->next        = column;
-        tableAttributesCopy->next->index = tableAttributesCopy->index + 1;
       }
     }
   }

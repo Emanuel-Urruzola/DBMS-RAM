@@ -18,9 +18,6 @@ void splitCondition( string condition, string &column, string &value,
 bool validColumns( string columnsOrder, Tables table ) {
   size_t position;
   int userAttributesCounter = 0;
-  //  TODO: Check possible double name in columns
-  //  TODO: Validate types and restrictions
-  // TODO: Last column from columnsOrder is not entering
   while( ( position = columnsOrder.find( ":" ) ) != string::npos ) {
     userAttributesCounter++;
     int counter               = 0;
@@ -34,20 +31,30 @@ bool validColumns( string columnsOrder, Tables table ) {
     columnsOrder.erase( 0, position + 1 );
   }
   Tuple tableAttributesCopy = table->attributes;
-  while( tableAttributesCopy->next != NULL )
+  int attributesCounter     = 0;
+  while( tableAttributesCopy->next != NULL ) {
+    attributesCounter++;
     tableAttributesCopy = tableAttributesCopy->next;
-
-  if( userAttributesCounter == tableAttributesCopy->index ) return true;
+  }
+  if( userAttributesCounter == attributesCounter ) return true;
   return false;
 }
 
 typeRet InsertInto( string tableName, string columnsOrder,
                     string columnValues ) {
   if( tableName.length( ) == 0 ) {
-    cout << "La tabla ingresada no existe!." << endl;
+    cout << "ERROR: Ingrese un nombre de tabla!." << endl;
     return ERROR;
   }
   Tables table = findTable( tableName );
+  if(!(validColumns(columnsOrder, table))){
+    cout<<"ERROR: Columna no existente, ingrese nuevamente!."<<endl;
+    return ERROR;
+  }
+  if( table->attributes == NULL ) {
+    cout << "ERROR: La tabla ingresada no tiene columnas!." << endl;
+    return ERROR;
+  }
   if( table == NULL ) {
     cout << "ERROR: La tabla ingresada no existe!." << endl;
     return ERROR;
@@ -102,7 +109,27 @@ typeRet InsertInto( string tableName, string columnsOrder,
           newTuple->text = columnValuesCopy;
         }
         newTuple->restriction = tableAttributesCopy->restriction;
-        newTuple->name        = tableAttributesCopy->name;
+        // Chequea si la PRIMARY KEY ya existe.
+        if( tableAttributesCopy->restriction == PRIMARY_KEY ) {
+          Tuples tupleCopy = table->tuple;
+          while( tupleCopy != NULL ) {
+            Tuple rowCopy = table->tuple->row;
+            while( rowCopy != NULL ) {
+              if( rowCopy->restriction == PRIMARY_KEY ) {
+                if( rowCopy->number == newTuple->number ) {
+                  cout << "ERROR: Primary key existente!." << endl;
+                  return ERROR;
+                } else {
+                  rowCopy = rowCopy->next;
+                }
+              } else {
+                rowCopy = rowCopy->next;
+              }
+            }
+            tupleCopy = tupleCopy->next;
+          }
+        }
+        newTuple->name = tableAttributesCopy->name;
         if( newRow->row == NULL ) {
           newRow->row = newTuple;
         } else {
