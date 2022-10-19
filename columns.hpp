@@ -120,6 +120,29 @@ void setColumnIndexes( Tuple &attributes ) {
   }
 }
 
+typeRet PKCondition( typeOfData type, int index, Tuples tuple ) {
+  tree treeUnion;
+  if( type == STRING ) treeUnion.treeStr = NULL;
+  else
+    treeUnion.treeInt = NULL;
+  while( tuple != NULL ) {
+    typeRet result = OK;
+    Tuple row      = tuple->row;
+    for( int i = 1; i < index; i++ ) row = row->next;
+    if( type == STRING )
+      result = InsertText( treeUnion.treeStr, row->text, "" );
+    else
+      result = Insert( treeUnion.treeInt, row->number, "" );
+    if( result == ERROR ) {
+      cout << "Hay datos duplicados en " << row->name
+           << " no se puede cambiar a PRIMARY KEY" << endl;
+      return ERROR;
+    }
+    tuple = tuple->next;
+  }
+  return OK;
+}
+
 // alterCol (Personas,Name,string,NOT EMPTY, Nombre)
 typeRet alterCol( string tableName, string columnName, string typeOfDataP,
                   string typeOfRestrictionP, string newColumnName ) {
@@ -136,9 +159,12 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
   const regex regExpString( "^[sS][tT][rR][iI][nN][gG]$" );
   const regex regExpInteger( "^[iI][nN][tT][eE][gG][eE][rR]$" );
   const regex regExpInt( "^[iI][nN][tT]$" );
+  const regex regExpAny( "^[Aa][Nn][Yy]$" );
+  const regex regExpNEmpty( "^[Nn][Oo][Tt][-_ ][Ee][Mm][Pp][Tt][Yy]$" );
   Tuple row   = table->tuple->row;
   bool change = false;
   typeOfData newType;
+  for( int i = 1; i < index; i++ ) row = row->next;
   if( regex_match( typeOfDataP, regExpInteger ) ||
       regex_match( typeOfDataP, regExpInt ) ) {
     newType = INT;
@@ -146,16 +172,19 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
       cout << "No esta permitido cambiar de STRING a INT" << endl;
       return ERROR;
     }
+  } else if( ! regex_match( typeOfDataP, regExpString ) ) {
+    cout << "Tipo de dato incorrecto, debe ser INT o STRING" << endl;
+    return ERROR;
   }
   if( regex_match( typeOfDataP, regExpString ) ) {
     newType = STRING;
     if( row->type == INT ) change = true;
   }
   // Check if columnName is Primary key and there is more than one column
+  row                     = table->tuple->row;
   bool minimumTwoElements = ( row->next != NULL );
   for( int i = 1; i < index; i++ ) row = row->next;
-  cout << row->name << "Es el row que quiero analizar" << endl;
-  typeOfData initialType = row->type;  // for condition on primary key later
+  typeOfData type = row->type;  // for condition on primary key later
   if( ( row->restriction == PRIMARY_KEY ) && minimumTwoElements ) {
     cout << row->name << " es la PRIMARY KEY y la tabla tiene más columnas.";
     return ERROR;
@@ -174,45 +203,19 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
   }
   // Check if typeOfRestriction parameter is primary key that there are no
   // duplicates
-  Tuples tuplesCopy = table->tuple;
   typeOfRestriction newRestriction;
   const regex regExpPrimary(
       "^[Pp][Rr][Ii][Mm][Aa][Rr][Yy][ _-][Kk][Ee][Yy]$" );
   if( regex_match( typeOfRestrictionP, regExpPrimary ) ) {
-    newRestriction  = PRIMARY_KEY;
-    typeRet primary = OK;
-    TreeInt treeInt;
-    TreeStr treeStr;
-    if( initialType == STRING ) {
-      while( tuplesCopy != NULL ) {
-        Tuple rowCopy = tuplesCopy->row;
-        for( int i = 1; i < index; i++ ) rowCopy = rowCopy->next;
-        if( InsertText( treeStr, row->text, "" ) == ERROR ) {
-          cout << "Hay datos en duplicados " << row->name
-               << " no se puede cambiar a PRIMARY KEY" << endl;
-        }
-        tuplesCopy = tuplesCopy->next;
-      }
-    } else {
-      while( tuplesCopy != NULL ) {
-        Tuple rowCopy = tuplesCopy->row;
-        for( int i = 1; i < index; i++ ) rowCopy = rowCopy->next;
-        if( Insert( treeInt, row->number, "" ) == ERROR ) {
-          cout << "Hay datos en duplicados " << row->name
-               << " no se puede cambiar a PRIMARY KEY" << endl;
-        }
-        tuplesCopy = tuplesCopy->next;
-      }
-    }
+    newRestriction = PRIMARY_KEY;
+    if( PKCondition( type, index, table->tuple ) == ERROR ) return ERROR;
   }
   // Store the other types of restrictions
-  const regex regExpAny( "^[Aa][Nn][Yy]$" );
-  const regex regExpNEmpty( "^[Nn][Oo][Tt][-_ ][Ee][Mm][Pp][Tt][Yy]$" );
   if( regex_match( typeOfRestrictionP, regExpAny ) ) newRestriction = ANY;
   if( regex_match( typeOfRestrictionP, regExpNEmpty ) )
     newRestriction = NOT_EMPTY;
   // If it don't throw an error still means I can set without errors.
-  tuplesCopy = table->tuple;
+  Tuples tuplesCopy = table->tuple;
   while( tuplesCopy != NULL ) {
     Tuple rowCopy = tuplesCopy->row;
     for( int i = 1; i < index; i++ ) rowCopy = rowCopy->next;

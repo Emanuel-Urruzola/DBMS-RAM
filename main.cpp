@@ -27,13 +27,13 @@ void seedTable( ) {
   // PrintDataTable( "Student", "" );
   createTable( "Subject" );
   AddCol( "Subject", "Credits", "INT", ANY );
-  AddCol( "Subject", "Semester", "STRING", ANY );
+  AddCol( "Subject", "Semester", "INT", ANY );
   AddCol( "Subject", "Name", "STRING", ANY );
-  AddCol( "Subject", "ID", "STRING", PRIMARY_KEY );
+  AddCol( "Subject", "ID", "INT", ANY );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "2:EDA:2:13" );
+  InsertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "4:OS:2:10" );
+  InsertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
 
   // deleteQuery( "Subject", "Semester=\"1\"" );
 
@@ -98,7 +98,6 @@ int main( ) {
       string typeOfRestriction = opc.substr( 0, opc.find( "," ) );
       opc                      = opc.erase( 0, opc.find( "," ) + 1 );
       string newColumnName     = opc.substr( 0, opc.find( ")" ) );
-      // TODO: Evaluate if a string is ""
       if( alterCol( table, columnName, typeOfData, typeOfRestriction,
                     newColumnName ) == OK ) {
         cout << "Columna modificada correctamente" << endl;
@@ -126,6 +125,7 @@ int main( ) {
       string column   = opc.substr( 0, opc.find( "," ) );
       opc             = opc.erase( 0, opc.find( "," ) + 1 );
       string newValue = opc.substr( 0, opc.find( ")" ) );
+      // TODO: Evaluate if a string is ""
       if( update( table, condition, column, newValue ) == OK ) {
         cout << "Columna mofidicada sastifactoriamente" << endl;
       } else {
