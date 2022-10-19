@@ -331,7 +331,6 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
           break;
       }
     } else {
-      // TODO: Empty INT
       if( tupleRowCopy->restriction != NOT_EMPTY ) {
         switch( option ) {
           case 0:
