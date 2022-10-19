@@ -12,7 +12,7 @@ void splitCondition( string condition, string &column, string &value,
                      string splitter, int add ) {
   column = condition.substr( 0, condition.find( splitter ) );
   value  = condition.substr( condition.find( splitter ) + add,
-                            condition.length( ) - condition.find( splitter ) );
+                             condition.length( ) - condition.find( splitter ) );
 }
 
 bool validColumns( string columnsOrder, Tables table ) {
@@ -343,54 +343,60 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
   if( columnIndex != -1 ) {
     Tuple tupleRowCopy = tuple->row;
     for( int i = 0; i < columnIndex; i++ ) tupleRowCopy = tupleRowCopy->next;
+
     if( value != "EMPTY" ) {
-      value = value.substr( 1, value.length( ) - 2 );
       switch( option ) {
         case 0:
           if( tupleRowCopy->type == STRING ) {
-            if( tupleRowCopy->text == value ) return 0;
+            if( tupleRowCopy->text.compare(
+                    value.substr( 1, value.length( ) - 2 ) ) == 0 )
+              return 0;
           } else if( tupleRowCopy->number == stoi( value ) )
             return 0;
           break;
         case 1:
           if( tupleRowCopy->type == STRING ) {
-            if( tupleRowCopy->text < value ) return 0;
-          } else if( tupleRowCopy->number < stoi( value ) )
+            if( tupleRowCopy->text.compare(
+                    value.substr( 1, value.length( ) - 2 ) ) != 0 )
+              return 0;
+          } else if( tupleRowCopy->number != stoi( value ) )
             return 0;
           break;
         case 2:
           if( tupleRowCopy->type == STRING ) {
-            if( tupleRowCopy->text != value ) return 0;
-          } else if( tupleRowCopy->number != stoi( value ) )
+            if( tupleRowCopy->text.compare(
+                    value.substr( 1, value.length( ) - 2 ) ) < 0 )
+              return 0;
+          } else if( tupleRowCopy->number < stoi( value ) )
             return 0;
           break;
         case 3:
           if( tupleRowCopy->type == STRING ) {
-            if( tupleRowCopy->text > value.substr( 1, value.length( ) - 2 ) )
+            if( tupleRowCopy->text.compare(
+                    value.substr( 1, value.length( ) - 2 ) ) > 0 )
               return 0;
-          } else if( tupleRowCopy->number >
-                     stoi( value.substr( 1, value.length( ) - 2 ) ) )
+          } else if( tupleRowCopy->number > stoi( value ) )
             return 0;
           break;
       }
     } else {
-      // TODO: Empty INT
-      switch( option ) {
-        case 0:
-          if( tupleRowCopy->type == STRING ) {
-            if( tupleRowCopy->text.compare( NULL ) == 0 ) return 0;
-          } else if( tupleRowCopy->number == stoi( value ) )
-            return 0;
-          break;
-        case 2:
-          if( tupleRowCopy->type == STRING ) {
-            if( tupleRowCopy->text.compare( NULL ) != 0 ) return 0;
-          } else if( tupleRowCopy->number != stoi( value ) )
-            return 0;
-          break;
+      if( tupleRowCopy->restriction != NOT_EMPTY ) {
+        switch( option ) {
+          case 0:
+            if( tupleRowCopy->type == STRING ) {
+              if( tupleRowCopy->text.length( ) == 0 ) return 0;
+            } else if( tupleRowCopy->number == -1 )
+              return 0;
+            break;
+          case 2:
+            if( tupleRowCopy->type == STRING ) {
+              if( tupleRowCopy->text.length( ) != 0 ) return 0;
+            } else if( tupleRowCopy->number != -1 )
+              return 0;
+            break;
+        }
       }
     }
-
   } else
     return 2;
   return 1;
@@ -434,7 +440,7 @@ typeRet deleteQuery( string tableName, string condition ) {
   }
 
   bool first = true;
-  while( first ) {
+  while( first && table->tuple != NULL ) {
     int conditionStatus =
         validCondition( table, table->tuple, option, column, value );
     if( conditionStatus == 0 ) deleteTuple( table->tuple );
@@ -445,30 +451,34 @@ typeRet deleteQuery( string tableName, string condition ) {
       return ERROR;
     }
   }
-
-  Tuples tableTuplesCopy = table->tuple;
-  while( tableTuplesCopy != NULL ) {
-    if( tableTuplesCopy->next != NULL ) {
+  if( table->tuple != NULL ) {
+    Tuples tableTuplesCopy = table->tuple;
+    Tuples previousTuple   = tableTuplesCopy;
+    while( tableTuplesCopy != NULL && tableTuplesCopy->next != NULL ) {
       int conditionStatus =
           validCondition( table, tableTuplesCopy->next, option, column, value );
       if( conditionStatus == 0 ) {
         deleteNextTuple( tableTuplesCopy );
       } else if( conditionStatus == 1 ) {
+        if( previousTuple != tableTuplesCopy )
+          previousTuple = previousTuple->next;
+
         tableTuplesCopy = tableTuplesCopy->next;
       } else if( conditionStatus == 2 ) {
         cout << "La columna '" << column << "' no existe." << endl;
         return ERROR;
       }
-    } else {
+    }
+    if( tableTuplesCopy != NULL ) {
       int conditionStatus =
           validCondition( table, tableTuplesCopy, option, column, value );
-      if( conditionStatus == 0 ) deleteTuple( tableTuplesCopy );
-      else if( conditionStatus == 2 ) {
+      if( conditionStatus == 0 ) {
+        deleteNextTuple( previousTuple );
+      } else if( conditionStatus == 2 ) {
         cout << "La columna '" << column << "' no existe." << endl;
         return ERROR;
       }
     }
-    tableTuplesCopy = tableTuplesCopy->next;
   }
 
   return OK;

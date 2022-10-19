@@ -16,8 +16,6 @@ void seedTable( ) {
   // modifyTable( "Teacher", "Profesoreeeee" );
   // createTable( "Student2" );
   // createTable( "Student2" );
-
-
   AddCol( "Student", "Name", "STRING",  ANY);
   AddCol( "Student", "Lastname", "STRING", ANY );
   AddCol( "Student", "ID", "INT", PRIMARY_KEY );
@@ -38,11 +36,13 @@ void seedTable( ) {
   InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
   InsertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
 
-  // deleteQuery( "Subject", "Semester=\"1\"" );
+  // deleteQuery( "Subject", "ID>1" );
 
-  // dropCol( "Subject", "Name" );
+  // dropCol( "Subject", "ID" );
 
-  // dropTable( "Student" );
+  dropTable( "Subject" );
+
+  PrintDataTable( "Subject", "ID" );
 
   Tables tablesCopy = tablesList;
   cout << "";
