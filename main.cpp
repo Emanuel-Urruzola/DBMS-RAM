@@ -11,19 +11,21 @@ using namespace std;
 
 void seedTable( ) {
   createTable( "Student" );
-  createTable( "Tools" );
-  createTable( "Teachers" );
-  modifyTable( "Teacher", "Profesoreeeee" );
-  createTable( "Student2" );
-  createTable( "Student2" );
+  // createTable( "Tools" );
+  // createTable( "Teachers" );
+  // modifyTable( "Teacher", "Profesoreeeee" );
+  // createTable( "Student2" );
+  // createTable( "Student2" );
 
-  // AddCol( "Student", "Name", "STRING",  ANY);
-  // AddCol( "Student", "Lastname", "STRING", ANY );
-  // AddCol( "Student", "ID", "INT", PRIMARY_KEY );
-  //  InsertInto( "Student", "ID:Lastname:Name", "11:Netto:Jona" );
-  // // AddCol( "Student", "ID2", "INT", ANY );
-  //  InsertInto( "Student", "ID:Name:Lastname", "22:Emanuel:Urruzola" );
-  //  InsertInto( "Student", "Lastname:ID:Name", "Acosta:33:Steven" );
+    AddCol( "Student", "Name", "STRING",  ANY);
+    AddCol( "Student", "Lastname", "STRING", ANY );
+    AddCol( "Student", "ID", "INT", PRIMARY_KEY );
+    InsertInto( "Student", "ID:Lastname:Name", "11:Netto:Jona" );
+    InsertInto( "Student", "ID:Lastname:Name", "12:Acosta:Steven" );
+    InsertInto( "Student", "ID:Lastname:Name", "13:Urruzola:Emanuel" );
+    // AddCol( "Student", "ID2", "INT", ANY );
+  // InsertInto( "Student", "ID:Name:Lastname", "22:Emanuel:Urruzola" );
+  // InsertInto( "Student", "Lastname:ID:Name", "Acosta:33:Steven" );
   // PrintDataTable( "Student", "" );
   // createTable( "Subject" );
   // AddCol( "Subject", "Credits", INT, ANY );
