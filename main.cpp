@@ -1,17 +1,15 @@
 #include <iostream>
 #include <string>
-#include <stdio.h>
-
-#include "columns.hpp"
-#include "tables.hpp"
-#include "tuples.hpp"
-#include "variables.hpp"
-#include "print.hpp"
+#include "include/columns.h"
+#include "include/tables.h"
+#include "include/tuples.h"
+#include "include/variables.h"
+#include "include/print.h"
 
 using namespace std;
 
 void seedTable( ) {
-  createTable( "Student" );
+  // createTable( "Student" );
   // createTable( "Tools" );
   // createTable( "Teachers" );
   // modifyTable( "Teacher", "Profesoreeeee" );
@@ -52,25 +50,23 @@ void seedTable( ) {
 int main( ) {
   seedTable( );
   string opc;
-
   do {
     cin >> opc;
-    if( opc == "createTable()" ) {
-      cout << "ERROR" << endl;
-    } else {
-      if( ( opc.substr( 0, opc.find( "(" ) ) == "createTable" ) )
-        createTable( opc.substr( opc.find( "(" ) + 1,
-                                 opc.length( ) - opc.find( "(" ) - 2 ) );
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" ) {
+    if( ( opc.substr( 0, opc.find( "(" ) ) == "createTable" ) ) {
+      typeRet response = createTable( opc.substr(
+          opc.find( "(" ) + 1, opc.length( ) - opc.find( "(" ) - 2 ) );
+      if( response == OK ) cout << "Operacion realizada con exito." << endl;
+      else if( response == NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "dropTable" ) {
       typeRet response = dropTable( opc.substr(
           opc.find( "(" ) + 1, opc.find( ")" ) - opc.find( "(" ) - 1 ) );
-      if( response == OK ) cout << "Operación realizada con éxito";
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" )
-      cout << "Not implemented yet" << endl;
-    if( opc.substr( 0, opc.find( "(" ) ) == "addCol" ) {
-      // addCol (Personas,CI,integer,PRIMARY KEY)
+      if( response == OK ) cout << "Operacion realizada con exito." << endl;
+      else if( response == NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "addCol" ) {
       opc                      = opc.erase( 0, opc.find( "(" ) + 1 );
       string table             = opc.substr( 0, opc.find( "," ) );
       opc                      = opc.erase( 0, opc.find( "," ) + 1 );
@@ -79,18 +75,24 @@ int main( ) {
       string typeOfData        = opc.substr( 0, opc.find( "," ) );
       opc                      = opc.erase( 0, opc.find( "," ) + 1 );
       string typeOfRestriction = opc.substr( 0, opc.find( ")" ) );
-      AddCol( table, columnName, typeOfData, typeOfRestriction );
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" ) {
+
+      typeRet response =
+          AddCol( table, columnName, typeOfData, typeOfRestriction );
+      if( response == OK ) cout << "Operacion realizada con exito." << endl;
+      else if( response == NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "dropCol" ) {
       typeRet response =
           dropCol( opc.substr( opc.find( "(" ) + 1,
                                opc.find( "," ) - opc.find( "(" ) - 1 ),
                    opc.substr( opc.find( "," ) + 1,
                                opc.find( ")" ) - opc.find( "," ) - 1 ) );
-      if( response == OK ) cout << "Operación realizada con éxito";
-    }
-    // alterCol (Personas,Name,string,NOT EMPTY, Nombre)
-    if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" ) {
+      if( response == OK ) cout << "Operacion realizada con exito." << endl;
+      else if( response == NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "alterCol" ) {
       opc                      = opc.erase( 0, opc.find( "(" ) + 1 );
       string table             = opc.substr( 0, opc.find( "," ) );
       opc                      = opc.erase( 0, opc.find( "," ) + 1 );
@@ -101,66 +103,72 @@ int main( ) {
       string typeOfRestriction = opc.substr( 0, opc.find( "," ) );
       opc                      = opc.erase( 0, opc.find( "," ) + 1 );
       string newColumnName     = opc.substr( 0, opc.find( ")" ) );
-      if( alterCol( table, columnName, typeOfData, typeOfRestriction,
-                    newColumnName ) == OK ) {
-        cout << "Columna modificada correctamente" << endl;
-      } else {
-        cout << "Ocurrio un error" << endl;
-      }
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" ) {
-      // insertInto (“Personas”,“Nombre:CI”,“Telma:3333111” );
+
+      typeRet response = alterCol( table, columnName, typeOfData,
+                                   typeOfRestriction, newColumnName );
+      if( response == OK ) cout << "Operacion realizada con exito." << endl;
+      else if( response == NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "insertInto" ) {
       opc               = opc.erase( 0, opc.find( "(" ) + 2 );
       string table      = opc.substr( 0, opc.find( "\"" ) );
       opc               = opc.erase( 0, opc.find( "," ) + 2 );
       string attributes = opc.substr( 0, opc.find( "\"" ) );
       opc               = opc.erase( 0, opc.find( "," ) + 2 );
       string values     = opc.substr( 0, opc.find( "\"" ) );
-      cout << attributes << " " << values << endl;
       InsertInto( table, attributes, values );
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "delete" ) {
+      typeRet response = InsertInto( table, attributes, values );
+      if( response == OK ) cout << "Operacion realizada con exito." << endl;
+      else if( response == NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "delete" ) {
       typeRet response =
           deleteQuery( opc.substr( opc.find( "(" ) + 1,
                                    opc.find( "," ) - opc.find( "(" ) - 1 ),
                        opc.substr( opc.find( "," ) + 1,
                                    opc.find( ")" ) - opc.find( "," ) - 1 ) );
-      if( response == OK ) cout << "Operación realizada con éxito";
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "update" ) {
-      opc          = opc.erase( 0, opc.find( "(" ) + 1 );
-      string table = opc.substr( 0, opc.find( "," ) );
-      opc          = opc.erase( 0, opc.find( "," ) + 1 );
-      string condition =
-          opc.substr( 0, opc.find( "," ) );  // TODO: If the string has , ?
-      opc             = opc.erase( 0, opc.find( "," ) + 1 );
-      string column   = opc.substr( 0, opc.find( "," ) );
-      opc             = opc.erase( 0, opc.find( "," ) + 1 );
-      string newValue = opc.substr( 0, opc.find( ")" ) );
-      // TODO: Evaluate if a string is ""
-      if( update( table, condition, column, newValue ) == OK ) {
-        cout << "Columna mofidicada satisfactoriamente" << endl;
-      } else {
-        cout << "Ocurrio un error, por favor revise la instruccion" << endl;
-      }
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "printDataTable" ) {
+      if( response == OK ) cout << "Operacion realizada con exito." << endl;
+      else if( response == NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "update" ) {
+      opc              = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table     = opc.substr( 0, opc.find( "," ) );
+      opc              = opc.erase( 0, opc.find( "," ) + 1 );
+      string condition = opc.substr( 0, opc.find( "," ) );
+      opc              = opc.erase( 0, opc.find( "," ) + 1 );
+      string column    = opc.substr( 0, opc.find( "," ) );
+      opc              = opc.erase( 0, opc.find( "," ) + 1 );
+      string newValue  = opc.substr( 0, opc.find( ")" ) );
+
+      typeRet response = update( table, condition, column, newValue );
+      if( response == OK ) cout << "Operacion realizada con exito." << endl;
+      else if( response == NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "printDataTable" ) {
       string column =
           opc.substr( opc.find( "(" ) + 1,
                       opc.length( ) - ( ( opc.find( "(" ) + 1 ) +
                                         ( opc.length( ) - opc.find( "," ) ) ) );
       string orderBy = opc.substr(
           opc.find( "," ) + 1, ( opc.length( ) - ( opc.find( "," ) + 2 ) ) );
-      if( PrintDataTable( column, orderBy ) == ERROR ) {
-        cout << "Ocurrio un error, revise el nombre de la tabla" << endl;
-      }
-    }
-    if( opc.substr( 0, opc.find( "(" ) ) == "modifyTable" ) {
+      PrintDataTable( column, orderBy );
+
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" ) {
       opc                 = opc.erase( 0, opc.find( "(" ) + 1 );
       string table        = opc.substr( 0, opc.find( "," ) );
       opc                 = opc.erase( 0, opc.find( "," ) + 1 );
       string newTableName = opc.substr( 0, opc.find( ")" ) );
-      modifyTable( table, newTableName );
-    }
+
+      typeRet response = modifyTable( table, newTableName );
+      if( response == OK ) cout << "Operacion realizada con exito." << endl;
+      else if( response == NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+    } else
+      cout << "ERROR: Entrada invalida." << endl;
+
   } while( opc != "exit" );
 }

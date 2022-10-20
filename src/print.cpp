@@ -1,10 +1,10 @@
-#ifndef print
-#define print
 using namespace std;
 #include <iostream>
 #include <string>
-#include "operations.hpp"
-#include "tuples.hpp"
+#include "../include/print.h"
+#include "../include/operations.h"
+#include "../include/tuples.h"
+#include "../include/tables.h"
 using namespace std;
 
 string getRowString( Tuple row, int index, typeOfData &type, int &number,
@@ -69,9 +69,12 @@ void LoopInRows( Tuples rows, TreeInt &treeQuerie, TreeStr &treeQuerieStr,
 
 typeRet PrintDataTable( string tableName, string ordeyBy ) {
   // TODO: column maximum size and "..." to string more large
-  Tables table = findTable( tableName );
   typeOfData type;  // To select type of sort
-  if( table == NULL ) return ERROR;
+  Tables table = findTable( tableName );
+  if( table == NULL ) {
+    cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
+    return ERROR;
+  }
   if( table->tuple == NULL ) {
     cout << "No hay tuplas en " << tableName << endl;
     return OK;
@@ -79,10 +82,11 @@ typeRet PrintDataTable( string tableName, string ordeyBy ) {
   TreeInt treeQuerie    = NULL;  // To save the int column in a tree
   TreeStr treeQuerieStr = NULL;  // To save the string column in a tree
   int n = findIndexColumn( table, ordeyBy );  // Save the index of column ordeby
-  if( ! n > 0 && ordeyBy.compare( "\"\"" ) ) {
-    cout << "No existe la columna" << endl;
+  if( n <= 0 && ordeyBy.compare( "\"\"" ) ) {
+    cout << "ERROR: No existe la columna" << endl;
     return ERROR;
   }
+
   LoopInRows( table->tuple, treeQuerie, treeQuerieStr, n, type );
   // system( "clear" );
   cout << endl << "Tabla " << table->name << ":" << endl;
@@ -103,4 +107,3 @@ typeRet PrintDataTable( string tableName, string ordeyBy ) {
   cout << endl << endl;
   return OK;
 }
-#endif
