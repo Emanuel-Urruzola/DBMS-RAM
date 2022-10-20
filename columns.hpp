@@ -88,18 +88,6 @@ typeRet AddCol( string tableName, string columnName, string columnType,
     if( table->attributes == NULL ) {
       table->attributes = column;
     } else {
-      // Si nombre de la columna ya existe.
-      if( table->attributes->next == NULL &&
-          table->attributes->name == columnName ) {
-        cout << "ERROR: El nombre de columna ya existe." << endl;
-        return ERROR;
-      }
-      if( table->attributes->next == NULL &&
-          table->attributes->restriction == PRIMARY_KEY &&
-          column->restriction == table->attributes->restriction ) {
-        cout << "ERROR: Ya existe una PRIMARY_KEY." << endl;
-        return ERROR;
-      }
       Tuple tableAttributesCopy = table->attributes;
       while( tableAttributesCopy->next != NULL ) {
         if( tableAttributesCopy->restriction == PRIMARY_KEY &&
@@ -113,6 +101,18 @@ typeRet AddCol( string tableName, string columnName, string columnType,
         } else {
           tableAttributesCopy = tableAttributesCopy->next;
         }
+      }
+      // Si nombre de la columna ya existe.
+      if( tableAttributesCopy->next == NULL &&
+          tableAttributesCopy->name == columnName ) {
+        cout << "ERROR: El nombre de columna ya existe." << endl;
+        return ERROR;
+      }
+      if( tableAttributesCopy->next == NULL &&
+          tableAttributesCopy->restriction == PRIMARY_KEY &&
+          column->restriction == tableAttributesCopy->restriction ) {
+        cout << "ERROR: Ya existe una PRIMARY_KEY." << endl;
+        return ERROR;
       }
       if( tableAttributesCopy->next == NULL ) {
         tableAttributesCopy->next = column;

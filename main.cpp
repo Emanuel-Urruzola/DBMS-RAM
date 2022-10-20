@@ -29,13 +29,10 @@ void seedTable( ) {
   // PrintDataTable( "Student", "" );
   createTable( "Subject" );
   AddCol( "Subject", "Credits", "integer", "ANY" );
-  AddCol( "Subject", "Semester", "integer", "ANY" );
-  AddCol( "Subject", "Name", "string", "PRIMARY_KEY" );
-  AddCol( "Subject", "ID", "integer", "ANY" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
+  InsertInto( "Subject", "ID:", "10" );
+  InsertInto( "Subject", "Credits:", "13" );
+  InsertInto( "Subject", "CREDITS:", "3" );
+  InsertInto( "Subject", "JAJA:", "11" );
 
   // deleteQuery( "Subject", "ID>1" );
 
@@ -43,7 +40,7 @@ void seedTable( ) {
 
   // dropTable( "Subject" );
 
-  PrintDataTable( "Subject", "ID" );
+  PrintDataTable( "Subject", "Credits" );
 
   Tables tablesCopy = tablesList;
   cout << "";

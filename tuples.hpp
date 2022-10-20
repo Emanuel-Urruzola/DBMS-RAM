@@ -18,6 +18,7 @@ void splitCondition( string condition, string &column, string &value,
 bool validColumns( string columnsOrder, Tables table ) {
   size_t position;
   int userAttributesCounter = 0;
+  // Falla al recortar, al ser una sola columna no tendra el ":"
   while( ( position = columnsOrder.find( ":" ) ) != string::npos ) {
     userAttributesCounter++;
     int counter               = 0;
@@ -32,6 +33,9 @@ bool validColumns( string columnsOrder, Tables table ) {
   }
   Tuple tableAttributesCopy = table->attributes;
   int attributesCounter     = 0;
+  if(tableAttributesCopy->next == NULL){
+    attributesCounter++;
+  }
   while( tableAttributesCopy->next != NULL ) {
     attributesCounter++;
     tableAttributesCopy = tableAttributesCopy->next;
