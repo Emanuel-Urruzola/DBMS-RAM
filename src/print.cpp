@@ -50,7 +50,7 @@ string getRowString( Tuple row, int index, typeOfData &type, int &number,
   return rowString;
 }
 
-void LoopInRows( Tuples rows, TreeInt &treeQuerie, TreeStr &treeQuerieStr,
+void loopInRows( Tuples rows, TreeInt &treeQuerie, TreeStr &treeQuerieStr,
                  int indexInParameter, typeOfData &type ) {
   int number;   // To sort by number
   string text;  // To sort by text
@@ -59,15 +59,15 @@ void LoopInRows( Tuples rows, TreeInt &treeQuerie, TreeStr &treeQuerieStr,
     int index        = indexInParameter;
     string rowString = getRowString( rows->row, index, type, number, text );
     if( type == STRING ) {
-      InsertText( treeQuerieStr, text, rowString );
+      insertText( treeQuerieStr, text, rowString );
     } else {
-      Insert( treeQuerie, number, rowString );
+      insert( treeQuerie, number, rowString );
     }
     rows = rows->next;
   }
 }
 
-typeRet PrintDataTable( string tableName, string ordeyBy ) {
+typeRet printDataTable( string tableName, string ordeyBy ) {
   // TODO: column maximum size and "..." to string more large
   typeOfData type;  // To select type of sort
   Tables table = findTable( tableName );
@@ -87,7 +87,7 @@ typeRet PrintDataTable( string tableName, string ordeyBy ) {
     return ERROR;
   }
 
-  LoopInRows( table->tuple, treeQuerie, treeQuerieStr, n, type );
+  loopInRows( table->tuple, treeQuerie, treeQuerieStr, n, type );
   // system( "clear" );
   cout << endl << "Tabla " << table->name << ":" << endl;
   Tuple attributes = table->attributes;
@@ -100,9 +100,9 @@ typeRet PrintDataTable( string tableName, string ordeyBy ) {
     attributes = attributes->next;
   }
   cout << endl;
-  if( type == STRING ) ShowTreeStr( treeQuerieStr );
+  if( type == STRING ) showTreeStr( treeQuerieStr );
   else
-    ShowTree( treeQuerie );
+    showTree( treeQuerie );
 
   cout << endl << endl;
   return OK;

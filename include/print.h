@@ -4,8 +4,8 @@
 
 string getRowString( Tuple, int, typeOfData &, int &, string & );
 
-void LoopInRows( Tuples, TreeInt &, TreeStr &, int, typeOfData & );
+void loopInRows( Tuples, TreeInt &, TreeStr &, int, typeOfData & );
 
-typeRet PrintDataTable( string, string );
+typeRet printDataTable( string, string );
 
 #endif

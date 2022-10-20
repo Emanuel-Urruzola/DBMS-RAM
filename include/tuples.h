@@ -6,9 +6,9 @@ void splitCondition( string, string &, string &, string, int );
 
 bool validColumns( string, Tables );
 
-typeRet InsertInto( string, string, string );
+typeRet insertInto( string, string, string );
 
-int WhereConditionColumn( Tables, string );
+int whereConditionColumn( Tables, string );
 
 typeRet findColumn( Tables, string );
 

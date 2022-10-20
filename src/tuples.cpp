@@ -38,7 +38,7 @@ bool validColumns( string columnsOrder, Tables table ) {
   return false;
 }
 
-typeRet InsertInto( string tableName, string columnsOrder,
+typeRet insertInto( string tableName, string columnsOrder,
                     string columnValues ) {
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
@@ -46,6 +46,11 @@ typeRet InsertInto( string tableName, string columnsOrder,
   }
 
   Tables table = findTable( tableName );
+  if( table == NULL ) {
+    cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
+    return ERROR;
+  }
+
   if( ! ( validColumns( columnsOrder, table ) ) ) {
     cout << "ERROR: Columna no existente." << endl;
     return ERROR;
@@ -148,7 +153,7 @@ typeRet InsertInto( string tableName, string columnsOrder,
   return OK;
 }
 
-int WhereConditionColumn( Tables table, string columnName ) {
+int whereConditionColumn( Tables table, string columnName ) {
   if( table == NULL ) return -1;
   int index        = 0;
   Tuple attributes = table->attributes;
@@ -302,7 +307,7 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
          << endl;
     return ERROR;
   }
-  int index = WhereConditionColumn( table,
+  int index = whereConditionColumn( table,
                                     column );  // Get the position of attribute
   if( index == -1 ) {                          // If the position doesn't found
     cout << "ERROR: La columna '" << column << "' no existe." << endl;

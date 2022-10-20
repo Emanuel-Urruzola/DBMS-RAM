@@ -2,9 +2,9 @@
 #define _COLUMNS_H
 #include "variables.h"
 
-typeRet AddCol( string, string, string, string );
+typeRet addCol( string, string, string, string );
 
-typeRet PKCondition( typeOfData, int, Tuples );
+typeRet pKCondition( typeOfData, int, Tuples );
 
 typeRet alterCol( string, string, string, string, string );
 

@@ -5,50 +5,12 @@
 #include "include/tuples.h"
 #include "include/variables.h"
 #include "include/print.h"
+#include "include/tests.h"
 
 using namespace std;
 
-void seedTable( ) {
-  // createTable( "Student" );
-  // createTable( "Tools" );
-  // createTable( "Teachers" );
-  // modifyTable( "Teacher", "Profesoreeeee" );
-  // createTable( "Student2" );
-  // createTable( "Student2" );
-  // AddCol( "Student", "Name", "STRING", ANY );
-  // AddCol( "Student", "Lastname", "STRING", ANY );
-  // AddCol( "Student", "ID", "INT", PRIMARY_KEY );
-  // InsertInto( "Student", "ID:Lastname:Name", "11:Netto:Jona" );
-  // InsertInto( "Student", "ID:Lastname:Name", "12:Acosta:Steven" );
-  // InsertInto( "Student", "ID:Lastname:Name", "13:Urruzola:Emanuel" );
-  // AddCol( "Student", "ID2", "INT", ANY );
-  // InsertInto( "Student", "ID:Name:Lastname", "22:Emanuel:Urruzola" );
-  // InsertInto( "Student", "Lastname:ID:Name", "Acosta:33:Steven" );
-  // PrintDataTable( "Student", "" );
-  createTable( "Subject" );
-  AddCol( "Subject", "Credits", "integer", "ANY" );
-  AddCol( "Subject", "Semester", "integer", "ANY" );
-  AddCol( "Subject", "Name", "string", "PRIMARY_KEY" );
-  AddCol( "Subject", "ID", "integer", "ANY" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
-  InsertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
-
-  // deleteQuery( "Subject", "ID>1" );
-
-  // dropCol( "Subject", "ID" );
-
-  // dropTable( "Subject" );
-
-  PrintDataTable( "Subject", "ID" );
-
-  Tables tablesCopy = tablesList;
-  cout << "";
-}
-
 int main( ) {
-  seedTable( );
+  runTests( );
   string opc;
   do {
     cin >> opc;
@@ -77,7 +39,7 @@ int main( ) {
       string typeOfRestriction = opc.substr( 0, opc.find( ")" ) );
 
       typeRet response =
-          AddCol( table, columnName, typeOfData, typeOfRestriction );
+          addCol( table, columnName, typeOfData, typeOfRestriction );
       if( response == OK ) cout << "Operacion realizada con exito." << endl;
       else if( response == NOT_IMPLEMENTED )
         cout << "La operacion aun no esta implementada." << endl;
@@ -117,8 +79,7 @@ int main( ) {
       string attributes = opc.substr( 0, opc.find( "\"" ) );
       opc               = opc.erase( 0, opc.find( "," ) + 2 );
       string values     = opc.substr( 0, opc.find( "\"" ) );
-      InsertInto( table, attributes, values );
-      typeRet response = InsertInto( table, attributes, values );
+      typeRet response  = insertInto( table, attributes, values );
       if( response == OK ) cout << "Operacion realizada con exito." << endl;
       else if( response == NOT_IMPLEMENTED )
         cout << "La operacion aun no esta implementada." << endl;
@@ -155,7 +116,7 @@ int main( ) {
                                         ( opc.length( ) - opc.find( "," ) ) ) );
       string orderBy = opc.substr(
           opc.find( "," ) + 1, ( opc.length( ) - ( opc.find( "," ) + 2 ) ) );
-      PrintDataTable( column, orderBy );
+      printDataTable( column, orderBy );
 
     } else if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" ) {
       opc                 = opc.erase( 0, opc.find( "(" ) + 1 );
@@ -167,7 +128,7 @@ int main( ) {
       if( response == OK ) cout << "Operacion realizada con exito." << endl;
       else if( response == NOT_IMPLEMENTED )
         cout << "La operacion aun no esta implementada." << endl;
-    } else
+    } else if( opc != "exit" )
       cout << "ERROR: Entrada invalida." << endl;
 
   } while( opc != "exit" );

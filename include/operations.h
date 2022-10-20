@@ -7,20 +7,20 @@ union tree {
   TreeStr treeStr;
 };
 
-void InsBack( List &, string );
+void insBack( List &, string );
 
-void InsBackInt( ListInt &, int );
+void insBackInt( ListInt &, int );
 
-TreeInt NewNode( int, string );
+TreeInt newNode( int, string );
 
-TreeStr NewNodeStr( string, string );
+TreeStr newNodeStr( string, string );
 
-typeRet Insert( TreeInt &, int, string );
+typeRet insert( TreeInt &, int, string );
 
-typeRet InsertText( TreeStr &, string, string );
+typeRet insertText( TreeStr &, string, string );
 
-void ShowTreeStr( TreeStr );
+void showTreeStr( TreeStr );
 
-void ShowTree( TreeInt );
+void showTree( TreeInt );
 
 #endif

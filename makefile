@@ -1,5 +1,5 @@
 MAIN	= main
-MODULES	= columns deleteHelpers operations print tables tuples variables
+MODULES	= columns deleteHelpers operations print tables tuples variables tests
 
 
 # defino reglas
@@ -16,7 +16,7 @@ CPPDIR	= src
 ODIR	= obj
 
 # compilar
-all: $(ODIR)/columns.o $(ODIR)/deleteHelpers.o $(ODIR)/operations.o $(ODIR)/print.o $(ODIR)/tables.o $(ODIR)/tuples.o $(ODIR)/variables.o $(MAIN).o
+all: $(ODIR)/columns.o $(ODIR)/deleteHelpers.o $(ODIR)/operations.o $(ODIR)/print.o $(ODIR)/tables.o $(ODIR)/tuples.o $(ODIR)/variables.o $(ODIR)/tests.o $(MAIN).o
 	$(CC) $(CCFLAGS) -o $(MAIN) $^
 	@echo "Compilado: ok"
 
@@ -25,8 +25,8 @@ run: $(MAIN).o
 	./$(MAIN)
 
 # compilo el main
-$(ODIR)/$(MAIN).o: $(ODIR)/columns.o $(ODIR)/deleteHelpers.o $(ODIR)/operations.o $(ODIR)/print.o $(ODIR)/tables.o $(ODIR)/tuples.o $(ODIR)/variables.o $(MAIN).cpp
-	$(CC) $(CCFLAGS) -c $(MAIN).cpp $(ODIR)/modulo1.o $(ODIR)/modulo2.o -o $@
+$(ODIR)/$(MAIN).o: $(ODIR)/columns.o $(ODIR)/deleteHelpers.o $(ODIR)/operations.o $(ODIR)/print.o $(ODIR)/tables.o $(ODIR)/tuples.o $(ODIR)/variables.o $(ODIR)/tests.o $(MAIN).cpp
+	$(CC) $(CCFLAGS) -c $(MAIN).cpp $(ODIR)/columns.o $(ODIR)/deleteHelpers.o $(ODIR)/operations.o $(ODIR)/print.o $(ODIR)/tables.o $(ODIR)/tuples.o $(ODIR)/variables.o $(ODIR)/tests.o -o $@
 
 # compilo los modulos
 $(ODIR)/columns.o: $(HDIR)/columns.h $(CPPDIR)/columns.cpp
@@ -49,6 +49,9 @@ $(ODIR)/tuples.o: $(HDIR)/tuples.h $(CPPDIR)/tuples.cpp
 	
 $(ODIR)/variables.o: $(HDIR)/variables.h $(CPPDIR)/variables.cpp
 	$(CC) $(CCFLAGS) -c $(CPPDIR)/variables.cpp -o $@
+
+$(ODIR)/tests.o: $(HDIR)/tests.h $(CPPDIR)/tests.cpp
+	$(CC) $(CCFLAGS) -c $(CPPDIR)/tests.cpp -o $@
 
 # elimino lo generado
 clean:
