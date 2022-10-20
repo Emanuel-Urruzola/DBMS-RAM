@@ -1,30 +1,25 @@
-#ifndef tables
-#define tables
-
 #include <iostream>
 #include <string>
-
-#include "variables.hpp"
-#include "deleteHelpers.hpp"
+#include "../include/tables.h"
+#include "../include/variables.h"
+#include "../include/deleteHelpers.h"
 
 using namespace std;
 
 typeRet createTable( string tableName ) {
   if( tableName.length( ) == 0 ) {
-    cout << "ERROR: Nombre vacio!." << endl;
+    cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
     return ERROR;
   }
   if( tablesList != NULL ) {
-    Tables aux  = tablesList;
-    bool finded = false;
+    Tables aux = tablesList;
     while( aux != NULL ) {
       if( aux->name == tableName ) {
-        cout << "ERROR: El nombre de tabla ya existe!." << endl;
+        cout << "ERROR: Ya existe la tabla '" << tableName << "'." << endl;
         return ERROR;
       } else {
-        if( aux->next != NULL ) {
-          aux = aux->next;
-        } else {
+        if( aux->next != NULL ) aux = aux->next;
+        else {
           cout << "";
           Tables newTable      = new nodeTable;
           newTable->name       = tableName;
@@ -66,13 +61,13 @@ Tables findTable( string tableName ) {
 
 typeRet dropTable( string tableName ) {
   if( tableName.length( ) == 0 ) {
-    cout << "La tabla debe ser especificada." << endl;
+    cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
     return ERROR;
   }
 
   Tables table = findTable( tableName );
   if( table == NULL ) {
-    cout << "La tabla " << tableName << " no existe." << endl;
+    cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return ERROR;
   }
   // Delete table tuples
@@ -99,28 +94,21 @@ typeRet dropTable( string tableName ) {
 
 typeRet modifyTable( string tableName, string newName ) {
   if( tableName.length( ) == 0 ) {
-    cout << "ERROR: Ingrese el nombre de tabla a modificar." << endl;
+    cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
     return ERROR;
   }
-  if( tablesList == NULL ) {
-    cout << "ERROR: No existen tablas aun." << endl;
+
+  if( newName.length( ) == 0 ) {
+    cout << "ERROR: El nuevo nombre de la tabla debe ser especificado." << endl;
     return ERROR;
-  } else {
-    Tables aux = tablesList;
-    while( aux != NULL ) {
-      if( aux->name == tableName ) {
-        aux->name = newName;
-        cout << "Nombre cambiado con exito!." << endl;
-        return OK;
-      } else {
-        aux = aux->next;
-      }
-    }
-    if(aux == NULL){
-      cout <<"ERROR: Nombre de tabla no valido." << endl;
-      return ERROR;
-    }
   }
+
+  Tables table = findTable( tableName );
+  if( table == NULL ) {
+    cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
+    return ERROR;
+  }
+
+  table->name = newName;
   return OK;
 }
-#endif  // !1

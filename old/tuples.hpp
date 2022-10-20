@@ -12,7 +12,7 @@ void splitCondition( string condition, string &column, string &value,
                      string splitter, int add ) {
   column = condition.substr( 0, condition.find( splitter ) );
   value  = condition.substr( condition.find( splitter ) + add,
-                            condition.length( ) - condition.find( splitter ) );
+                             condition.length( ) - condition.find( splitter ) );
 }
 
 bool validColumns( string columnsOrder, Tables table ) {
@@ -43,109 +43,110 @@ bool validColumns( string columnsOrder, Tables table ) {
 typeRet InsertInto( string tableName, string columnsOrder,
                     string columnValues ) {
   if( tableName.length( ) == 0 ) {
-    cout << "ERROR: Ingrese un nombre de tabla!." << endl;
+    cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
     return ERROR;
   }
+
   Tables table = findTable( tableName );
   if( ! ( validColumns( columnsOrder, table ) ) ) {
-    cout << "ERROR: Columna no existente, ingrese nuevamente!." << endl;
+    cout << "ERROR: Columna no existente." << endl;
     return ERROR;
   }
   if( table->attributes == NULL ) {
-    cout << "ERROR: La tabla ingresada no tiene columnas!." << endl;
+    cout << "ERROR: La tabla '" << tableName << "' no tiene columnas." << endl;
     return ERROR;
   }
+
   if( table == NULL ) {
-    cout << "ERROR: La tabla ingresada no existe!." << endl;
+    cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return ERROR;
-  } else {
-    if( validColumns( columnsOrder, table ) ) {
-      Tuples newRow = new nodeTuple;
-      newRow->next  = NULL;
-      newRow->row   = NULL;
-      if( table->tuple != NULL ) {
-        Tuples tableRows = table->tuple;
-        while( tableRows->next != NULL ) {
-          tableRows = tableRows->next;
-        }
-        tableRows->next = newRow;
-      } else {
-        // caso de que sea la primer tupla a ingresar.
-        table->tuple = newRow;
+  }
+
+  if( validColumns( columnsOrder, table ) ) {
+    Tuples newRow = new nodeTuple;
+    newRow->next  = NULL;
+    newRow->row   = NULL;
+    if( table->tuple != NULL ) {
+      Tuples tableRows = table->tuple;
+      while( tableRows->next != NULL ) {
+        tableRows = tableRows->next;
       }
-      Tuple tableAttributesCopy = table->attributes;
-      while( tableAttributesCopy != NULL ) {
-        size_t position;
-        string columnsOrderCopy = columnsOrder;
-        bool finded             = false;
-        int columnIndex         = 0;
-        while( ( position = columnsOrderCopy.find( ":" ) ) != string::npos &&
-               ! finded ) {
-          if( ( tableAttributesCopy->name ==
-                columnsOrderCopy.substr(
-                    0, columnsOrderCopy.length( ) -
-                           ( columnsOrderCopy.length( ) -
-                             columnsOrderCopy.find( ":" ) ) ) ) ) {
-            finded = true;
-          } else {
-            columnIndex++;
-            columnsOrderCopy.erase( 0, position + 1 );
-          }
+      tableRows->next = newRow;
+    } else
+      // caso de que sea la primer tupla a ingresar.
+      table->tuple = newRow;
+
+    Tuple tableAttributesCopy = table->attributes;
+    while( tableAttributesCopy != NULL ) {
+      size_t position;
+      string columnsOrderCopy = columnsOrder;
+      bool finded             = false;
+      int columnIndex         = 0;
+      while( ( position = columnsOrderCopy.find( ":" ) ) != string::npos &&
+             ! finded ) {
+        if( ( tableAttributesCopy->name ==
+              columnsOrderCopy.substr(
+                  0, columnsOrderCopy.length( ) -
+                         ( columnsOrderCopy.length( ) -
+                           columnsOrderCopy.find( ":" ) ) ) ) )
+          finded = true;
+        else {
+          columnIndex++;
+          columnsOrderCopy.erase( 0, position + 1 );
         }
-        string columnValuesCopy = columnValues;
-        for( int i = 0; i < columnIndex; i++ ) {
-          position = columnValuesCopy.find( ":" );
-          columnValuesCopy.erase( 0, position + 1 );
-        }
-        columnValuesCopy = columnValuesCopy.substr(
-            0, columnValuesCopy.length( ) - ( columnValuesCopy.length( ) -
-                                              columnValuesCopy.find( ":" ) ) );
-        Tuple newTuple = new nodeElement;
-        newTuple->next = NULL;
-        newTuple->type = tableAttributesCopy->type;
-        if( tableAttributesCopy->type == INT ) {
-          newTuple->number = stoi( columnValuesCopy );
-        } else {
-          newTuple->text = columnValuesCopy;
-        }
-        newTuple->restriction = tableAttributesCopy->restriction;
-        // Chequea si la PRIMARY KEY ya existe.
-        if( tableAttributesCopy->restriction == PRIMARY_KEY ) {
-          Tuples tupleCopy = table->tuple;
-          while( tupleCopy != NULL ) {
-            Tuple rowCopy = table->tuple->row;
-            while( rowCopy != NULL ) {
-              if( rowCopy->restriction == PRIMARY_KEY ) {
-                if( ( rowCopy->type == INT &&
-                      rowCopy->number == newTuple->number ) ||
-                    ( rowCopy->type == STRING &&
-                      rowCopy->text == newTuple->text ) ) {
-                  cout << "ERROR: Primary key existente!." << endl;
-                  return ERROR;
-                } else {
-                  rowCopy = rowCopy->next;
-                }
+      }
+      string columnValuesCopy = columnValues;
+      for( int i = 0; i < columnIndex; i++ ) {
+        position = columnValuesCopy.find( ":" );
+        columnValuesCopy.erase( 0, position + 1 );
+      }
+      columnValuesCopy = columnValuesCopy.substr(
+          0, columnValuesCopy.length( ) - ( columnValuesCopy.length( ) -
+                                            columnValuesCopy.find( ":" ) ) );
+      Tuple newTuple = new nodeElement;
+      newTuple->next = NULL;
+      newTuple->type = tableAttributesCopy->type;
+      if( tableAttributesCopy->type == INT ) {
+        newTuple->number = stoi( columnValuesCopy );
+      } else {
+        newTuple->text = columnValuesCopy;
+      }
+      newTuple->restriction = tableAttributesCopy->restriction;
+      // Chequea si la PRIMARY KEY ya existe.
+      if( tableAttributesCopy->restriction == PRIMARY_KEY ) {
+        Tuples tupleCopy = table->tuple;
+        while( tupleCopy != NULL ) {
+          Tuple rowCopy = table->tuple->row;
+          while( rowCopy != NULL ) {
+            if( rowCopy->restriction == PRIMARY_KEY ) {
+              if( ( rowCopy->type == INT &&
+                    rowCopy->number == newTuple->number ) ||
+                  ( rowCopy->type == STRING &&
+                    rowCopy->text == newTuple->text ) ) {
+                cout << "ERROR: Primary key existente." << endl;
+                return ERROR;
               } else {
                 rowCopy = rowCopy->next;
               }
+            } else {
+              rowCopy = rowCopy->next;
             }
-            tupleCopy = tupleCopy->next;
           }
+          tupleCopy = tupleCopy->next;
         }
-        newTuple->name = tableAttributesCopy->name;
-        if( newRow->row == NULL ) {
-          newRow->row = newTuple;
-        } else {
-          Tuple rowCopy = newRow->row;
-          while( rowCopy->next != NULL ) {
-            rowCopy = rowCopy->next;
-          }
-          rowCopy->next = newTuple;
-        }
-        tableAttributesCopy = tableAttributesCopy->next;
       }
+      newTuple->name = tableAttributesCopy->name;
+      if( newRow->row == NULL ) newRow->row = newTuple;
+      else {
+        Tuple rowCopy = newRow->row;
+        while( rowCopy->next != NULL ) rowCopy = rowCopy->next;
+
+        rowCopy->next = newTuple;
+      }
+      tableAttributesCopy = tableAttributesCopy->next;
     }
   }
+
   return OK;
 }
 
@@ -208,9 +209,8 @@ typeRet replaceInRow( Tuple rowCopy, string columnToModify,
         if( regex_match( valueModified, regExpNumber ) ) {
           rowCopy->number = stoi( valueModified );
           modified        = true;
-        } else {
+        } else
           return ERROR;
-        }
       }
     }
     rowCopy = rowCopy->next;
@@ -301,13 +301,14 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
     splitCondition( whereCondition, column, value, ">", 1 );
     option = 3;
   } else {
-    cout << "Debe ingresar un operador valido ('=', '<', '>' o '<>')." << endl;
+    cout << "ERROR: Debe ingresar un operador valido ('=', '<', '>' o '<>')."
+         << endl;
     return ERROR;
   }
   int index = WhereConditionColumn( table,
                                     column );  // Get the position of attribute
   if( index == -1 ) {                          // If the position doesn't found
-    cout << "La columna asociada a la condicion no se encontro" << endl;
+    cout << "ERROR: La columna '" << column << "' no existe." << endl;
     return ERROR;
   }
   typeOfData type = findTypeColumn( table, index );
@@ -320,7 +321,7 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
                      option ) == ERROR )
       return ERROR;
   } else {
-    cout << "Recuerde poner comillas para columnas de tipo STRING y no "
+    cout << "ERROR: Recuerde poner comillas para columnas de tipo STRING y no "
             "poner "
             "comillas para tipo INT"
          << endl;
@@ -408,13 +409,13 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
 
 typeRet deleteQuery( string tableName, string condition ) {
   if( tableName.length( ) == 0 ) {
-    cout << "La columna debe ser especificada." << endl;
+    cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
     return ERROR;
   }
 
   Tables table = findTable( tableName );
   if( table == NULL ) {
-    cout << "La tabla '" << tableName << "' no existe." << endl;
+    cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return ERROR;
   }
 
@@ -439,7 +440,8 @@ typeRet deleteQuery( string tableName, string condition ) {
     splitCondition( condition, column, value, ">", 1 );
     option = 3;
   } else {
-    cout << "Debe ingresar un operador valido ('=', '<', '>' o '<>')." << endl;
+    cout << "ERROR: Debe ingresar un operador valido ('=', '<', '>' o '<>')."
+         << endl;
     return ERROR;
   }
 
@@ -451,7 +453,7 @@ typeRet deleteQuery( string tableName, string condition ) {
     else if( conditionStatus == 1 )
       first = false;
     else if( conditionStatus == 2 ) {
-      cout << "La columna '" << column << "' no existe." << endl;
+      cout << "ERROR: La columna '" << column << "' no existe." << endl;
       return ERROR;
     }
   }
@@ -461,15 +463,13 @@ typeRet deleteQuery( string tableName, string condition ) {
     while( tableTuplesCopy != NULL && tableTuplesCopy->next != NULL ) {
       int conditionStatus =
           validCondition( table, tableTuplesCopy->next, option, column, value );
-      if( conditionStatus == 0 ) {
-        deleteNextTuple( tableTuplesCopy );
-      } else if( conditionStatus == 1 ) {
+      if( conditionStatus == 0 ) deleteNextTuple( tableTuplesCopy );
+      else if( conditionStatus == 1 ) {
         if( previousTuple != tableTuplesCopy )
           previousTuple = previousTuple->next;
-
         tableTuplesCopy = tableTuplesCopy->next;
       } else if( conditionStatus == 2 ) {
-        cout << "La columna '" << column << "' no existe." << endl;
+        cout << "ERROR: La columna '" << column << "' no existe." << endl;
         return ERROR;
       }
     }
@@ -479,7 +479,7 @@ typeRet deleteQuery( string tableName, string condition ) {
       if( conditionStatus == 0 ) {
         deleteNextTuple( previousTuple );
       } else if( conditionStatus == 2 ) {
-        cout << "La columna '" << column << "' no existe." << endl;
+        cout << "ERROR: La columna '" << column << "' no existe." << endl;
         return ERROR;
       }
     }

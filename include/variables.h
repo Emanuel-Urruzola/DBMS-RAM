@@ -1,5 +1,5 @@
-#ifndef variables
-#define variables
+#ifndef _VARIABLES_H
+#define _VARIABLES_H
 #include <string>
 using namespace std;
 
@@ -20,7 +20,6 @@ typedef nodeElement *Tuple;
 
 struct nodeTuple {
   Tuple row;
-  int tuplesCount;
   nodeTuple *next;
 };
 typedef nodeTuple *Tuples;
@@ -61,6 +60,6 @@ struct nodeTreeStr {
 };
 typedef nodeTreeStr *TreeStr;
 
-Tables tablesList = NULL;
+inline Tables tablesList = NULL;
 
-#endif  // !variables
+#endif
