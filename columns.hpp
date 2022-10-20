@@ -9,18 +9,29 @@
 // exista almenos una tupla. Tambien validar que en el caso de que existan
 // tuplas no pueden tener restriction != de ANY
 typeRet AddCol( string tableName, string columnName, string columnType,
-                typeOfRestriction restriction ) {
+                string restriction ) {
   typeOfData colType;
   typeOfRestriction colRestriction;
-  if( columnType == "STRING" ) {
+
+  if( columnType == "string" ) {
     colType = STRING;
-  } else if( columnType == "INT" ) {
+  } else if( columnType == "integer" ) {
     colType = INT;
   } else {
-    cout << "Tipo de dato invalido." << endl;
+    cout << "El tipo de dato " << columnType << " no es valido." << endl;
     return ERROR;
   }
-  if( columnType != "STRING" && columnType != "INT" ) {
+  if( restriction == "PRIMARY_KEY" ) {
+    colRestriction = PRIMARY_KEY;
+  } else if( restriction == "ANY" ) {
+    colRestriction = ANY;
+  } else if( restriction == "NOT_EMPTY" ) {
+    colRestriction = NOT_EMPTY;
+  } else {
+    // TODO: Steven error
+    return ERROR;
+  }
+  if( columnType != "string" && columnType != "integer" ) {
     cout << "ERROR: Ingrese tipo de dato válido." << endl;
     return ERROR;
   }
@@ -43,16 +54,16 @@ typeRet AddCol( string tableName, string columnName, string columnType,
     column->name = columnName;
     column->type = colType;
     if( table->tuple != NULL ) {
-      if( restriction != ANY ) {
+      if( colRestriction != ANY ) {
         cout << "ERROR: El calificador debe ser ANY!." << endl;
         return ERROR;
       } else {
-        column->restriction   = restriction;
+        column->restriction   = colRestriction;
         Tuple newTuple        = new nodeElement;
         newTuple->next        = NULL;
         newTuple->name        = columnName;
         newTuple->type        = colType;
-        newTuple->restriction = restriction;
+        newTuple->restriction = colRestriction;
         if( colType == INT ) {
           newTuple->number = -1;
         } else {
@@ -71,7 +82,7 @@ typeRet AddCol( string tableName, string columnName, string columnType,
         }
       }
     } else {
-      column->restriction = restriction;
+      column->restriction = colRestriction;
     }
     column->next = NULL;
     if( table->attributes == NULL ) {
@@ -104,21 +115,11 @@ typeRet AddCol( string tableName, string columnName, string columnType,
         }
       }
       if( tableAttributesCopy->next == NULL ) {
-        tableAttributesCopy->next        = column;
+        tableAttributesCopy->next = column;
       }
     }
   }
   return OK;
-}
-
-void setColumnIndexes( Tuple &attributes ) {
-  int index            = 0;
-  Tuple attributesCopy = attributes;
-  while( attributesCopy != NULL ) {
-    attributesCopy->index = index;
-    index++;
-    attributesCopy = attributesCopy->next;
-  }
 }
 
 typeRet PKCondition( typeOfData type, int index, Tuples tuple ) {
@@ -221,7 +222,7 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
     Tuple rowCopy = tuplesCopy->row;
     for( int i = 1; i < index; i++ ) rowCopy = rowCopy->next;
     if( rowCopy->type == INT && newType == STRING ) {
-      rowCopy->text = to_string( row->number );
+      rowCopy->text = to_string( rowCopy->number );
       rowCopy->type = newType;
     }
     rowCopy->restriction = newRestriction;
@@ -330,9 +331,6 @@ typeRet dropCol( string tableName, string columnName ) {
     }
     tableTuplesCopy = tableTuplesCopy->next;
   }
-
-  setColumnIndexes( table->attributes );
-
   return OK;
 }
 

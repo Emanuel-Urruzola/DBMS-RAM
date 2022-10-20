@@ -12,7 +12,7 @@ void splitCondition( string condition, string &column, string &value,
                      string splitter, int add ) {
   column = condition.substr( 0, condition.find( splitter ) );
   value  = condition.substr( condition.find( splitter ) + add,
-                             condition.length( ) - condition.find( splitter ) );
+                            condition.length( ) - condition.find( splitter ) );
 }
 
 bool validColumns( string columnsOrder, Tables table ) {
@@ -47,8 +47,8 @@ typeRet InsertInto( string tableName, string columnsOrder,
     return ERROR;
   }
   Tables table = findTable( tableName );
-  if(!(validColumns(columnsOrder, table))){
-    cout<<"ERROR: Columna no existente, ingrese nuevamente!."<<endl;
+  if( ! ( validColumns( columnsOrder, table ) ) ) {
+    cout << "ERROR: Columna no existente, ingrese nuevamente!." << endl;
     return ERROR;
   }
   if( table->attributes == NULL ) {
@@ -116,7 +116,10 @@ typeRet InsertInto( string tableName, string columnsOrder,
             Tuple rowCopy = table->tuple->row;
             while( rowCopy != NULL ) {
               if( rowCopy->restriction == PRIMARY_KEY ) {
-                if( rowCopy->number == newTuple->number ) {
+                if( ( rowCopy->type == INT &&
+                      rowCopy->number == newTuple->number ) ||
+                    ( rowCopy->type == STRING &&
+                      rowCopy->text == newTuple->text ) ) {
                   cout << "ERROR: Primary key existente!." << endl;
                   return ERROR;
                 } else {
@@ -328,11 +331,12 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
 
 int columnExists( Tables table, string columnName ) {
   Tuple tableAttributesCopy = table->attributes;
+  int index                 = 0;
   while( tableAttributesCopy != NULL ) {
-    if( tableAttributesCopy->name == columnName )
-      return tableAttributesCopy->index;
+    if( tableAttributesCopy->name == columnName ) return index;
     else
       tableAttributesCopy = tableAttributesCopy->next;
+    index++;
   }
   return -1;
 }

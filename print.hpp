@@ -13,7 +13,7 @@ string getRowString( Tuple row, int index, typeOfData &type, int &number,
   bool noExist     = index == 0;
   while( row != NULL ) {
     if( row->type == STRING ) {
-      if( row->text == "\"\"" ) {
+      if( row->text.length( ) == 0 ) {
         string element = "EMPTY";
         element.resize( 20, ' ' );
         rowString += element + "\t" + "|";
