@@ -3,7 +3,7 @@
 #include "../include/variables.h"
 using namespace std;
 
-void InsBack( List &initialList, string value ) {
+void insBack( List &initialList, string value ) {
   List newNode   = new nodeList;
   newNode->value = value;
   newNode->next  = NULL;
@@ -18,7 +18,7 @@ void InsBack( List &initialList, string value ) {
   }
 }
 
-void InsBackInt( ListInt &initialList, int value ) {
+void insBackInt( ListInt &initialList, int value ) {
   ListInt newNode = new nodeListInt;
   newNode->value  = value;
   newNode->next   = NULL;
@@ -33,7 +33,7 @@ void InsBackInt( ListInt &initialList, int value ) {
   }
 }
 
-TreeInt NewNode( int value, string row ) {
+TreeInt newNode( int value, string row ) {
   TreeInt newNode = new nodeTree;
   newNode->value  = value;
   newNode->row    = row;
@@ -42,7 +42,7 @@ TreeInt NewNode( int value, string row ) {
   return newNode;
 }
 
-TreeStr NewNodeStr( string value, string row ) {
+TreeStr newNodeStr( string value, string row ) {
   TreeStr newNode = new nodeTreeStr;
   newNode->value  = value;
   newNode->row    = row;
@@ -51,54 +51,54 @@ TreeStr NewNodeStr( string value, string row ) {
   return newNode;
 }
 
-typeRet Insert( TreeInt &tree, int value, string row ) {
+typeRet insert( TreeInt &tree, int value, string row ) {
   if( tree == NULL ) {
-    TreeInt newTree = NewNode( value, row );
+    TreeInt newTree = newNode( value, row );
     tree            = newTree;
     return OK;
   } else {
     if( value < tree->value ) {
-      Insert( tree->left, value, row );
+      insert( tree->left, value, row );
       return OK;
     } else if( value == tree->value ) {
-      Insert( tree->right, value, row );
+      insert( tree->right, value, row );
       return ERROR;
     } else {
-      Insert( tree->right, value, row );
+      insert( tree->right, value, row );
       return OK;
     }
   }
 }
 
-typeRet InsertText( TreeStr &tree, string value, string row ) {
+typeRet insertText( TreeStr &tree, string value, string row ) {
   if( tree == NULL ) {
-    TreeStr newTree = NewNodeStr( value, row );
+    TreeStr newTree = newNodeStr( value, row );
     tree            = newTree;
     return OK;
   } else {
     if( value.compare( tree->value ) < 0 ) {
-      InsertText( tree->left, value, row );
+      insertText( tree->left, value, row );
       return OK;
     } else if( value.compare( tree->value ) == 0 ) {
-      InsertText( tree->right, value, row );
+      insertText( tree->right, value, row );
       return ERROR;
     } else {
-      InsertText( tree->right, value, row );
+      insertText( tree->right, value, row );
       return OK;
     }
   }
 }
 
-void ShowTreeStr( TreeStr tree ) {
+void showTreeStr( TreeStr tree ) {
   if( tree == NULL ) return;
-  ShowTreeStr( tree->left );
+  showTreeStr( tree->left );
   cout << tree->row << endl;
-  ShowTreeStr( tree->right );
+  showTreeStr( tree->right );
 }
 
-void ShowTree( TreeInt tree ) {
+void showTree( TreeInt tree ) {
   if( tree == NULL ) return;
-  ShowTree( tree->left );
+  showTree( tree->left );
   cout << tree->row << endl;
-  ShowTree( tree->right );
+  showTree( tree->right );
 }

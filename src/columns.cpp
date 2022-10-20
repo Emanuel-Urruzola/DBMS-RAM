@@ -9,7 +9,7 @@
 // TODO: Validar el caso de que
 // exista almenos una tupla. Tambien validar que en el caso de que existan
 // tuplas no pueden tener restriction != de ANY
-typeRet AddCol( string tableName, string columnName, string columnType,
+typeRet addCol( string tableName, string columnName, string columnType,
                 string restriction ) {
   typeOfData colType;
   typeOfRestriction colRestriction;
@@ -30,9 +30,11 @@ typeRet AddCol( string tableName, string columnName, string columnType,
   } else if( restriction == "NOT_EMPTY" ) {
     colRestriction = NOT_EMPTY;
   } else {
-    // TODO: Steven error
+    cout << "ERROR: El tipo de restriccion '" << restriction
+         << "' no es valido." << endl;
     return ERROR;
   }
+
   if( columnType != "string" && columnType != "integer" ) {
     cout << "ERROR: Ingrese tipo de dato válido." << endl;
     return ERROR;
@@ -60,30 +62,25 @@ typeRet AddCol( string tableName, string columnName, string columnType,
     if( colRestriction != ANY ) {
       cout << "ERROR: El calificador de la columna debe ser ANY." << endl;
       return ERROR;
-    } else {
-      column->restriction   = colRestriction;
-      Tuple newTuple        = new nodeElement;
-      newTuple->next        = NULL;
-      newTuple->name        = columnName;
-      newTuple->type        = colType;
-      newTuple->restriction = colRestriction;
-      if( colType == INT ) {
-        newTuple->number = -1;
-      } else {
-        newTuple->text = "";
-      }
-      Tuples aux = table->tuple;
-      while( aux != NULL ) {
-        Tuple tupleCopy = aux->row;
-        while( tupleCopy->next != NULL ) {
-          tupleCopy = tupleCopy->next;
-        }
-        if( tupleCopy->next == NULL ) {
-          tupleCopy->next = newTuple;
-        }
-        aux = aux->next;
-      }
     }
+    column->restriction   = colRestriction;
+    Tuple newTuple        = new nodeElement;
+    newTuple->next        = NULL;
+    newTuple->name        = columnName;
+    newTuple->type        = colType;
+    newTuple->restriction = colRestriction;
+    if( colType == INT ) newTuple->number = -1;
+    else
+      newTuple->text = "";
+
+    Tuples aux = table->tuple;
+    while( aux != NULL ) {
+      Tuple tupleCopy = aux->row;
+      while( tupleCopy->next != NULL ) tupleCopy = tupleCopy->next;
+      if( tupleCopy->next == NULL ) tupleCopy->next = newTuple;
+      aux = aux->next;
+    }
+
   } else
     column->restriction = colRestriction;
 
@@ -125,7 +122,7 @@ typeRet AddCol( string tableName, string columnName, string columnType,
   return OK;
 }
 
-typeRet PKCondition( typeOfData type, int index, Tuples tuple ) {
+typeRet pKCondition( typeOfData type, int index, Tuples tuple ) {
   tree treeUnion;
   if( type == STRING ) treeUnion.treeStr = NULL;
   else
@@ -135,9 +132,9 @@ typeRet PKCondition( typeOfData type, int index, Tuples tuple ) {
     Tuple row      = tuple->row;
     for( int i = 1; i < index; i++ ) row = row->next;
     if( type == STRING )
-      result = InsertText( treeUnion.treeStr, row->text, "" );
+      result = insertText( treeUnion.treeStr, row->text, "" );
     else
-      result = Insert( treeUnion.treeInt, row->number, "" );
+      result = insert( treeUnion.treeInt, row->number, "" );
     if( result == ERROR ) {
       cout << "ERROR: Hay datos duplicados en '" << row->name
            << "' no se puede cambiar a PRIMARY KEY" << endl;
@@ -157,7 +154,26 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
     return ERROR;
   }
 
-  int index = WhereConditionColumn( table, columnName );
+  if( typeOfRestrictionP.length( ) == 0 ) {
+    cout << "ERROR: El la restriccion de la columna debe ser especificada."
+         << endl;
+    return ERROR;
+  }
+
+  if( typeOfRestrictionP != "ANY" && typeOfRestrictionP != "PRIMARY_KEY" &&
+      typeOfRestrictionP != "NOT_EMPTY" ) {
+    cout << "ERROR: El la restriccion de la columna debe PRIMARY_KEY, "
+            "NOT_EMPTY o ANY."
+         << endl;
+    return ERROR;
+  }
+
+  if( newColumnName.length( ) == 0 ) {
+    cout << "ERROR: El nombre de la columna debe ser especificado." << endl;
+    return ERROR;
+  }
+
+  int index = whereConditionColumn( table, columnName );
   if( index == -1 ) {
     cout << "ERROR: La columna no existe" << endl;
     return ERROR;
@@ -219,7 +235,7 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
       "^[Pp][Rr][Ii][Mm][Aa][Rr][Yy][ _-][Kk][Ee][Yy]$" );
   if( regex_match( typeOfRestrictionP, regExpPrimary ) ) {
     newRestriction = PRIMARY_KEY;
-    if( PKCondition( type, index, table->tuple ) == ERROR ) return ERROR;
+    if( pKCondition( type, index, table->tuple ) == ERROR ) return ERROR;
   }
   // Store the other types of restrictions
   if( regex_match( typeOfRestrictionP, regExpAny ) ) newRestriction = ANY;
