@@ -10,7 +10,7 @@
 using namespace std;
 
 int main() {
-    runTests( );
+    //runTests( );
     string opc;
     do {
         cin >> opc;
