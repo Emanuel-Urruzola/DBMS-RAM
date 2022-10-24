@@ -2,9 +2,9 @@
 #include <string>
 using namespace std;
 
-enum typeOfRestriction { NOT_EMPTY = 0, PRIMARY_KEY, ANY };
-enum typeOfData { STRING = 0, INT };
-enum typeRet { OK = 0, ERROR, NOT_IMPLEMENTED };
+enum typeOfRestriction { NOT_EMPTY, PRIMARY_KEY, ANY };
+enum typeOfData { STRING, INT };
+enum typeRet { OK, ERROR, NOT_IMPLEMENTED };
 
 // template<typename values>  //It doesn't seem to work.
 struct nodeElement {
