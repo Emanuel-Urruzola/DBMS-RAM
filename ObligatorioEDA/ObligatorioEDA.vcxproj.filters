@@ -69,4 +69,9 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".clang-format">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+  </ItemGroup>
 </Project>

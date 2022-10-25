@@ -1,12 +1,12 @@
 #pragma once
 #include "variables.h"
 
-typeRet addCol(string, string, string, string);
+typeRet addCol( string, string, string, string );
 
-typeRet pKCondition(typeOfData, int, Tuples);
+typeRet pkCondition( typeOfData, int, Tuples );
 
-typeRet alterCol(string, string, string, string, string);
+typeRet alterCol( string, string, string, string, string );
 
-typeRet dropCol(string, string);
+typeRet dropCol( string, string );
 
-void showColumns(Tables);
+void showColumns( Tables );
