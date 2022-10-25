@@ -1,12 +1,12 @@
 #pragma once
 #include "variables.h"
 
-typeRet createTable(string);
+typeRet createTable( string );
 
-void showTables(Tables);
+void showTables( Tables );
 
-Tables findTable(string);
+Tables findTable( string );
 
-typeRet dropTable(string);
+typeRet dropTable( string );
 
-typeRet modifyTable(string, string);
+typeRet modifyTable( string, string );

@@ -1,10 +1,10 @@
 #pragma once
 #include "variables.h"
 
-void deleteAllRows(Tuple&);
+void deleteAllRows( Tuple& );
 
-void deleteAllTuples(Tuples&);
+void deleteAllTuples( Tuples& );
 
-void deleteTuple(Tuples&);
+void deleteTuple( Tuples& );
 
-void deleteNextTuple(Tuples&);
+void deleteNextTuple( Tuples& );

@@ -110,3 +110,18 @@ void showTree(TreeInt tree) {
     cout << tree->row << endl;
     showTree(tree->right);
 }
+
+Tuples insFrontTuples(Tuples tuplesList, Tuple row) {
+    if (tuplesList == NULL) {
+        tuplesList = new nodeTuple;
+        tuplesList->row = row;
+        tuplesList->next = NULL;
+    }
+    else {
+        Tuples copy = new nodeTuple;
+        copy->row = row;
+        copy->next = tuplesList;
+        tuplesList = copy;
+    }
+    return tuplesList;
+}
