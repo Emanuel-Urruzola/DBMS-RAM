@@ -47,27 +47,27 @@ typeRet insertInto( string tableName, string columnsOrder,
                     string columnValues ) {
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   Tables table = findTable( tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( ! ( validColumns( columnsOrder, table ) ) ) {
     cout << "ERROR: Columna no existente." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
   if( table->attributes == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no tiene columnas." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( validColumns( columnsOrder, table ) ) {
@@ -114,25 +114,25 @@ typeRet insertInto( string tableName, string columnsOrder,
       Tuple newTuple = new nodeElement;
       newTuple->next = NULL;
       newTuple->type = tableAttributesCopy->type;
-      if( tableAttributesCopy->type == INT ) {
+      if( tableAttributesCopy->type == typeOfData::INT ) {
         newTuple->number = stoi( columnValuesCopy );
       } else {
         newTuple->text = columnValuesCopy;
       }
       newTuple->restriction = tableAttributesCopy->restriction;
       // Chequea si la PRIMARY KEY ya existe.
-      if( tableAttributesCopy->restriction == PRIMARY_KEY ) {
+      if( tableAttributesCopy->restriction == typeOfRestriction::PRIMARY_KEY ) {
         Tuples tupleCopy = table->tuple;
         while( tupleCopy != NULL ) {
           Tuple rowCopy = table->tuple->row;
           while( rowCopy != NULL ) {
-            if( rowCopy->restriction == PRIMARY_KEY ) {
-              if( ( rowCopy->type == INT &&
+            if( rowCopy->restriction == typeOfRestriction::PRIMARY_KEY ) {
+              if( ( rowCopy->type == typeOfData::INT &&
                     rowCopy->number == newTuple->number ) ||
-                  ( rowCopy->type == STRING &&
+                  ( rowCopy->type == typeOfData::STRING &&
                     rowCopy->text == newTuple->text ) ) {
                 cout << "ERROR: Primary key existente." << endl;
-                return ERROR;
+                return typeRet::ERROR;
               } else {
                 rowCopy = rowCopy->next;
               }
@@ -155,7 +155,7 @@ typeRet insertInto( string tableName, string columnsOrder,
     }
   }
 
-  return OK;
+  return typeRet::OK;
 }
 
 int whereConditionColumn( Tables table, string columnName ) {
@@ -171,13 +171,13 @@ int whereConditionColumn( Tables table, string columnName ) {
 }
 
 typeRet findColumn( Tables table, string columnName ) {
-  if( table == NULL ) return ERROR;
+  if( table == NULL ) return typeRet::ERROR;
   Tuple attributes = table->attributes;
   while( attributes != NULL ) {
-    if( attributes->name == columnName ) return OK;
+    if( attributes->name == columnName ) return typeRet::OK;
     attributes = attributes->next;
   }
-  return ERROR;
+  return typeRet::ERROR;
 }
 
 int findIndexColumn( Tables table, string columnName ) {
@@ -193,7 +193,8 @@ int findIndexColumn( Tables table, string columnName ) {
   } else {
     while( attributes->next != NULL ) {
       index++;
-      if( attributes->restriction == PRIMARY_KEY ) return index;
+      if( attributes->restriction == typeOfRestriction::PRIMARY_KEY )
+        return index;
       attributes = attributes->next;
     }
     index++;
@@ -208,7 +209,7 @@ typeRet getRows( Tuple& row, string columnToModify,
   Tuple rowCopy  = row;
   while( rowCopy->name != columnToModify ) rowCopy = rowCopy->next;
   restriction = rowCopy->restriction;
-  return OK;
+  return typeRet::OK;
 }
 
 typeRet findMatches( Tables table, int index, string value, typeOfData type,
@@ -216,7 +217,7 @@ typeRet findMatches( Tables table, int index, string value, typeOfData type,
                      int condition ) {
   Tuples tuple = table->tuple;
   bool isEmpty = ! value.compare( "\"\"" );
-  if( type == STRING && ! isEmpty )
+  if( type == typeOfData::STRING && ! isEmpty )
     value = value.substr( 1, value.length( ) - 2 );
   Tuples rowsToModify = NULL;
   typeOfRestriction restriction;
@@ -226,33 +227,38 @@ typeRet findMatches( Tables table, int index, string value, typeOfData type,
     for( int i = 1; i < index; i++ ) row = row->next;
     switch( condition ) {
       case 0:
-        if( ( type == STRING && ! row->text.compare( value ) ) || isEmpty ||
-            ( type == INT && row->number == stoi( value ) ) ) {
+        if( ( type == typeOfData::STRING && ! row->text.compare( value ) ) ||
+            isEmpty ||
+            ( type == typeOfData::INT && row->number == stoi( value ) ) ) {
           if( getRows( rowCopy, columnToModify, restriction, rowsToModify ) ==
-              ERROR )
-            return ERROR;
+              typeRet::ERROR )
+            return typeRet::ERROR;
         }
         break;
       case 1:
-        if( ( type == STRING && row->text.compare( value ) ) || isEmpty ||
-            ( type == INT && row->number != stoi( value ) ) )
+        if( ( type == typeOfData::STRING && row->text.compare( value ) ) ||
+            isEmpty ||
+            ( type == typeOfData::INT && row->number != stoi( value ) ) )
           if( getRows( rowCopy, columnToModify, restriction, rowsToModify ) ==
-              ERROR )
-            return ERROR;
+              typeRet::ERROR )
+            return typeRet::ERROR;
         break;
       case 2:
-        if( ( type == STRING && row->text.compare( value ) == -1 ) || isEmpty ||
-            ( type == INT && row->number < stoi( value ) ) )
+        if( ( type == typeOfData::STRING &&
+              row->text.compare( value ) == -1 ) ||
+            isEmpty ||
+            ( type == typeOfData::INT && row->number < stoi( value ) ) )
           if( getRows( rowCopy, columnToModify, restriction, rowsToModify ) ==
-              ERROR )
-            return ERROR;
+              typeRet::ERROR )
+            return typeRet::ERROR;
         break;
       case 3:
-        if( ( type == STRING && row->text.compare( value ) == 1 ) || isEmpty ||
-            ( type == INT && row->number > stoi( value ) ) )
+        if( ( type == typeOfData::STRING && row->text.compare( value ) == 1 ) ||
+            isEmpty ||
+            ( type == typeOfData::INT && row->number > stoi( value ) ) )
           if( getRows( rowCopy, columnToModify, restriction, rowsToModify ) ==
-              ERROR )
-            return ERROR;
+              typeRet::ERROR )
+            return typeRet::ERROR;
         break;
       default:
         break;
@@ -263,15 +269,16 @@ typeRet findMatches( Tables table, int index, string value, typeOfData type,
   tuple       = table->tuple;
   int counter = 0;
   if( rowsToModify == NULL )
-    return OK;  // If the table doesn't have tuples, is not a ERROR
+    return typeRet::OK;  // If the table doesn't have tuples, is not a ERROR
   else if( rowsToModify->next != NULL ) {
-    if( restriction == PRIMARY_KEY ) return ERROR;
+    if( restriction == typeOfRestriction::PRIMARY_KEY ) return typeRet::ERROR;
     else {
       while( rowsToModify != NULL ) {
         Tuple rowToModify = rowsToModify->row;
         while( rowToModify->name != columnToModify )
           rowToModify = rowToModify->next;
-        if( rowToModify->type == STRING ) rowToModify->text = valueModified;
+        if( rowToModify->type == typeOfData::STRING )
+          rowToModify->text = valueModified;
         else
           rowToModify->number = stoi( valueModified );
         rowsToModify = rowsToModify->next;
@@ -283,27 +290,29 @@ typeRet findMatches( Tables table, int index, string value, typeOfData type,
       while( row->name != columnToModify ) row = row->next;
       while( rowsToModify->row->name != columnToModify )
         rowsToModify->row = rowsToModify->row->next;
-      if( row->type == STRING ) {
+      if( row->type == typeOfData::STRING ) {
         if( row->text == valueModified ) {
-          if( row != rowsToModify->row && restriction == PRIMARY_KEY )
-            return ERROR;
+          if( row != rowsToModify->row &&
+              restriction == typeOfRestriction::PRIMARY_KEY )
+            return typeRet::ERROR;
         }
       } else {
         if( regex_match( valueModified, regExpNumber ) &&
             row->number == stoi( valueModified ) ) {
-          if( row != rowsToModify->row && restriction == PRIMARY_KEY )
-            return ERROR;
+          if( row != rowsToModify->row &&
+              restriction == typeOfRestriction::PRIMARY_KEY )
+            return typeRet::ERROR;
         }
       }
       tuple = tuple->next;
     }
-    if( rowsToModify->row->type == STRING )
+    if( rowsToModify->row->type == typeOfData::STRING )
       rowsToModify->row->text = valueModified;
     else
       rowsToModify->row->number = stoi( valueModified );
     tuple = table->tuple;
   }
-  return OK;
+  return typeRet::OK;
 }
 
 typeOfData findTypeColumn( Tables table, int index ) {
@@ -314,15 +323,14 @@ typeOfData findTypeColumn( Tables table, int index ) {
 
 typeRet update( string tableName, string whereCondition, string columnToModify,
                 string newValue ) {
-  // TODO Emanuel : if columnToModify doesn't exist, doesn't work;
   Tables table = findTable( tableName );
   if( table == NULL ) {
-    cout << "ERROR: La tabla a modificar no existe";
-    return ERROR;
+    cout << "ERROR: La tabla a modificar no existe" << endl;
+    return typeRet::ERROR;
   }
-  if( findColumn( table, columnToModify ) == ERROR ) {
-    cout << "ERROR: La columna a modificar no existe";
-    return ERROR;
+  if( findColumn( table, columnToModify ) == typeRet::ERROR ) {
+    cout << "ERROR: La columna a modificar no existe" << endl;
+    return typeRet::ERROR;
   }
   const regex regExpString(
       "[\"'”].+[\"'”]" );  // Checking that string is between different types
@@ -346,35 +354,35 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
   } else {
     cout << "ERROR: Debe ingresar un operador valido ('=', '<', '>' o '<>')."
          << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
   int index = whereConditionColumn( table,
                                     column );  // Get the position of attribute
   if( index == -1 ) {                          // If the position doesn't found
     cout << "ERROR: La columna '" << column << "' no existe." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
   typeOfData type = findTypeColumn( table, index );
-  if( ( type == INT && regex_match( value, regExpNumber ) ) ||
-      ( type == STRING && regex_match( value, regExpString ) ) ||
+  if( ( type == typeOfData::INT && regex_match( value, regExpNumber ) ) ||
+      ( type == typeOfData::STRING && regex_match( value, regExpString ) ) ||
       ! value.compare(
           "\"\"" ) ) {  // if is int it can only have number, if is string has
     // to have quotes, or if is "" it passes
     if( findMatches( table, index, value, type, columnToModify, newValue,
-                     option ) == ERROR ) {
+                     option ) == typeRet::ERROR ) {
       cout << "ERROR: Una columna del tipo PRIMARY KEY no puede tener "
               "elementos repetidos"
            << endl;
-      return ERROR;
+      return typeRet::ERROR;
     }
   } else {
     cout << "ERROR: Recuerde poner comillas para columnas de tipo STRING y no "
             "poner "
             "comillas para tipo INT"
          << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
-  return OK;
+  return typeRet::OK;
 }
 
 int columnExists( Tables table, string columnName ) {
@@ -399,7 +407,7 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
     if( value != "EMPTY" ) {
       switch( option ) {
         case 0:
-          if( tupleRowCopy->type == STRING ) {
+          if( tupleRowCopy->type == typeOfData::STRING ) {
             if( tupleRowCopy->text.compare(
                     value.substr( 1, value.length( ) - 2 ) ) == 0 )
               return 0;
@@ -407,7 +415,7 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
             return 0;
           break;
         case 1:
-          if( tupleRowCopy->type == STRING ) {
+          if( tupleRowCopy->type == typeOfData::STRING ) {
             if( tupleRowCopy->text.compare(
                     value.substr( 1, value.length( ) - 2 ) ) != 0 )
               return 0;
@@ -415,7 +423,7 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
             return 0;
           break;
         case 2:
-          if( tupleRowCopy->type == STRING ) {
+          if( tupleRowCopy->type == typeOfData::STRING ) {
             if( tupleRowCopy->text.compare(
                     value.substr( 1, value.length( ) - 2 ) ) < 0 )
               return 0;
@@ -423,7 +431,7 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
             return 0;
           break;
         case 3:
-          if( tupleRowCopy->type == STRING ) {
+          if( tupleRowCopy->type == typeOfData::STRING ) {
             if( tupleRowCopy->text.compare(
                     value.substr( 1, value.length( ) - 2 ) ) > 0 )
               return 0;
@@ -432,16 +440,16 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
           break;
       }
     } else {
-      if( tupleRowCopy->restriction != NOT_EMPTY ) {
+      if( tupleRowCopy->restriction != typeOfRestriction::NOT_EMPTY ) {
         switch( option ) {
           case 0:
-            if( tupleRowCopy->type == STRING ) {
+            if( tupleRowCopy->type == typeOfData::STRING ) {
               if( tupleRowCopy->text.length( ) == 0 ) return 0;
             } else if( tupleRowCopy->number == -1 )
               return 0;
             break;
           case 2:
-            if( tupleRowCopy->type == STRING ) {
+            if( tupleRowCopy->type == typeOfData::STRING ) {
               if( tupleRowCopy->text.length( ) != 0 ) return 0;
             } else if( tupleRowCopy->number != -1 )
               return 0;
@@ -457,18 +465,18 @@ int validCondition( Tables table, Tuples tuple, int option, string column,
 typeRet deleteQuery( string tableName, string condition ) {
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   Tables table = findTable( tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( condition.length( ) == 0 ) {
     deleteAllTuples( table->tuple );
-    return OK;
+    return typeRet::OK;
   }
 
   string column, value;
@@ -489,7 +497,7 @@ typeRet deleteQuery( string tableName, string condition ) {
   } else {
     cout << "ERROR: Debe ingresar un operador valido ('=', '<', '>' o '<>')."
          << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   bool first = true;
@@ -501,7 +509,7 @@ typeRet deleteQuery( string tableName, string condition ) {
       first = false;
     else if( conditionStatus == 2 ) {
       cout << "ERROR: La columna '" << column << "' no existe." << endl;
-      return ERROR;
+      return typeRet::ERROR;
     }
   }
   if( table->tuple != NULL ) {
@@ -517,7 +525,7 @@ typeRet deleteQuery( string tableName, string condition ) {
         tableTuplesCopy = tableTuplesCopy->next;
       } else if( conditionStatus == 2 ) {
         cout << "ERROR: La columna '" << column << "' no existe." << endl;
-        return ERROR;
+        return typeRet::ERROR;
       }
     }
     if( tableTuplesCopy != NULL ) {
@@ -527,10 +535,10 @@ typeRet deleteQuery( string tableName, string condition ) {
         deleteNextTuple( previousTuple );
       } else if( conditionStatus == 2 ) {
         cout << "ERROR: La columna '" << column << "' no existe." << endl;
-        return ERROR;
+        return typeRet::ERROR;
       }
     }
   }
 
-  return OK;
+  return typeRet::OK;
 }

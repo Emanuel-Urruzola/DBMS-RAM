@@ -15,53 +15,53 @@ typeRet addCol( string tableName, string columnName, string columnType,
   typeOfRestriction colRestriction;
 
   if( columnType == "string" ) {
-    colType = STRING;
+    colType = typeOfData::STRING;
   } else if( columnType == "integer" ) {
-    colType = INT;
+    colType = typeOfData::INT;
   } else {
     cout << "ERROR: El tipo de dato '" << columnType << "' no es valido."
          << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
   if( restriction == "PRIMARY_KEY" ) {
-    colRestriction = PRIMARY_KEY;
+    colRestriction = typeOfRestriction::PRIMARY_KEY;
   } else if( restriction == "ANY" ) {
-    colRestriction = ANY;
+    colRestriction = typeOfRestriction::ANY;
   } else if( restriction == "NOT_EMPTY" ) {
-    colRestriction = NOT_EMPTY;
+    colRestriction = typeOfRestriction::NOT_EMPTY;
   } else {
     cout << "ERROR: El tipo de restriccion '" << restriction
          << "' no es valido." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( columnType != "string" && columnType != "integer" ) {
     cout << "ERROR: Ingrese tipo de dato válido." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( columnName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la columna debe ser especificado." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   Tables table = findTable( tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   Tuple column = new nodeElement;
   column->name = columnName;
   column->type = colType;
   if( table->tuple != NULL ) {
-    if( colRestriction != ANY ) {
+    if( colRestriction != typeOfRestriction::ANY ) {
       cout << "ERROR: El calificador de la columna debe ser ANY." << endl;
-      return ERROR;
+      return typeRet::ERROR;
     }
     column->restriction   = colRestriction;
     Tuple newTuple        = new nodeElement;
@@ -69,7 +69,7 @@ typeRet addCol( string tableName, string columnName, string columnType,
     newTuple->name        = columnName;
     newTuple->type        = colType;
     newTuple->restriction = colRestriction;
-    if( colType == INT ) newTuple->number = -1;
+    if( colType == typeOfData::INT ) newTuple->number = -1;
     else
       newTuple->text = "";
 
@@ -89,16 +89,16 @@ typeRet addCol( string tableName, string columnName, string columnType,
   else {
     Tuple tableAttributesCopy = table->attributes;
     while( tableAttributesCopy->next != NULL ) {
-      if( tableAttributesCopy->restriction == PRIMARY_KEY &&
+      if( tableAttributesCopy->restriction == typeOfRestriction::PRIMARY_KEY &&
           column->restriction == tableAttributesCopy->restriction ) {
         cout << "ERROR: Ya existe una PRIMARY_KEY." << endl;
-        return ERROR;
+        return typeRet::ERROR;
       }
 
       if( tableAttributesCopy->name == columnName ) {
         cout << "ERROR: La columna '" << columnName
              << "' ya existe en la tabla '" << tableName << "'." << endl;
-        return ERROR;
+        return typeRet::ERROR;
       } else
         tableAttributesCopy = tableAttributesCopy->next;
     }
@@ -107,37 +107,37 @@ typeRet addCol( string tableName, string columnName, string columnType,
     if( tableAttributesCopy->next == NULL &&
         tableAttributesCopy->name == columnName ) {
       cout << "ERROR: El nombre de columna ya existe." << endl;
-      return ERROR;
+      return typeRet::ERROR;
     }
     if( tableAttributesCopy->next == NULL &&
-        tableAttributesCopy->restriction == PRIMARY_KEY &&
+        tableAttributesCopy->restriction == typeOfRestriction::PRIMARY_KEY &&
         column->restriction == tableAttributesCopy->restriction ) {
       cout << "ERROR: Ya existe una PRIMARY_KEY." << endl;
-      return ERROR;
+      return typeRet::ERROR;
     }
 
     if( tableAttributesCopy->next == NULL ) tableAttributesCopy->next = column;
   }
-  return OK;
+  return typeRet::ERROR;
 }
 
 typeRet pkCondition( typeOfData type, int index, Tuples tuple ) {
-  tree treeUnion;
-  if( type == STRING ) treeUnion.treeStr = NULL;
+  tree treeUnion{ };
+  if( type == typeOfData::STRING ) treeUnion.treeStr = NULL;
   else
     treeUnion.treeInt = NULL;
   while( tuple != NULL ) {
-    typeRet result = OK;
+    typeRet result = typeRet::ERROR;
     Tuple row      = tuple->row;
     for( int i = 1; i < index; i++ ) row = row->next;
-    if( type == STRING )
+    if( type == typeOfData::STRING )
       result = insertText( treeUnion.treeStr, row->text, "" );
     else
       result = insert( treeUnion.treeInt, row->number, "" );
-    if( result == ERROR ) return ERROR;
+    if( result == typeRet::ERROR ) return typeRet::ERROR;
     tuple = tuple->next;
   }
-  return OK;
+  return typeRet::ERROR;
 }
 
 // alterCol (Personas,Name,string,NOT EMPTY, Nombre)
@@ -154,17 +154,17 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
 
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( typeOfRestrictionP.length( ) == 0 ) {
     cout << "ERROR: El la restriccion de la columna debe ser especificada."
          << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
   if( typeOfDataP.length( ) == 0 ) {
     cout << "ERROR: El tipo de la columna debe ser especificada." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( ! regex_match( typeOfRestrictionP, regExpAny ) &&
@@ -173,47 +173,48 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
     cout << "ERROR: El la restriccion de la columna debe PRIMARY_KEY, "
             "NOT_EMPTY o ANY."
          << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( newColumnName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la columna debe ser especificado." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   int index = whereConditionColumn( table, columnName );
   if( index == -1 ) {
     cout << "ERROR: La columna no existe" << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   Tuple attributes = table->attributes;
   // TODO Emanuel: ver si change se usa. en linea 190 tambien borrar
-  typeOfData newType;
+  typeOfData newType{ };
   for( int i = 1; i < index; i++ ) attributes = attributes->next;
   if( regex_match( typeOfDataP, regExpInteger ) ||
       regex_match( typeOfDataP, regExpInt ) ) {
-    newType = INT;
-    if( attributes->type == STRING ) {
+    newType = typeOfData::INT;
+    if( attributes->type == typeOfData::STRING ) {
       cout << "ERROR: No esta permitido cambiar de STRING a INT" << endl;
-      return ERROR;
+      return typeRet::ERROR;
     }
   } else if( ! regex_match( typeOfDataP, regExpString ) ) {
     cout << "ERROR: Tipo de dato incorrecto, debe ser INT o STRING" << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
   if( regex_match( typeOfDataP, regExpString ) ) {
-    newType = STRING;
+    newType = typeOfData::STRING;
   }
   // Check if columnName is Primary key and there is more than one column
   Tuple row               = table->tuple->row;
   bool minimumTwoElements = ( row->next != NULL );
   for( int i = 1; i < index; i++ ) row = row->next;
   typeOfData type = row->type;  // for condition on primary key later
-  if( ( row->restriction == PRIMARY_KEY ) && minimumTwoElements ) {
+  if( ( row->restriction == typeOfRestriction::PRIMARY_KEY ) &&
+      minimumTwoElements ) {
     cout << "ERROR: La columna'" << row->name
          << "' es la PRIMARY KEY y la tabla tiene más columnas.";
-    return ERROR;
+    return typeRet::ERROR;
   }
   // Check if newColumnName exist previously (I allow it if it is the same
   // column)
@@ -224,31 +225,32 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
     if( row->name == newColumnName && index != 0 ) {
       cout << "ERROR: La columna '" << newColumnName
            << "' ya existe en la tabla '" << tableName << "'." << endl;
-      return ERROR;
+      return typeRet::ERROR;
     }
     row = row->next;
   }
   // Check if typeOfRestriction parameter is primary key that there are no
   // duplicates
-  typeOfRestriction newRestriction;
+  typeOfRestriction newRestriction{ };
   if( regex_match( typeOfRestrictionP, regExpPrimary ) ) {
-    newRestriction = PRIMARY_KEY;
-    if( pkCondition( type, index, table->tuple ) == ERROR ) {
-      cout << "ERROR: Hay datos duplicados en '" << row->name
+    newRestriction = typeOfRestriction::PRIMARY_KEY;
+    if( pkCondition( type, index, table->tuple ) == typeRet::ERROR ) {
+      cout << "ERROR: Hay datos duplicados en '" << newColumnName
            << "' no se puede cambiar a PRIMARY KEY" << endl;
-      return ERROR;
+      return typeRet::ERROR;
     }
   }
   // Store the other types of restrictions
-  if( regex_match( typeOfRestrictionP, regExpAny ) ) newRestriction = ANY;
+  if( regex_match( typeOfRestrictionP, regExpAny ) )
+    newRestriction = typeOfRestriction::ANY;
   if( regex_match( typeOfRestrictionP, regExpNEmpty ) )
-    newRestriction = NOT_EMPTY;
+    newRestriction = typeOfRestriction::NOT_EMPTY;
   // If it don't throw an error still means I can set without errors.
   Tuples tuplesCopy = table->tuple;
   while( tuplesCopy != NULL ) {
     Tuple rowCopy = tuplesCopy->row;
     for( int i = 1; i < index; i++ ) rowCopy = rowCopy->next;
-    if( rowCopy->type == INT && newType == STRING ) {
+    if( rowCopy->type == typeOfData::INT && newType == typeOfData::STRING ) {
       rowCopy->text = to_string( rowCopy->number );
       rowCopy->type = newType;
     }
@@ -259,29 +261,27 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
   // TODO: Delete if we delete attributes list
   Tuple attributesCopy = table->attributes;
   for( int i = 1; i < index; i++ ) attributesCopy = attributesCopy->next;
-  if( newType != NULL ) {
-    attributesCopy->type        = newType;
-    attributesCopy->restriction = newRestriction;
-  }
-  attributesCopy->name = newColumnName;
-  return OK;
+  attributesCopy->type        = newType;
+  attributesCopy->restriction = newRestriction;
+  attributesCopy->name        = newColumnName;
+  return typeRet::ERROR;
 }
 
 typeRet dropCol( string tableName, string columnName ) {
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   if( columnName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la columna debe ser especificado." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   Tables table = findTable( tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   Tuple tableAttributesCopy = table->attributes;
@@ -298,15 +298,16 @@ typeRet dropCol( string tableName, string columnName ) {
   if( findedColumn == NULL ) {
     cout << "ERROR: La columna '" << columnName << "' no pertenece a la tabla '"
          << tableName << "'." << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
-  if( findedColumn->restriction == PRIMARY_KEY && columnsCounter > 1 ) {
+  if( findedColumn->restriction == typeOfRestriction::PRIMARY_KEY &&
+      columnsCounter > 1 ) {
     cout << "ERROR: La columna '" << columnName
          << "' es clave primaria de la tabla '" << tableName
          << "'. No puede ser eliminada al menos que sea el único atributo."
          << endl;
-    return ERROR;
+    return typeRet::ERROR;
   }
 
   int findedColumnIndex = 0;
@@ -330,8 +331,10 @@ typeRet dropCol( string tableName, string columnName ) {
     for( int i = 0; i < findedColumnIndex - 1; i++ ) {
       tableAttributesCopy = tableAttributesCopy->next;
     }
-    Tuple attributeCopy       = tableAttributesCopy->next;
-    tableAttributesCopy->next = tableAttributesCopy->next->next;
+    Tuple attributeCopy = tableAttributesCopy->next;
+    if( tableAttributesCopy->next != NULL &&
+        tableAttributesCopy->next->next != NULL ) //fix warning
+      tableAttributesCopy->next = tableAttributesCopy->next->next;
     delete attributeCopy;
   }
 
@@ -360,9 +363,8 @@ typeRet dropCol( string tableName, string columnName ) {
     }
     tableTuplesCopy = tableTuplesCopy->next;
   }
-  return OK;
+  return typeRet::ERROR;
 }
-// TODO
 void showColumns( Tables tablesList ) {
   Tables aux = tablesList;
   while( aux->attributes != NULL ) {
