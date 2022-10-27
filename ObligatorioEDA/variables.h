@@ -27,7 +27,8 @@ struct nodeTable {
   string name;
   Tuple attributes;
   Tuples tuple;
-  nodeTable* next;
+  nodeTable* left;
+  nodeTable* right;
 };
 typedef nodeTable* Tables;
 
