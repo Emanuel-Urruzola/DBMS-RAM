@@ -63,12 +63,15 @@ typeRet createTable( string tableName ) {
 }
 
 typeRet printTables( Tables tablesList ) {
-  if( tablesList != NULL ){
-    printTables( tablesList->left );
-    cout << tablesList->name << endl;
-    printTables( tablesList->right );
-  } else
+  if( tablesList == NULL ) {
+    cout << "ERROR: No hay tablas." << endl;
     return typeRet::ERROR;
+  } else {
+     printTables( tablesList->left );
+     cout << tablesList->name << endl;
+     printTables( tablesList->right );
+  }
+  
   return typeRet::OK;
 }
 
@@ -83,57 +86,89 @@ Tables findTable( Tables tablesList, string tableName ) {
     return findTable( tablesList->left, tableName );
 }
 
-Tables minNode( Tables tablesList ) {
-  if( tablesList->left != NULL) 
-      minNode( tablesList->left );
-  else
+void deleteMax( Tables &tablesList ) {
+  if( tablesList != NULL ) {
+    if( tablesList->right != NULL ) deleteMax( tablesList->right );
+    else if( tablesList->left == NULL ) {
+      Tables aux = tablesList;
+      delete aux;
+      tablesList = NULL;
+    } 
+    else {
+      Tables aux = tablesList;
+      tablesList = tablesList->left;
+      delete aux;
+    }
+  }  
+}
+
+
+void deleteTable( Tables &tablesList, string tableName ){
+  if( tablesList != NULL ) {
+    if( tableName.compare( tablesList->name ) == 0 ) {
+      if( tablesList->left == NULL && tablesList->right == NULL ) {
+        Tables aux = tablesList;
+        tablesList = NULL;
+        delete aux;
+      } else if( tablesList->right == NULL ) {
+        Tables aux = tablesList;
+        tablesList = tablesList->left;
+        delete aux;
+      } else if( tablesList->left == NULL ) {
+        Tables aux = tablesList;
+        tablesList = tablesList->right;
+        delete aux;
+      } else {
+        deleteMax( tablesList->left );
+      }
+    } else if( tableName.compare( tablesList->name ) < 0 )
+      deleteTable( tablesList->left, tableName );
+    else
+      deleteTable( tablesList->right, tableName );
+  }
+  /*if( tablesList == NULL )
     return tablesList;
-}
-
-void deleteMinNode( Tables tablesList ) {
-  Tables aux;
-  if( tablesList->left == NULL ) {
-    aux = tablesList->right;
-    delete tablesList;
-    tablesList = aux;
-  } else
-    deleteMinNode( tablesList->left );
-}
-
-// TODO: terminar delete table (falta el caso de que halla un solo nodo en tableslist)
-Tables deleteTable( Tables tablesList, string tableName ){
-  if( tablesList == NULL ) return tablesList;
   if( tableName.compare( tablesList->name ) < 0 )
     tablesList->left = deleteTable( tablesList->left, tableName );
   else if( tableName.compare( tablesList->name ) > 0 )
     tablesList->right = deleteTable( tablesList->right, tableName );
   else {
-    if( tablesList->left == NULL && tablesList->right == NULL ) return NULL;
-    else if( tablesList->left == NULL) {
-      Tables temp = tablesList->right;
+      // sin hijos
+    if( tablesList->left == NULL && tablesList->right == NULL ) {
       delete tablesList;
-      return temp;
-    } else if( tablesList->right == NULL ) {
-      Tables temp = tablesList->left;
-      delete tablesList;
-      return temp;
+      return NULL;
     }
-    Tables temp = minNode( tablesList->right);
-    tablesList->name = temp->name;
-    tablesList->right = deleteTable( tablesList->right, temp->name );
+    // 1 hijo
+    else if( tablesList->left == NULL || tablesList->right == NULL) {
+      Tables temp = tablesList->left ? tablesList->left : tablesList->right;
+      delete tablesList;
+      return temp;
+    } 
+    // 2 hijos
+    else if( tablesList->left != NULL && tablesList->right != NULL ) {
+      Tables temp = tablesList->right;
+      while( temp->left != NULL ) temp = temp->left;
+      tablesList->name = temp->name;
+      tablesList->right = deleteTable( tablesList->right, tablesList->name );
+    } 
+    //else {
+    //  Tables temp = minNode( tablesList->right);
+    // tablesList->name = temp->name;
+    // tablesList->right = deleteTable( tablesList->right, temp->name );
+    //}
   }
-  return tablesList;
+  return tablesList;*/ 
   /*Tables aux;
   if( tablesList->name == tableName ) {
     if( tablesList->right == NULL) {
       aux = tablesList->left;
       delete tablesList;
-      tablesList = aux;
+      return aux;
     } 
     else if( tablesList->left == NULL ) {
       aux = tablesList->right;
       delete tablesList;
-      tablesList = aux;
+      return aux;
     } 
     else {
       tablesList = minNode( tablesList->right );
@@ -145,8 +180,7 @@ Tables deleteTable( Tables tablesList, string tableName ){
       deleteTable( tablesList->left, tableName );
     else
       deleteTable( tablesList->right, tableName );
-  }
-  return tablesList;*/ 
+  }*/ 
 }
 typeRet dropTable( string tableName ) {
   if( tableName.length( ) == 0 ) {
