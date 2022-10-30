@@ -305,7 +305,7 @@ typeRet dropCol( string tableName, string columnName ) {
       columnsCounter > 1 ) {
     cout << "ERROR: La columna '" << columnName
          << "' es clave primaria de la tabla '" << tableName
-         << "'. No puede ser eliminada al menos que sea el único atributo."
+         << "'. No puede ser eliminada al menos que sea el unico atributo."
          << endl;
     return typeRet::ERROR;
   }

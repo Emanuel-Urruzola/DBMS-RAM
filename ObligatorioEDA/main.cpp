@@ -126,7 +126,7 @@ int main( ) {
           opc.find( "," ) + 1, ( opc.length( ) - ( opc.find( "," ) + 2 ) ) );
       printDataTable( column, orderBy );
 
-    } else if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" ) {
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "modifyTable" ) {
       opc                 = opc.erase( 0, opc.find( "(" ) + 1 );
       string table        = opc.substr( 0, opc.find( "," ) );
       opc                 = opc.erase( 0, opc.find( "," ) + 1 );
