@@ -3,9 +3,9 @@
 
 typeRet createTable( string );
 
-void showTables( Tables );
+typeRet printTables( Tables );
 
-Tables findTable( string );
+Tables findTable( Tables, string );
 
 typeRet dropTable( string );
 

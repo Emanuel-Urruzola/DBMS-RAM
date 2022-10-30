@@ -36,7 +36,8 @@ void insertTable( Tables tablesList, string tableName ) {
     else
       insertTable( tablesList->right, tableName );
   } else {
-    if( tablesList->left == NULL ) tablesList->left = newNodeTable( tableName );
+    if( tablesList->left == NULL ) 
+      tablesList->left = newNodeTable( tableName );
     else
       insertTable( tablesList->left, tableName );
   }
@@ -61,22 +62,24 @@ typeRet createTable( string tableName ) {
   return typeRet::OK;
 }
 
-void showTables( Tables tablesList ) {
-  if( tablesList != NULL ) {
-    showTables( tablesList->left);
+typeRet printTables( Tables tablesList ) {
+  if( tablesList != NULL ){
+    printTables( tablesList->left );
     cout << tablesList->name << endl;
-    showTables( tablesList->right);
+    printTables( tablesList->right );
   }
-    
+  return typeRet::OK;
 }
 
-Tables findTable( string tableName ) {
-  Tables aux = tablesList;
-  while( aux != NULL ) {
-    if( aux->name == tableName ) return aux;
-    aux = aux->left;
-  }
-  return NULL;
+Tables findTable( Tables tablesList, string tableName ) {
+  if( tablesList == NULL ) 
+      return NULL;
+  if( tableName.compare( tablesList->name ) == 0 ) 
+    return tablesList;
+  else if( tableName.compare( tablesList->name ) > 0 )
+    return findTable( tablesList->right, tableName );
+  else
+    return findTable( tablesList->left, tableName );
 }
 
 typeRet dropTable( string tableName ) {
@@ -85,7 +88,7 @@ typeRet dropTable( string tableName ) {
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( tableName );
+  Tables table = findTable(tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;
@@ -123,7 +126,7 @@ typeRet modifyTable( string tableName, string newName ) {
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;

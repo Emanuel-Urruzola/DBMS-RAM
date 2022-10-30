@@ -50,7 +50,7 @@ typeRet insertInto( string tableName, string columnsOrder,
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;
@@ -323,7 +323,7 @@ typeOfData findTypeColumn( Tables table, int index ) {
 
 typeRet update( string tableName, string whereCondition, string columnToModify,
                 string newValue ) {
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla a modificar no existe" << endl;
     return typeRet::ERROR;
@@ -468,7 +468,7 @@ typeRet deleteQuery( string tableName, string condition ) {
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;

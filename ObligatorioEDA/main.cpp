@@ -8,23 +8,9 @@
 #include "tests.h"
 
 using namespace std;
-void seed( ) {
-  createTable( "Subject" );
-  addCol( "Subject", "Credits", "integer", "ANY" );
-  addCol( "Subject", "Semester", "integer", "ANY" );
-  addCol( "Subject", "Name", "string", "ANY" );
-  addCol( "Subject", "ID", "integer", "ANY" );
-  insertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
-  insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
-  insertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
-  insertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
-  alterCol( "Subject", "Name", "string", "primary_key", "NAME" );
-  // update( "Subject", "Semester=1", "NAME", "KDD" );
-  printDataTable( "Subject", "\"\"" );
-}
 int main( ) {
-  runTests( );
-  seed( );
+ // runTests( );
+ // seed( );
   string opc;
   do {
     cin >> opc;
@@ -147,6 +133,13 @@ int main( ) {
       string newTableName = opc.substr( 0, opc.find( ")" ) );
 
       typeRet response = modifyTable( table, newTableName );
+      if( response == typeRet::OK )
+        cout << "Operacion realizada con exito." << endl;
+      else if( response == typeRet::NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+    } 
+    else if( opc.substr( 0, opc.find( "(" ) ) == "printTables" ) {
+      typeRet response = printTables( tablesList );
       if( response == typeRet::OK )
         cout << "Operacion realizada con exito." << endl;
       else if( response == typeRet::NOT_IMPLEMENTED )
