@@ -1,7 +1,3 @@
-// Si nombreTabla1 no existe o no se especifica.
-//  Si nombreTabla2 no existe o no se especifica.
-//  Si nombreTabla3 existe.
-//  Si los esquemas de nombreTabla1 es distinta a nombreTabla2.
 #include <iostream>
 #include <string>
 #include "sets.h"
@@ -10,73 +6,53 @@
 #include "columns.h"
 #include "tuples.h"
 #include "operations.h"
-
 TreeStr sets = NULL;
-typeRet unionDB( string tableName1, string tableName2, string tableNameResult,
-                 string type ) {
-  // type method to enum
-  if( tableName1.length( ) == 0 ) {
-    cout << "ERROR: El nombre de la tabla 1 debe ser especificado" << endl;
-    return typeRet::ERROR;
-  }
-  if( tableName2.length( ) == 0 ) {
-    cout << "ERROR: El nombre de la tabla 2 debe ser especificado" << endl;
-    return typeRet::ERROR;
-  }
-  if( tableNameResult.length( ) == 0 ) {
-    cout << "ERROR: El nombre de la nueva tabla debe ser especificado" << endl;
-    return typeRet::ERROR;
-  }
-  Tables table1 = findTable( tableName1 );
-  if( table1 == NULL ) {
-    cout << "ERROR: La tabla '" << tableName1 << "' no existe." << endl;
-    return typeRet::ERROR;
-  }
-  Tables table2 = findTable( tableName2 );
-  if( table2 == NULL ) {
-    cout << "ERROR: La tabla '" << tableName2 << "' no existe." << endl;
-    return typeRet::ERROR;
-  }
+bool IsEmptyString( string value, string error ) {
+  if( value.length( ) != 0 ) return false;
+  cout << "ERROR: El nombre de " + error + " debe ser especificado" << endl;
+  return true;
+}
+bool tableIsNull( Tables table, string tableName, bool negation ) {
+  if( table != NULL ) return false;
+  if( ! negation )
+    cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
+  return true;
+}
+typeRet createSet( string tableName1, string tableName2, string tableNameResult,
+                   string type ) {
+  if( IsEmptyString( tableName1, "la tabla 1" ) ) return typeRet::ERROR;
+  if( IsEmptyString( tableName1, "la tabla 2" ) ) return typeRet::ERROR;
+  if( IsEmptyString( tableName1, "la nueva tabla" ) ) return typeRet::ERROR;
+  Tables table1      = findTable( tableName1 );
+  Tables table2      = findTable( tableName2 );
   Tables tableResult = findTable( tableNameResult );
-  if( tableResult != NULL ) {
-    cout << "ERROR: La tabla '" << tableName2 << "' ya existe." << endl;
+  if( tableIsNull( table1, tableName1, false ) ) return typeRet::ERROR;
+  if( tableIsNull( table2, tableName2, false ) ) return typeRet::ERROR;
+  if( ! tableIsNull( tableResult, tableNameResult, true ) )
     return typeRet::ERROR;
-  }
-  if( checkSchema( table1, table2, tableNameResult ) == typeRet::ERROR ) {
-    return typeRet::ERROR;
-  }
+  if( ! checkSchema( table1, table2 ) ) return typeRet::ERROR;
+  if( ! createTableUnion( table1, tableNameResult ) ) return typeRet::ERROR;
   if( type == "union" ) {
-    if( insertIntoSet( table1, tableNameResult, "union", sets ) ==
-        typeRet::ERROR )
+    if( ! insertIntoSet( table1, tableNameResult, type, sets ) ||
+        ! insertIntoSet( table2, tableNameResult, type, sets ) )
       return typeRet::ERROR;
-    if( insertIntoSet( table2, tableNameResult, "union", sets ) ==
-        typeRet::ERROR )
-      return typeRet::ERROR;
-    releaseTree( sets );
   } else if( type == "intersect" ) {
-    if( insertIntoTableIntersection( table1, tableNameResult, sets, type ) ==
-        typeRet::ERROR )
+    if( ! insertIntoTableIntersection( table1, tableNameResult, sets, type ) ||
+        ! insertIntoTableIntersection( table2, tableNameResult, sets, type ) )
       return typeRet::ERROR;
-    if( insertIntoTableIntersection( table2, tableNameResult, sets, type ) ==
-        typeRet::ERROR )
-      return typeRet::ERROR;
-    releaseTree( sets );
   } else if( type == "minus" ) {
-    if( insertIntoTableIntersection( table1, tableNameResult, sets, type ) ==
-        typeRet::ERROR )
+    if( ! insertIntoTableIntersection( table1, tableNameResult, sets, type ) ||
+        ! insertIntoSet( table2, tableNameResult, type, sets ) ||
+        insertSetTreeInTable( sets, tableNameResult ) )
       return typeRet::ERROR;
-    if( insertIntoSet( table2, tableNameResult, "minus", sets ) ==
-        typeRet::ERROR )
-      return typeRet::ERROR;
-    insertSetTreeInTable( sets, tableNameResult );
-    releaseTree( sets );
   } else {
     cout << "Error: tipo incorrecto";
     return typeRet::ERROR;
   }
+  releaseTree( sets );
   return typeRet::OK;
 }
-typeRet checkSchema( Tables table1, Tables table2, string tableNameResult ) {
+bool checkSchema( Tables table1, Tables table2 ) {
   // TODO Emanuel: Check if tables have no attributes previously  ?
   Tuple attributesTable1 = table1->attributes;
   Tuple attributesTable2 = table2->attributes;
@@ -89,7 +65,7 @@ typeRet checkSchema( Tables table1, Tables table2, string tableNameResult ) {
         attributesTable1->restriction == attributesTable2->restriction;
     if( ! names || ! types || ! restrictions ) {
       cout << "ERROR: Los esquemas de las tablas no son iguales" << endl;
-      return typeRet::ERROR;
+      return false;
     }
     attributesTable1 = attributesTable1->next;
     attributesTable2 = attributesTable2->next;
@@ -97,15 +73,11 @@ typeRet checkSchema( Tables table1, Tables table2, string tableNameResult ) {
   if( attributesTable1 != NULL || attributesTable2 != NULL ) {
     cout << "ERROR: Las tablas tienen que tener la misma cantidad de atributos"
          << endl;
-    return typeRet::ERROR;
+    return false;
   }
-  if( createTableUnion( table1, table2, tableNameResult ) == typeRet::ERROR ) {
-    return typeRet::ERROR;
-  }
-  return typeRet::OK;
+  return true;
 }
-typeRet createTableUnion( Tables table1, Tables table2,
-                          string tableNameResult ) {
+bool createTableUnion( Tables table1, string tableNameResult ) {
   createTable( tableNameResult );
   Tuple attributesTable1 = table1->attributes;
   while( attributesTable1 != NULL ) {
@@ -121,93 +93,86 @@ typeRet createTableUnion( Tables table1, Tables table2,
       restriction = "PRIMARY_KEY";
     if( addCol( tableNameResult, attributesTable1->name, type, restriction ) ==
         typeRet::ERROR ) {
-      return typeRet::ERROR;
+      return false;
     }
     attributesTable1 = attributesTable1->next;
   }
-  return typeRet::OK;
+  return true;
 }
-typeRet insertIntoSet( Tables table, string tableNameResult, string type,
-                       TreeStr tree ) {
+void getStrings( Tuples tuples, string& names, string& values ) {
+  Tuple row = tuples->row;
+  while( row != NULL ) {
+    names += row->name + ":";
+    if( row->type == typeOfData::STRING ) values += row->text + ":";
+    else
+      values += to_string( row->number ) + ":";
+    row = row->next;
+  }
+  names  = names.substr( 0, names.length( ) - 1 );
+  values = values.substr( 0, values.length( ) - 1 );
+}
+bool insertIntoSet( Tables table, string tableNameResult, string type,
+                    TreeStr tree ) {
   Tuples tuples = table->tuple;
   while( tuples != NULL ) {
-    Tuple row     = tuples->row;
     string names  = "";
     string values = "";
-    while( row != NULL ) {
-      names += row->name + ":";
-      if( row->type == typeOfData::STRING ) values += row->text + ":";
-      else
-        values += to_string( row->number ) + ":";
-      row = row->next;
-    }
-    names  = names.substr( 0, names.length( ) - 1 );
-    values = values.substr( 0, values.length( ) - 1 );
+    getStrings( tuples, names, values );
     if( type == "union" &&
         insertInto( tableNameResult, names, values ) == typeRet::ERROR ) {
       cout << "Hubo un error al ingresar las tuplas en la nueva tabla, revise "
               "las primary key"
            << endl;
-      return typeRet::ERROR;
+      return false;
     } else if( type == "minus" ) {
       deleteNodeTree( tree, values );
     }
     tuples = tuples->next;
   }
-  return typeRet::OK;
+  return true;
 }
-typeRet insertIntoTableIntersection( Tables table, string tableNameResult,
-                                     TreeStr& sets, string type ) {
+bool insertIntoTableIntersection( Tables table, string tableNameResult,
+                                  TreeStr& sets, string type ) {
   // TODO Emanuel: If there are repeated elements within the same table?
   Tuples tuples = table->tuple;
   while( tuples != NULL ) {
-    Tuple row     = tuples->row;
     string names  = "";
     string values = "";
-    while( row != NULL ) {
-      names += row->name + ":";
-      if( row->type == typeOfData::STRING ) values += row->text + ":";
-      else
-        values += to_string( row->number ) + ":";
-      row = row->next;
-    }
-    names  = names.substr( 0, names.length( ) - 1 );
-    values = values.substr( 0, values.length( ) - 1 );
-    insertAndCreate( sets, values, names, tableNameResult, type );
+    getStrings( tuples, names, values );
+    if( ! insertAndCreate( sets, values, names, tableNameResult, type ) )
+      return false;
     tuples = tuples->next;
   }
-  return typeRet::OK;
+  return true;
 }
-
-typeRet insertAndCreate( TreeStr& tree, string values, string names,
-                         string tableNameResult, string type ) {
+bool insertAndCreate( TreeStr& tree, string values, string names,
+                      string tableNameResult, string type ) {
   if( tree == NULL ) {
     TreeStr newTree = newNodeStr( values, names );
     tree            = newTree;
-    return typeRet::OK;
-  } else {
-    if( values.compare( tree->value ) < 0 ) {
-      insertAndCreate( tree->left, values, names, tableNameResult, type );
-      return typeRet::OK;
-    } else if( values.compare( tree->value ) == 0 ) {
-      if( type != "minus" ) {
+    return true;
+  }
+  switch( values.compare( tree->value ) ) {
+    case 0:
+      if( type == "minus" ) deleteNodeTree( tree, values );
+      else {
         if( insertInto( tableNameResult, names, values ) == typeRet::ERROR ) {
           cout << "Hubo un error al ingresar las tuplas en la nueva tabla, "
-                  "revise "
-                  "las primary key"
+                  "revise las primary key"
                << endl;
-          return typeRet::ERROR;
+          return false;
         }
-        return typeRet::OK;
-      } else
-        deleteNodeTree( tree, values );
+      }
       insertAndCreate( tree->right, values, names, tableNameResult, type );
-      return typeRet::OK;
-    } else {
+      break;
+    case -1:
+      insertAndCreate( tree->left, values, names, tableNameResult, type );
+      break;
+    case 1:
       insertAndCreate( tree->right, values, names, tableNameResult, type );
-      return typeRet::OK;
-    }
+      break;
   }
+  return true;
 }
 TreeStr deleteNodeTree( TreeStr& tree, string value ) {
   if( tree == NULL ) return NULL;
@@ -235,29 +200,17 @@ TreeStr deleteNodeTree( TreeStr& tree, string value ) {
 }
 int insertSetTreeInTable( TreeStr tree, string tableNameResult ) {
   if( tree == NULL ) return 0;
-  else {
-    if( insertInto( tableNameResult, tree->row, tree->value ) ==
-        typeRet::ERROR ) {
-      return 1;
-    }
-    if( tree->left != NULL )
-      return 0 + insertSetTreeInTable( tree->left, tableNameResult );
-    if( tree->right != NULL )
-      return 0 + insertSetTreeInTable( tree->right, tableNameResult );
-    return 0;
-  }
+  if( insertInto( tableNameResult, tree->row, tree->value ) == typeRet::ERROR )
+    return 1;
+  return insertSetTreeInTable( tree->left, tableNameResult ) +
+         insertSetTreeInTable( tree->right, tableNameResult );
 }
-
 void releaseTree( TreeStr& tree ) {
-  if( tree != NULL ) {
-    if( tree->left == NULL && tree->right == NULL ) {
-      delete tree;
-      tree = NULL;
-    } else {
-      releaseTree( tree->left );
-      releaseTree( tree->right );
-      delete tree;
-      tree = NULL;
-    }
+  if( tree == NULL ) return;
+  if( tree->left != NULL || tree->right != NULL ) {
+    releaseTree( tree->left );
+    releaseTree( tree->right );
   }
+  delete tree;
+  tree = NULL;
 }
