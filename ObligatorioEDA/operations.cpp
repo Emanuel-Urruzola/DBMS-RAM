@@ -103,6 +103,11 @@ void showTree( TreeInt tree ) {
   showTree( tree->right );
 }
 
+TreeStr findMinimum( TreeStr tree ) {
+  if( tree->left == NULL ) return tree;
+  return findMinimum( tree->left );
+}
+
 Tuples insFrontTuples( Tuples tuplesList, Tuple row ) {
   if( tuplesList == NULL ) {
     tuplesList       = new nodeTuple;

@@ -118,7 +118,7 @@ typeRet addCol( string tableName, string columnName, string columnType,
 
     if( tableAttributesCopy->next == NULL ) tableAttributesCopy->next = column;
   }
-  return typeRet::ERROR;
+  return typeRet::OK;
 }
 
 typeRet pkCondition( typeOfData type, int index, Tuples tuple ) {

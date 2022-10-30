@@ -14,7 +14,7 @@ void seed( ) {
   addCol( "Subject", "Credits", "integer", "ANY" );
   addCol( "Subject", "Semester", "integer", "ANY" );
   addCol( "Subject", "Name", "string", "ANY" );
-  addCol( "Subject", "ID", "integer", "PRIMARY_KEY" );
+  addCol( "Subject", "ID", "integer", "ANY" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
@@ -25,20 +25,27 @@ void seed( ) {
   addCol( "Subject2", "Credits", "integer", "ANY" );
   addCol( "Subject2", "Semester", "integer", "ANY" );
   addCol( "Subject2", "Name", "string", "ANY" );
-  addCol( "Subject2", "ID", "integer", "PRIMARY_KEY" );
+  addCol( "Subject2", "ID", "integer", "ANY" );
   insertInto( "Subject2", "ID:Name:Semester:Credits", "4:ER:4:15" );
   insertInto( "Subject2", "ID:Name:Semester:Credits", "6:GFD:5:7" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
   insertInto( "Subject2", "ID:Name:Semester:Credits", "8:HTT:2:24" );
   insertInto( "Subject2", "ID:Name:Semester:Credits", "10:AWS:6:20" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "4:KDD:2:10" );
   //alterCol( "Subject2", "Name", "string", "primary_key", "NAME" );
 
   printDataTable( "Subject", "\"\"" );
   printDataTable( "Subject2", "\"\"" );
-  //unionDB( "Subject", "Subject2", "subject3" );
+  unionDB( "Subject", "Subject2", "SUnion", "union" );
+  printDataTable( "SUnion", "\"\"" );
+  unionDB( "Subject", "Subject2", "SIntersection", "intersect");
+  printDataTable( "SIntersection", "\"\"" );
+  unionDB( "Subject", "Subject2", "SDifference", "minus" );
+  printDataTable( "SDifference", "\"\"" );
 }
 int main( ) {
-  runTests( );
-  //seed( );
+  //runTests( );
+  seed( );
   string opc;
   do {
     cin >> opc;
@@ -171,8 +178,10 @@ int main( ) {
       opc                = opc.erase( 0, opc.find( "," ) + 1 );
       string table2      = opc.substr( 0, opc.find( "," ) );
       opc                = opc.erase( 0, opc.find( "," ) + 1 );
-      string tableResult = opc.substr( 0, opc.find( ")" ) );
-      if( unionDB( table1, table2, tableResult ) == typeRet::OK) {
+      string tableResult = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string type = opc.substr( 0, opc.find( ")" ) );
+      if( unionDB( table1, table2, tableResult, type ) == typeRet::OK) {
         cout << "Operacion realizada con exito." << endl;
       }
     } else if( opc != "exit" )

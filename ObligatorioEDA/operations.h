@@ -22,4 +22,6 @@ void showTreeStr( TreeStr );
 
 void showTree( TreeInt );
 
+TreeStr findMinimum( TreeStr );
+
 Tuples insFrontTuples( Tuples, Tuple );
