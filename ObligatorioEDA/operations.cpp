@@ -33,6 +33,11 @@ void insBackInt( ListInt& initialList, int value ) {
   }
 }
 
+void deleteListInt( ListInt& list ) {
+  if( list->next != NULL ) deleteListInt( list->next );
+  delete list;
+}
+
 TreeInt newNode( int value, string row ) {
   TreeInt newNode = new nodeTree;
   newNode->value  = value;

@@ -6,6 +6,8 @@ union tree {
   TreeStr treeStr;
 };
 
+void deleteListInt( ListInt& );
+
 void insBack( List&, string );
 
 void insBackInt( ListInt&, int );
