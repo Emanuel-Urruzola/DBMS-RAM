@@ -66,9 +66,11 @@ typeRet printTables( Tables tablesList ) {
   if( tablesList == NULL ) {
     cout << "ERROR: No hay tablas." << endl;
     return typeRet::ERROR;
-  } else {
+  } else { 
+    if( tablesList->left != NULL ) // Si hay tablas a la izquierda llama a la funcion para imprimir los hijos izq
      printTables( tablesList->left );
-     cout << tablesList->name << endl;
+    cout << tablesList->name << endl;
+    if( tablesList->right != NULL ) // Si hay tablas a la derecha llama a la funcion para imprimir hijos der
      printTables( tablesList->right );
   }
   
