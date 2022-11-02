@@ -18,10 +18,8 @@ Tables newNodeTable( string tableName ) {
 
 bool isIncluded( Tables tablesList, string tableName ) {
   if( tablesList == NULL ) return false;
-  if( tableName.compare( tablesList->name ) == 0 ) {
-    cout << "La tabla ya existe." << endl;
-    return true;
-  } else if( tableName.compare( tablesList->name ) > 0 )
+  if( tableName.compare( tablesList->name ) == 0 ) return true;
+  else if( tableName.compare( tablesList->name ) > 0 )
     return isIncluded( tablesList->right, tableName );
   else
     return isIncluded( tablesList->left, tableName );
@@ -163,6 +161,11 @@ typeRet modifyTable( string tableName, string newName ) {
   Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
+    return typeRet::ERROR;
+  }
+  if( isIncluded( tablesList, newName ) ) {
+    cout << "ERROR: Ya existe una tabla con nombre '" << newName << "'."
+         << endl;
     return typeRet::ERROR;
   }
 
