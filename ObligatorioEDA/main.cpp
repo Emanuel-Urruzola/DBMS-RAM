@@ -7,11 +7,58 @@
 #include "print.h"
 #include "tests.h"
 #include "sets.h"
+#include "selects.h"
+
+void seed( ) {
+  createTable( "Subject" );
+  addCol( "Subject", "Credits", "integer", "ANY" );
+  addCol( "Subject", "Semester", "integer", "ANY" );
+  addCol( "Subject", "Name", "string", "ANY" );
+  addCol( "Subject", "ID", "integer", "ANY" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
+
+  createTable( "Subject2" );
+  addCol( "Subject2", "Credits", "integer", "ANY" );
+  addCol( "Subject2", "Semester", "integer", "ANY" );
+  addCol( "Subject2", "Name", "string", "ANY" );
+  addCol( "Subject2", "ID", "integer", "ANY" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "8:HTT:2:24" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "10:AWS:6:20" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "4:KDD:2:10" );
+
+  createTable( "Professor" );
+  addCol( "Professor", "IDPROFESSOR", "integer", "ANY" );
+  addCol( "Professor", "Name", "string", "ANY" );
+  insertInto( "Professor", "IDPROFESSOR:Name", "1:PP" );
+  insertInto( "Professor", "IDPROFESSOR:Name", "2:EDA" );
+  insertInto( "Professor", "IDPROFESSOR:Name", "3:KDD" );
+
+  //selectWhere( "Subject", "Credits>7", "mayorASiete" );
+  //select( "Subject", "ID:Name", "SubjectIDName" );
+  //join( "Subject", "Professor", "SubjectProfessor" );
+
+  //createSet( "Subject", "Subject2", "SubjectsU", "union" );
+  //createSet( "Subject", "Subject2", "SubjectsM", "minus" );
+  //createSet( "Subject", "Subject2", "SubjectsI", "intersect" );
+
+  dropTable( "Subject" );
+
+  printDataTable( "Subject", "\"\"" );
+  printDataTable( "Subject2", "\"\"" );
+  printDataTable( "SubjectsU", "\"\"" );
+  printDataTable( "SubjectsM", "\"\"" );
+  printDataTable( "SubjectsI", "\"\"" );
+}
 
 using namespace std;
 int main( ) {
   string opc;
+  seed( );
   do {
+    cout << "DBMS-RAM > ";
     cin >> opc;
     if( ( opc.substr( 0, opc.find( "(" ) ) == "createTable" ) ) {
       typeRet response = createTable( opc.substr(
@@ -161,7 +208,8 @@ int main( ) {
       string table2      = opc.substr( 0, opc.find( "," ) );
       opc                = opc.erase( 0, opc.find( "," ) + 1 );
       string tableResult = opc.substr( 0, opc.find( ")" ) );
-      if( createSet( table1, table2, tableResult, "intersect" ) == typeRet::OK ) {
+      if( createSet( table1, table2, tableResult, "intersect" ) ==
+          typeRet::OK ) {
         cout << "Operacion realizada con exito." << endl;
       } else {
         dropTable( tableResult );
@@ -177,6 +225,16 @@ int main( ) {
         cout << "Operacion realizada con exito." << endl;
       } else {
         dropTable( tableResult );
+      }
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "join" ) {
+      opc                = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table1      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string table2      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string tableResult = opc.substr( 0, opc.find( ")" ) );
+      if( join( table1, table2, tableResult ) == typeRet::OK ) {
+        cout << "Operacion realizada con exito." << endl;
       }
     } else if( opc != "exit" )
       cout << "ERROR: Entrada invalida." << endl;

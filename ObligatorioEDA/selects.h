@@ -9,6 +9,8 @@ void addNewTableColumns( Tables, Tables &, string );
 
 typeRet select( string, string, string );
 
+int matchColumnIndex( Tables, Tables );
+
 void addJoinColumns( Tables, Tables, Tables &, int );
 
 void addJoinTuples( Tables, Tables, Tables &, int );
