@@ -44,7 +44,7 @@ void seed( ) {
   //createSet( "Subject", "Subject2", "SubjectsM", "minus" );
   //createSet( "Subject", "Subject2", "SubjectsI", "intersect" );
 
-  dropTable( "Subject" );
+  //dropTable("Subject");
 
   printDataTable( "Subject", "\"\"" );
   printDataTable( "Subject2", "\"\"" );
