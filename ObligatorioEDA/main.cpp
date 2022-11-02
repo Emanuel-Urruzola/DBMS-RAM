@@ -6,6 +6,7 @@
 #include "variables.h"
 #include "print.h"
 #include "tests.h"
+#include "sets.h"
 
 using namespace std;
 int main( ) {
@@ -141,6 +142,42 @@ int main( ) {
         cout << "Operacion realizada con exito." << endl;
       else if( response == typeRet::NOT_IMPLEMENTED )
         cout << "La operacion aun no esta implementada." << endl;
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "union" ) {
+      opc                = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table1      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string table2      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string tableResult = opc.substr( 0, opc.find( ")" ) );
+      if( createSet( table1, table2, tableResult, "union" ) == typeRet::OK ) {
+        cout << "Operacion realizada con exito." << endl;
+      } else {
+        dropTable( tableResult );
+      }
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "intersect" ) {
+      opc                = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table1      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string table2      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string tableResult = opc.substr( 0, opc.find( ")" ) );
+      if( createSet( table1, table2, tableResult, "intersect" ) == typeRet::OK ) {
+        cout << "Operacion realizada con exito." << endl;
+      } else {
+        dropTable( tableResult );
+      }
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "minus" ) {
+      opc                = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table1      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string table2      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string tableResult = opc.substr( 0, opc.find( ")" ) );
+      if( createSet( table1, table2, tableResult, "minus" ) == typeRet::OK ) {
+        cout << "Operacion realizada con exito." << endl;
+      } else {
+        dropTable( tableResult );
+      }
     } else if( opc != "exit" )
       cout << "ERROR: Entrada invalida." << endl;
 

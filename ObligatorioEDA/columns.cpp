@@ -36,7 +36,7 @@ typeRet addCol( string tableName, string columnName, string columnType,
   }
 
   if( columnType != "string" && columnType != "integer" ) {
-    cout << "ERROR: Ingrese tipo de dato válido." << endl;
+    cout << "ERROR: Ingrese tipo de dato vï¿½lido." << endl;
     return typeRet::ERROR;
   }
   if( tableName.length( ) == 0 ) {
@@ -213,7 +213,7 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
   if( ( row->restriction == typeOfRestriction::PRIMARY_KEY ) &&
       minimumTwoElements ) {
     cout << "ERROR: La columna'" << row->name
-         << "' es la PRIMARY KEY y la tabla tiene más columnas.";
+         << "' es la PRIMARY KEY y la tabla tiene mï¿½s columnas.";
     return typeRet::ERROR;
   }
   // Check if newColumnName exist previously (I allow it if it is the same

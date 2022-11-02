@@ -33,6 +33,11 @@ void insBackInt( ListInt& initialList, int value ) {
   }
 }
 
+void deleteListInt( ListInt& list ) {
+  if( list->next != NULL ) deleteListInt( list->next );
+  delete list;
+}
+
 TreeInt newNode( int value, string row ) {
   TreeInt newNode = new nodeTree;
   newNode->value  = value;
@@ -101,6 +106,11 @@ void showTree( TreeInt tree ) {
   showTree( tree->left );
   cout << tree->row << endl;
   showTree( tree->right );
+}
+
+TreeStr findMinimum( TreeStr tree ) {
+  if( tree->left == NULL ) return tree;
+  return findMinimum( tree->left );
 }
 
 Tuples insFrontTuples( Tuples tuplesList, Tuple row ) {

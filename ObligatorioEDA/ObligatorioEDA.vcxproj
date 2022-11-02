@@ -145,6 +145,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="operations.cpp" />
     <ClCompile Include="print.cpp" />
+    <ClCompile Include="sets.cpp" />
     <ClCompile Include="tables.cpp" />
     <ClCompile Include="tests.cpp" />
     <ClCompile Include="tuples.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="deleteHelpers.h" />
     <ClInclude Include="operations.h" />
     <ClInclude Include="print.h" />
+    <ClInclude Include="sets.h" />
     <ClInclude Include="tables.h" />
     <ClInclude Include="tests.h" />
     <ClInclude Include="tuples.h" />

@@ -112,7 +112,7 @@ void runTests( ) {
   else
     cout << "FALLO 18" << endl;
 
-  // Si nombreCol es la PRIMARY KEY y la tabla tiene más columnas.
+  // Si nombreCol es la PRIMARY KEY y la tabla tiene mï¿½s columnas.
   addCol( "Subject", "Nombre", "string", "ANY" );
 
   if( dropCol( "Subject", "ID" ) == typeRet::ERROR ) cout << "OK" << endl;
@@ -215,7 +215,7 @@ void runTests( ) {
   else
     cout << "FALLO 32" << endl;
 
-  // Si nombreCol es la PRIMARY KEY y la tabla tiene más columnas.
+  // Si nombreCol es la PRIMARY KEY y la tabla tiene mï¿½s columnas.
   // addCol( "Subject", "Nombre", "string", "ANY" );
 
   // if( alterCol( "Subject2", "ID", "string", "PRIMARY_KEY", "ID2" ) ==
