@@ -97,7 +97,7 @@ void loopInRows( Tuples rows, TreeInt& treeQuerie, TreeStr& treeQuerieStr,
 typeRet printDataTable( string tableName, string ordeyBy ) {
   // TODO: column maximum size and "..." to string more large
   typeOfData type;  // To select type of sort
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;

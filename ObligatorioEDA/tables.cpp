@@ -6,66 +6,131 @@
 
 using namespace std;
 
+Tables newNodeTable( string tableName ) {
+  Tables newTable      = new nodeTable;
+  newTable->name       = tableName;
+  newTable->attributes = NULL;
+  newTable->tuple      = NULL;
+  newTable->left       = NULL;
+  newTable->right      = NULL;
+  return newTable;
+}
+
+bool isIncluded( Tables tablesList, string tableName ) {
+  if( tablesList == NULL ) return false;
+  if( tableName.compare( tablesList->name ) == 0 ) {
+    cout << "La tabla ya existe." << endl;
+    return true;
+  } else if( tableName.compare( tablesList->name ) > 0 )
+    return isIncluded( tablesList->right, tableName );
+  else
+    return isIncluded( tablesList->left, tableName );
+}
+
+void insertTable( Tables tablesList, string tableName ) {
+  if( tableName.compare( tablesList->name ) > 0 ) {
+    if( tablesList->right == NULL )
+      tablesList->right = newNodeTable( tableName );
+    else
+      insertTable( tablesList->right, tableName );
+  } else {
+    if( tablesList->left == NULL ) tablesList->left = newNodeTable( tableName );
+    else
+      insertTable( tablesList->left, tableName );
+  }
+}
+
 typeRet createTable( string tableName ) {
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
     return typeRet::ERROR;
   }
-  if( tablesList != NULL ) {
-    Tables aux = tablesList;
-    while( aux != NULL ) {
-      if( aux->name == tableName ) {
-        cout << "ERROR: Ya existe la tabla '" << tableName << "'." << endl;
-        return typeRet::ERROR;
-      } else {
-        if( aux->next != NULL ) aux = aux->next;
-        else {
-          cout << "";
-          Tables newTable      = new nodeTable;
-          newTable->name       = tableName;
-          newTable->attributes = NULL;
-          newTable->tuple      = NULL;
-          newTable->next       = tablesList;
-          tablesList           = newTable;
-          aux                  = aux->next;
-        }
-      }
-    }
+  if( tablesList == NULL ) {
+    Tables newTable = newNodeTable( tableName );
+    tablesList      = newTable;
   } else {
-    Tables newTable      = new nodeTable;
-    newTable->name       = tableName;
-    newTable->attributes = NULL;
-    newTable->tuple      = NULL;
-    newTable->next       = tablesList;
-    tablesList           = newTable;
+    if( isIncluded( tablesList, tableName ) ) {
+      cout << "ERROR: Ya existe la tabla " << tableName << endl;
+      return typeRet::ERROR;
+    } else {
+      insertTable( tablesList, tableName );
+    }
   }
   return typeRet::OK;
 }
 
-void showTables( Tables tablesList ) {
-  Tables aux = tablesList;
-  while( aux != NULL ) {
-    cout << aux->name << endl;
-    aux = aux->next;
+typeRet printTables( Tables tablesList ) {
+  if( tablesList == NULL ) {
+    cout << "ERROR: No hay tablas." << endl;
+    return typeRet::ERROR;
+  } else {
+    if( tablesList->left != NULL )  // Si hay tablas a la izquierda llama a la
+                                    // funcion para imprimir los hijos izq
+      printTables( tablesList->left );
+    cout << tablesList->name << endl;
+    if( tablesList->right != NULL )  // Si hay tablas a la derecha llama a la
+                                     // funcion para imprimir hijos der
+      printTables( tablesList->right );
+  }
+
+  return typeRet::OK;
+}
+
+Tables findTable( Tables tablesList, string tableName ) {
+  if( tablesList == NULL ) return NULL;
+  if( tableName.compare( tablesList->name ) == 0 ) return tablesList;
+  else if( tableName.compare( tablesList->name ) > 0 )
+    return findTable( tablesList->right, tableName );
+  else
+    return findTable( tablesList->left, tableName );
+}
+
+void deleteMax( Tables &tablesList ) {
+  if( tablesList != NULL ) {
+    if( tablesList->right != NULL ) deleteMax( tablesList->right );
+    else if( tablesList->left == NULL ) {
+      Tables aux = tablesList;
+      delete aux;
+      tablesList = NULL;
+    } else {
+      Tables aux = tablesList;
+      tablesList = tablesList->left;
+      delete aux;
+    }
   }
 }
 
-Tables findTable( string tableName ) {
-  Tables aux = tablesList;
-  while( aux != NULL ) {
-    if( aux->name == tableName ) return aux;
-    aux = aux->next;
+void deleteTable( Tables &tablesList, string tableName ) {
+  if( tablesList != NULL ) {
+    if( tableName.compare( tablesList->name ) == 0 ) {
+      if( tablesList->left == NULL && tablesList->right == NULL ) {
+        Tables aux = tablesList;
+        tablesList = NULL;
+        delete aux;
+      } else if( tablesList->right == NULL ) {
+        Tables aux = tablesList;
+        tablesList = tablesList->left;
+        delete aux;
+      } else if( tablesList->left == NULL ) {
+        Tables aux = tablesList;
+        tablesList = tablesList->right;
+        delete aux;
+      } else {
+        deleteMax( tablesList->left );
+      }
+    } else if( tableName.compare( tablesList->name ) < 0 )
+      deleteTable( tablesList->left, tableName );
+    else
+      deleteTable( tablesList->right, tableName );
   }
-  return NULL;
 }
-
 typeRet dropTable( string tableName ) {
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;
@@ -77,18 +142,8 @@ typeRet dropTable( string tableName ) {
   deleteAllRows( table->attributes );
 
   // Delete table
-  if( tablesList == table ) {
-    Tables tableCopy = tablesList;
-    tablesList       = tablesList->next;
-    delete tableCopy;
-  } else {
-    Tables tablesListCopy = tablesList;
-    while( tablesListCopy->next != table )
-      tablesListCopy = tablesListCopy->next;
-    Tables tableCopy     = tablesListCopy->next;
-    tablesListCopy->next = tablesListCopy->next->next;
-    delete tableCopy;
-  }
+  deleteTable( tablesList, tableName );
+
   return typeRet::OK;
 }
 
@@ -103,7 +158,7 @@ typeRet modifyTable( string tableName, string newName ) {
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;

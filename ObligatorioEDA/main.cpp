@@ -9,37 +9,7 @@
 #include "sets.h"
 
 using namespace std;
-void seed( ) {
-  createTable( "Subject" );
-  addCol( "Subject", "Credits", "integer", "ANY" );
-  addCol( "Subject", "Semester", "integer", "ANY" );
-  addCol( "Subject", "Name", "string", "ANY" );
-  addCol( "Subject", "ID", "integer", "ANY" );
-  insertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
-  insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
-  insertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
-  insertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
-  // alterCol( "Subject", "Name", "string", "primary_key", "NAME" );
-
-  createTable( "Subject2" );
-  addCol( "Subject2", "Credits", "integer", "ANY" );
-  addCol( "Subject2", "Semester", "integer", "ANY" );
-  addCol( "Subject2", "Name", "string", "ANY" );
-  addCol( "Subject2", "ID", "integer", "ANY" );
-  insertInto( "Subject2", "ID:Name:Semester:Credits", "4:ER:4:15" );
-  insertInto( "Subject2", "ID:Name:Semester:Credits", "6:GFD:5:7" );
-  insertInto( "Subject2", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
-  insertInto( "Subject2", "ID:Name:Semester:Credits", "8:HTT:2:24" );
-  insertInto( "Subject2", "ID:Name:Semester:Credits", "10:AWS:6:20" );
-  insertInto( "Subject2", "ID:Name:Semester:Credits", "4:KDD:2:10" );
-  // alterCol( "Subject2", "Name", "string", "primary_key", "NAME" );
-
-  printDataTable( "Subject", "\"\"" );
-  printDataTable( "Subject2", "\"\"" );
-}
 int main( ) {
-  // runTests( );
-  seed( );
   string opc;
   do {
     cin >> opc;
@@ -155,13 +125,19 @@ int main( ) {
           opc.find( "," ) + 1, ( opc.length( ) - ( opc.find( "," ) + 2 ) ) );
       printDataTable( column, orderBy );
 
-    } else if( opc.substr( 0, opc.find( "(" ) ) == "alterTable" ) {
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "modifyTable" ) {
       opc                 = opc.erase( 0, opc.find( "(" ) + 1 );
       string table        = opc.substr( 0, opc.find( "," ) );
       opc                 = opc.erase( 0, opc.find( "," ) + 1 );
       string newTableName = opc.substr( 0, opc.find( ")" ) );
 
       typeRet response = modifyTable( table, newTableName );
+      if( response == typeRet::OK )
+        cout << "Operacion realizada con exito." << endl;
+      else if( response == typeRet::NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "printTables" ) {
+      typeRet response = printTables( tablesList );
       if( response == typeRet::OK )
         cout << "Operacion realizada con exito." << endl;
       else if( response == typeRet::NOT_IMPLEMENTED )

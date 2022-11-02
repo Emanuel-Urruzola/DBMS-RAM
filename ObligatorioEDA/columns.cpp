@@ -49,7 +49,7 @@ typeRet addCol( string tableName, string columnName, string columnType,
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;
@@ -143,7 +143,7 @@ typeRet pkCondition( typeOfData type, int index, Tuples tuple ) {
 // alterCol (Personas,Name,string,NOT EMPTY, Nombre)
 typeRet alterCol( string tableName, string columnName, string typeOfDataP,
                   string typeOfRestrictionP, string newColumnName ) {
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   const regex regExpString( "^[sS][tT][rR][iI][nN][gG]$" );
   const regex regExpInteger( "^[iI][nN][tT][eE][gG][eE][rR]$" );
   const regex regExpInt( "^[iI][nN][tT]$" );
@@ -278,7 +278,7 @@ typeRet dropCol( string tableName, string columnName ) {
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;
@@ -305,7 +305,7 @@ typeRet dropCol( string tableName, string columnName ) {
       columnsCounter > 1 ) {
     cout << "ERROR: La columna '" << columnName
          << "' es clave primaria de la tabla '" << tableName
-         << "'. No puede ser eliminada al menos que sea el �nico atributo."
+         << "'. No puede ser eliminada al menos que sea el unico atributo."
          << endl;
     return typeRet::ERROR;
   }
@@ -333,7 +333,7 @@ typeRet dropCol( string tableName, string columnName ) {
     }
     Tuple attributeCopy = tableAttributesCopy->next;
     if( tableAttributesCopy->next != NULL &&
-        tableAttributesCopy->next->next != NULL ) //fix warning
+        tableAttributesCopy->next->next != NULL )  // fix warning
       tableAttributesCopy->next = tableAttributesCopy->next->next;
     delete attributeCopy;
   }
