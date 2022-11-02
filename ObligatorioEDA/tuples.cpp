@@ -333,7 +333,7 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
     return typeRet::ERROR;
   }
   const regex regExpString(
-      "[\"'”].+[\"'”]" );  // Checking that string is between different types
+      "[\"'ï¿½].+[\"'ï¿½]" );  // Checking that string is between different types
   // of quotes
   const regex regExpNumber( "^[\\d]+$" );  // Start and end with number
   string column, value;

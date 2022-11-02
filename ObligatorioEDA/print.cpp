@@ -7,57 +7,84 @@ using namespace std;
 #include "tables.h"
 using namespace std;
 
+ListInt lengths = NULL;
 string getRowString( Tuple row, int index, typeOfData& type, int& number,
-                     string& text ) {
+                     string& text, ListInt length ) {
   string rowString = "|";
-  bool noExist     = index == 0;
   while( row != NULL ) {
+    string element = "";
     if( row->type == typeOfData::STRING ) {
-      if( row->text.length( ) == 0 ) {
-        string element = "EMPTY";
-        element.resize( 20, ' ' );
-        rowString += element + "\t" + "|";
-      } else {
-        string element = row->text;
-        element.resize( 20, ' ' );
-        rowString += element + "\t" + "|";
-      }
+      if( row->text.length( ) == 0 ) element = "EMPTY";
+      else
+        element = row->text;
     } else {
-      if( row->number == -1 ) {  // nc
-        string element = "EMPTY";
-        element.resize( 20, ' ' );
-        rowString += element + "\t" + "|";
-      } else {
-        string element = to_string( row->number ) + "";
-        element.resize( 20, ' ' );
-        rowString += element + "\t" + "|";
-      }
+      if( row->number == -1 ) element = "EMPTY";  // nc
+      else
+        element = to_string( row->number ) + "";
     }
+    element.resize( length->value, ' ' );
+    rowString += " " + element + " |";
     index--;
-    if( index == 0 ) {
+    if( index == 0 || row->next == NULL ) {
       type = row->type;
-      if( row->type == typeOfData::INT ) number = row->number;
-      else
-        text = row->text;
-    } else if( row->next == NULL && noExist ) {
-      type = row->type;
-      if( row->type == typeOfData::INT ) number = row->number;
+      if( type == typeOfData::INT ) number = row->number;
       else
         text = row->text;
     }
-    row = row->next;
+    row    = row->next;
+    length = length->next;
   }
   return rowString;
+}
+
+int maxlenght( Tuple row ) {
+  int lengthRow = 2;
+  if( row->name.length( ) > lengthRow ) lengthRow = row->name.length( );
+  if( row->type == typeOfData::INT &&
+      to_string( row->number ).length( ) > lengthRow )
+    lengthRow = to_string( row->number ).length( );
+  if( row->type == typeOfData::STRING && row->text.length( ) > lengthRow )
+    lengthRow = row->text.length( );
+  if( row->type == typeOfData::INT && row->number == -1 ||
+      row->type == typeOfData::STRING && row->text == "" ) {
+    if( lengthRow < 5 ) lengthRow = 5;
+  }
+  return lengthRow;
+}
+
+ListInt getFirstLength( Tuple row ) {
+  while( row != NULL ) {
+    int lengthRow = maxlenght( row );
+    insBackInt( lengths, lengthRow );
+    row = row->next;
+  }
+  return lengths;
+}
+
+void getLength( Tuples rows, ListInt list ) {
+  while( rows != NULL ) {
+    Tuple row     = rows->row;
+    ListInt list_ = list;
+    while( row != NULL ) {
+      int maximum = maxlenght( row );
+      if( maximum > list_->value ) list_->value = maximum;
+      list_        = list_->next;
+      row          = row->next;
+    }
+    rows = rows->next;
+  }
 }
 
 void loopInRows( Tuples rows, TreeInt& treeQuerie, TreeStr& treeQuerieStr,
                  int indexInParameter, typeOfData& type ) {
   int number;   // To sort by number
   string text;  // To sort by text
-  // TODO: union?
+  ListInt lengths = getFirstLength( rows->row );
+  getLength( rows, lengths );
   while( rows != NULL ) {
-    int index        = indexInParameter;
-    string rowString = getRowString( rows->row, index, type, number, text );
+    int index = indexInParameter;
+    string rowString =
+        getRowString( rows->row, index, type, number, text, lengths );
     if( type == typeOfData::STRING ) {
       insertText( treeQuerieStr, text, rowString );
     } else {
@@ -90,20 +117,38 @@ typeRet printDataTable( string tableName, string ordeyBy ) {
   loopInRows( table->tuple, treeQuerie, treeQuerieStr, n, type );
   // system( "clear" );
   cout << endl << "Tabla " << table->name << ":" << endl;
-  Tuple attributes = table->attributes;
+  separator( );
+  Tuple attributes    = table->attributes;
+  ListInt copyLengths = lengths;
   cout << "|";
   while( attributes != NULL ) {
     string attribute = attributes->name;
-    attribute.resize( 20, ' ' );
-    cout << attribute << "\t"
+    attribute.resize( copyLengths->value, ' ' );
+    cout << " " << attribute << " "
          << "|";
-    attributes = attributes->next;
+    attributes  = attributes->next;
+    copyLengths = copyLengths->next;
   }
   cout << endl;
+  separator( );
   if( type == typeOfData::STRING ) showTreeStr( treeQuerieStr );
   else
     showTree( treeQuerie );
-
-  cout << endl << endl;
+  separator( );
+  deleteListInt( lengths );
+  lengths = NULL;
   return typeRet::OK;
+}
+
+void separator( ) {
+  ListInt copyLengths = lengths;
+  copyLengths         = lengths;
+  while( copyLengths != NULL ) {
+    string minus = "";
+    minus.resize( copyLengths->value + 2, '-' );
+    cout << "+" << minus;
+    copyLengths = copyLengths->next;
+  }
+  cout << "+";
+  cout << endl;
 }

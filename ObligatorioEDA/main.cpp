@@ -6,6 +6,7 @@
 #include "variables.h"
 #include "print.h"
 #include "tests.h"
+#include "sets.h"
 
 using namespace std;
 void seed( ) {
@@ -18,12 +19,26 @@ void seed( ) {
   insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
-  alterCol( "Subject", "Name", "string", "primary_key", "NAME" );
-  // update( "Subject", "Semester=1", "NAME", "KDD" );
+  // alterCol( "Subject", "Name", "string", "primary_key", "NAME" );
+
+  createTable( "Subject2" );
+  addCol( "Subject2", "Credits", "integer", "ANY" );
+  addCol( "Subject2", "Semester", "integer", "ANY" );
+  addCol( "Subject2", "Name", "string", "ANY" );
+  addCol( "Subject2", "ID", "integer", "ANY" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "4:ER:4:15" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "6:GFD:5:7" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "8:HTT:2:24" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "10:AWS:6:20" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "4:KDD:2:10" );
+  // alterCol( "Subject2", "Name", "string", "primary_key", "NAME" );
+
   printDataTable( "Subject", "\"\"" );
+  printDataTable( "Subject2", "\"\"" );
 }
 int main( ) {
-  runTests( );
+  // runTests( );
   seed( );
   string opc;
   do {
@@ -151,6 +166,42 @@ int main( ) {
         cout << "Operacion realizada con exito." << endl;
       else if( response == typeRet::NOT_IMPLEMENTED )
         cout << "La operacion aun no esta implementada." << endl;
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "union" ) {
+      opc                = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table1      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string table2      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string tableResult = opc.substr( 0, opc.find( ")" ) );
+      if( createSet( table1, table2, tableResult, "union" ) == typeRet::OK ) {
+        cout << "Operacion realizada con exito." << endl;
+      } else {
+        dropTable( tableResult );
+      }
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "intersect" ) {
+      opc                = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table1      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string table2      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string tableResult = opc.substr( 0, opc.find( ")" ) );
+      if( createSet( table1, table2, tableResult, "intersect" ) == typeRet::OK ) {
+        cout << "Operacion realizada con exito." << endl;
+      } else {
+        dropTable( tableResult );
+      }
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "minus" ) {
+      opc                = opc.erase( 0, opc.find( "(" ) + 1 );
+      string table1      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string table2      = opc.substr( 0, opc.find( "," ) );
+      opc                = opc.erase( 0, opc.find( "," ) + 1 );
+      string tableResult = opc.substr( 0, opc.find( ")" ) );
+      if( createSet( table1, table2, tableResult, "minus" ) == typeRet::OK ) {
+        cout << "Operacion realizada con exito." << endl;
+      } else {
+        dropTable( tableResult );
+      }
     } else if( opc != "exit" )
       cout << "ERROR: Entrada invalida." << endl;
 

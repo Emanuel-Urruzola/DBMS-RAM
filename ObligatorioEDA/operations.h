@@ -6,6 +6,8 @@ union tree {
   TreeStr treeStr;
 };
 
+void deleteListInt( ListInt& );
+
 void insBack( List&, string );
 
 void insBackInt( ListInt&, int );
@@ -21,5 +23,7 @@ typeRet insertText( TreeStr&, string, string );
 void showTreeStr( TreeStr );
 
 void showTree( TreeInt );
+
+TreeStr findMinimum( TreeStr );
 
 Tuples insFrontTuples( Tuples, Tuple );
