@@ -9,8 +9,6 @@
 
 using namespace std;
 int main( ) {
- // runTests( );
- // seed( );
   string opc;
   do {
     cin >> opc;
@@ -137,8 +135,7 @@ int main( ) {
         cout << "Operacion realizada con exito." << endl;
       else if( response == typeRet::NOT_IMPLEMENTED )
         cout << "La operacion aun no esta implementada." << endl;
-    } 
-    else if( opc.substr( 0, opc.find( "(" ) ) == "printTables" ) {
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "printTables" ) {
       typeRet response = printTables( tablesList );
       if( response == typeRet::OK )
         cout << "Operacion realizada con exito." << endl;

@@ -333,7 +333,7 @@ typeRet dropCol( string tableName, string columnName ) {
     }
     Tuple attributeCopy = tableAttributesCopy->next;
     if( tableAttributesCopy->next != NULL &&
-        tableAttributesCopy->next->next != NULL ) //fix warning
+        tableAttributesCopy->next->next != NULL )  // fix warning
       tableAttributesCopy->next = tableAttributesCopy->next->next;
     delete attributeCopy;
   }

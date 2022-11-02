@@ -16,17 +16,15 @@ Tables newNodeTable( string tableName ) {
   return newTable;
 }
 
-// Auxiliar para ver si la tabla ya existe (osea si se repite el nombre).
 bool isIncluded( Tables tablesList, string tableName ) {
-  if( tablesList == NULL ) 
-      return false;
+  if( tablesList == NULL ) return false;
   if( tableName.compare( tablesList->name ) == 0 ) {
     cout << "La tabla ya existe." << endl;
     return true;
-  }
-  else if( tableName.compare( tablesList->name ) > 0 ) 
-      return isIncluded(tablesList->right, tableName );
-  else return isIncluded( tablesList->left, tableName );
+  } else if( tableName.compare( tablesList->name ) > 0 )
+    return isIncluded( tablesList->right, tableName );
+  else
+    return isIncluded( tablesList->left, tableName );
 }
 
 void insertTable( Tables tablesList, string tableName ) {
@@ -36,8 +34,7 @@ void insertTable( Tables tablesList, string tableName ) {
     else
       insertTable( tablesList->right, tableName );
   } else {
-    if( tablesList->left == NULL ) 
-      tablesList->left = newNodeTable( tableName );
+    if( tablesList->left == NULL ) tablesList->left = newNodeTable( tableName );
     else
       insertTable( tablesList->left, tableName );
   }
@@ -66,22 +63,22 @@ typeRet printTables( Tables tablesList ) {
   if( tablesList == NULL ) {
     cout << "ERROR: No hay tablas." << endl;
     return typeRet::ERROR;
-  } else { 
-    if( tablesList->left != NULL ) // Si hay tablas a la izquierda llama a la funcion para imprimir los hijos izq
-     printTables( tablesList->left );
+  } else {
+    if( tablesList->left != NULL )  // Si hay tablas a la izquierda llama a la
+                                    // funcion para imprimir los hijos izq
+      printTables( tablesList->left );
     cout << tablesList->name << endl;
-    if( tablesList->right != NULL ) // Si hay tablas a la derecha llama a la funcion para imprimir hijos der
-     printTables( tablesList->right );
+    if( tablesList->right != NULL )  // Si hay tablas a la derecha llama a la
+                                     // funcion para imprimir hijos der
+      printTables( tablesList->right );
   }
-  
+
   return typeRet::OK;
 }
 
 Tables findTable( Tables tablesList, string tableName ) {
-  if( tablesList == NULL ) 
-      return NULL;
-  if( tableName.compare( tablesList->name ) == 0 ) 
-    return tablesList;
+  if( tablesList == NULL ) return NULL;
+  if( tableName.compare( tablesList->name ) == 0 ) return tablesList;
   else if( tableName.compare( tablesList->name ) > 0 )
     return findTable( tablesList->right, tableName );
   else
@@ -95,17 +92,15 @@ void deleteMax( Tables &tablesList ) {
       Tables aux = tablesList;
       delete aux;
       tablesList = NULL;
-    } 
-    else {
+    } else {
       Tables aux = tablesList;
       tablesList = tablesList->left;
       delete aux;
     }
-  }  
+  }
 }
 
-
-void deleteTable( Tables &tablesList, string tableName ){
+void deleteTable( Tables &tablesList, string tableName ) {
   if( tablesList != NULL ) {
     if( tableName.compare( tablesList->name ) == 0 ) {
       if( tablesList->left == NULL && tablesList->right == NULL ) {
@@ -128,61 +123,6 @@ void deleteTable( Tables &tablesList, string tableName ){
     else
       deleteTable( tablesList->right, tableName );
   }
-  /*if( tablesList == NULL )
-    return tablesList;
-  if( tableName.compare( tablesList->name ) < 0 )
-    tablesList->left = deleteTable( tablesList->left, tableName );
-  else if( tableName.compare( tablesList->name ) > 0 )
-    tablesList->right = deleteTable( tablesList->right, tableName );
-  else {
-      // sin hijos
-    if( tablesList->left == NULL && tablesList->right == NULL ) {
-      delete tablesList;
-      return NULL;
-    }
-    // 1 hijo
-    else if( tablesList->left == NULL || tablesList->right == NULL) {
-      Tables temp = tablesList->left ? tablesList->left : tablesList->right;
-      delete tablesList;
-      return temp;
-    } 
-    // 2 hijos
-    else if( tablesList->left != NULL && tablesList->right != NULL ) {
-      Tables temp = tablesList->right;
-      while( temp->left != NULL ) temp = temp->left;
-      tablesList->name = temp->name;
-      tablesList->right = deleteTable( tablesList->right, tablesList->name );
-    } 
-    //else {
-    //  Tables temp = minNode( tablesList->right);
-    // tablesList->name = temp->name;
-    // tablesList->right = deleteTable( tablesList->right, temp->name );
-    //}
-  }
-  return tablesList;*/ 
-  /*Tables aux;
-  if( tablesList->name == tableName ) {
-    if( tablesList->right == NULL) {
-      aux = tablesList->left;
-      delete tablesList;
-      return aux;
-    } 
-    else if( tablesList->left == NULL ) {
-      aux = tablesList->right;
-      delete tablesList;
-      return aux;
-    } 
-    else {
-      tablesList = minNode( tablesList->right );
-      deleteMinNode( tablesList->right );
-    }
-  } 
-  else {
-    if( tableName.compare( tablesList->name ) < 0 )
-      deleteTable( tablesList->left, tableName );
-    else
-      deleteTable( tablesList->right, tableName );
-  }*/ 
 }
 typeRet dropTable( string tableName ) {
   if( tableName.length( ) == 0 ) {
@@ -190,7 +130,7 @@ typeRet dropTable( string tableName ) {
     return typeRet::ERROR;
   }
 
-  Tables table = findTable(tablesList, tableName );
+  Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;
@@ -203,18 +143,7 @@ typeRet dropTable( string tableName ) {
 
   // Delete table
   deleteTable( tablesList, tableName );
-  /*if( tablesList == table ) {
-    Tables tableCopy = tablesList;
-    tablesList       = tablesList->left;
-    delete tableCopy;
-  } else {
-    Tables tablesListCopy = tablesList;
-    while( tablesListCopy->left != table )
-      tablesListCopy = tablesListCopy->left;
-    Tables tableCopy     = tablesListCopy->left;
-    tablesListCopy->left = tablesListCopy->left->left;
-    delete tableCopy;
-  }*/ 
+
   return typeRet::OK;
 }
 
