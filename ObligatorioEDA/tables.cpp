@@ -85,44 +85,45 @@ Tables findTable( Tables tablesList, string tableName ) {
     return findTable( tablesList->left, tableName );
 }
 
-void deleteMax( Tables &tablesList ) {
-  if( tablesList != NULL ) {
-    if( tablesList->right != NULL ) deleteMax( tablesList->right );
-    else if( tablesList->left == NULL ) {
-      Tables aux = tablesList;
-      delete aux;
-      tablesList = NULL;
-    } else {
-      Tables aux = tablesList;
-      tablesList = tablesList->left;
-      delete aux;
-    }
-  }
+Tables minTable( Tables tablesList ) {
+  Tables current = tablesList;
+  while( current && current->left != NULL ) current = current->left;
+  return current;
 }
 
-void deleteTable( Tables &tablesList, string tableName ) {
+Tables deleteTable( Tables &tablesList, string tableName ) {
   if( tablesList != NULL ) {
     if( tableName.compare( tablesList->name ) == 0 ) {
+      // nodo hoja
       if( tablesList->left == NULL && tablesList->right == NULL ) {
         Tables aux = tablesList;
         tablesList = NULL;
         delete aux;
+        // nodo con hijo a la izq
       } else if( tablesList->right == NULL ) {
         Tables aux = tablesList;
         tablesList = tablesList->left;
         delete aux;
+        // nodo con hijo a la derecha
       } else if( tablesList->left == NULL ) {
         Tables aux = tablesList;
         tablesList = tablesList->right;
         delete aux;
+        // tiene dos hijos.
       } else {
-        deleteMax( tablesList->left );
+        // deleteMax( tablesList->left );
+        Tables temp            = minTable( tablesList->right );
+        tablesList->name       = temp->name;
+        tablesList->attributes = temp->attributes;
+        tablesList->tuple      = temp->tuple;
+        tablesList->right      = deleteTable( tablesList->right, temp->name );
       }
     } else if( tableName.compare( tablesList->name ) < 0 )
       deleteTable( tablesList->left, tableName );
     else
       deleteTable( tablesList->right, tableName );
   }
+  return tablesList;
 }
 
 typeRet dropTable( string tableName ) {
