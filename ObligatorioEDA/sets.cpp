@@ -23,9 +23,9 @@ typeRet createSet( string tableName1, string tableName2, string tableNameResult,
   if( IsEmptyString( tableName1, "la tabla 1" ) ) return typeRet::ERROR;
   if( IsEmptyString( tableName1, "la tabla 2" ) ) return typeRet::ERROR;
   if( IsEmptyString( tableName1, "la nueva tabla" ) ) return typeRet::ERROR;
-  Tables table1      = findTable( tableName1 );
-  Tables table2      = findTable( tableName2 );
-  Tables tableResult = findTable( tableNameResult );
+  Tables table1      = findTable( tablesList, tableName1 );
+  Tables table2      = findTable( tablesList, tableName2 );
+  Tables tableResult = findTable( tablesList, tableNameResult );
   if( tableIsNull( table1, tableName1, false ) ) return typeRet::ERROR;
   if( tableIsNull( table2, tableName2, false ) ) return typeRet::ERROR;
   if( ! tableIsNull( tableResult, tableNameResult, true ) )

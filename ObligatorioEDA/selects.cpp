@@ -4,8 +4,6 @@
 #include "tables.h"
 #include "tuples.h"
 
-using namespace std;
-
 void insertRow( Tuples tableTuple, string newTableName ) {
   string columns      = "";
   string values       = "";
@@ -38,20 +36,20 @@ typeRet selectWhere( string tableName, string condition, string newTableName ) {
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( newTableName );
+  Tables table = findTable( tablesList, newTableName );
   if( table != NULL ) {
     cout << "ERROR: La tabla '" << newTableName << "' ya existe." << endl;
     return typeRet::ERROR;
   }
 
-  table = findTable( tableName );
+  table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;
   }
 
   createTable( newTableName );
-  Tables newTable = findTable( newTableName );
+  Tables newTable = findTable( tablesList, newTableName );
 
   Tuple tableAttributesCopy = table->attributes;
   while( tableAttributesCopy != NULL ) {
@@ -182,13 +180,13 @@ typeRet select( string tableName, string columns, string newTableName ) {
     return typeRet::ERROR;
   }
 
-  Tables table = findTable( newTableName );
+  Tables table = findTable( tablesList, newTableName );
   if( table != NULL ) {
     cout << "ERROR: La tabla '" << newTableName << "' ya existe." << endl;
     return typeRet::ERROR;
   }
 
-  table = findTable( tableName );
+  table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
     return typeRet::ERROR;
@@ -245,7 +243,7 @@ typeRet select( string tableName, string columns, string newTableName ) {
   }
 
   createTable( newTableName );
-  Tables newTable = findTable( newTableName );
+  Tables newTable = findTable( tablesList, newTableName );
   addNewTableColumns( table, newTable, columns );
 
   Tuples tableTuplesCopy = table->tuple;
@@ -424,7 +422,7 @@ typeRet join( string table1Name, string table2Name, string newTableName ) {
     return typeRet::ERROR;
   }
 
-  Tables table1 = findTable( table1Name );
+  Tables table1 = findTable( tablesList, table1Name);
   if( table1 == NULL ) {
     cout << "ERROR: La tabla '" << table1Name << "' no existe." << endl;
     return typeRet::ERROR;
@@ -435,13 +433,13 @@ typeRet join( string table1Name, string table2Name, string newTableName ) {
     return typeRet::ERROR;
   }
 
-  Tables table2 = findTable( table2Name );
+  Tables table2 = findTable( tablesList, table2Name );
   if( table1 == NULL ) {
     cout << "ERROR: La tabla '" << table2Name << "' no existe." << endl;
     return typeRet::ERROR;
   }
 
-  if( findTable( newTableName ) != NULL ) {
+  if( findTable( tablesList, newTableName ) != NULL ) {
     cout << "ERROR: La tabla '" << newTableName << "' ya existe." << endl;
     return typeRet::ERROR;
   }
@@ -461,7 +459,7 @@ typeRet join( string table1Name, string table2Name, string newTableName ) {
   }
 
   createTable( newTableName );
-  Tables newTable = findTable( newTableName );
+  Tables newTable = findTable( tablesList, newTableName );
   addJoinColumns( table1, table2, newTable, matchIndex );
   addJoinTuples( table1, table2, newTable, matchIndex );
 

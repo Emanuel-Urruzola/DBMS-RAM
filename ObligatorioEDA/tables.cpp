@@ -124,6 +124,7 @@ void deleteTable( Tables &tablesList, string tableName ) {
       deleteTable( tablesList->right, tableName );
   }
 }
+
 typeRet dropTable( string tableName ) {
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
