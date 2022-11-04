@@ -18,3 +18,5 @@ void insertTable( Tables, string );
 Tables minTable( Tables );
 
 Tables deleteTable( Tables &, string );
+
+typeRet printMetadata( string tableName );

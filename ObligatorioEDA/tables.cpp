@@ -3,7 +3,6 @@
 #include "tables.h"
 #include "variables.h"
 #include "deleteHelpers.h"
-
 using namespace std;
 
 Tables newNodeTable( string tableName ) {
@@ -172,3 +171,43 @@ typeRet modifyTable( string tableName, string newName ) {
   table->name = newName;
   return typeRet::OK;
 }
+
+//typeRet printMetadata( string tableName ) {
+//  Tables table = findTable( tablesList, tableName );
+//  if( table == NULL ) {
+//    cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
+//    return typeRet::ERROR;
+//  }
+//  cout << "Tabla " << table->name << endl;
+//  if( table->attributes == NULL )
+//    cout << "La tabla no tiene columnas definidas.";
+//  else {
+//    separator( );
+//    Tuple tableAttributesCopy = table->attributes;
+//    ListInt copyLengths       = lengths;
+//    cout << "|";
+//    while( tableAttributesCopy != NULL ) {
+//      string attribute = tableAttributesCopy->name;
+//      attribute.resize( copyLengths->value, ' ' );
+//      cout << " " << attribute << " "
+//           << "|";
+//      if( tableAttributesCopy->type == typeOfData::STRING )
+//        cout << "Es String" << endl;
+//      else
+//        cout << "Es Integer" << endl;
+//      if( tableAttributesCopy->restriction == typeOfRestriction::PRIMARY_KEY )
+//        cout << "Calificador: PRIMARY KEY" << endl;
+//      else if( tableAttributesCopy->restriction == typeOfRestriction::ANY )
+//        cout << "Calificador: ANY" << endl;
+//      else
+//        cout << "Calificador: NOT_EMPTY" << endl;
+//
+//        tableAttributesCopy = tableAttributesCopy->next;
+//    }
+//    cout << endl;
+//    separator( );
+//    dropListInt( lengths );
+//    lengths = NULL;
+//  }
+//  return typeRet::OK;
+//}

@@ -14,7 +14,7 @@ void seed( ) {
   addCol( "Subject", "Credits", "integer", "ANY" );
   addCol( "Subject", "Semester", "integer", "ANY" );
   addCol( "Subject", "Name", "string", "ANY" );
-  addCol( "Subject", "ID", "integer", "ANY" );
+  addCol( "Subject", "ID", "integer", "PRIMARY_KEY" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
@@ -189,7 +189,16 @@ int main( ) {
         cout << "Operacion realizada con exito." << endl;
       else if( response == typeRet::NOT_IMPLEMENTED )
         cout << "La operacion aun no esta implementada." << endl;
-    } else if( opc.substr( 0, opc.find( "(" ) ) == "union" ) {
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "printMetadata" ) {
+      opc                = opc.erase( 0, opc.find( "(" ) + 1 );
+      string tableName      = opc.substr( 0, opc.find( ")" ) );
+      typeRet response   = printMetadata( tableName );
+      if( response == typeRet::OK )
+        cout << "Operacion realizada con exito." << endl;
+      else if( response == typeRet::NOT_IMPLEMENTED )
+        cout << "La operacion aun no esta implementada." << endl;
+    }
+    else if( opc.substr( 0, opc.find( "(" ) ) == "union" ) {
       opc                = opc.erase( 0, opc.find( "(" ) + 1 );
       string table1      = opc.substr( 0, opc.find( "," ) );
       opc                = opc.erase( 0, opc.find( "," ) + 1 );
