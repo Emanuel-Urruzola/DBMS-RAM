@@ -201,9 +201,7 @@ typeRet select( string tableName, string columns, string newTableName ) {
     bool attributeFinded      = false;
     while( tableAttributesCopy != NULL && ! attributeFinded ) {
       if( tableAttributesCopy->name ==
-          columnsOrderCopy.substr( 0, columnsOrderCopy.length( ) -
-                                          ( columnsOrderCopy.length( ) -
-                                            columnsOrderCopy.find( ":" ) ) ) )
+          columnsOrderCopy.substr( 0, columnsOrderCopy.find( ":" ) ) )
         attributeFinded = true;
       else {
         tableAttributesCopy = tableAttributesCopy->next;
@@ -225,9 +223,7 @@ typeRet select( string tableName, string columns, string newTableName ) {
   bool attributeFinded      = false;
   while( tableAttributesCopy != NULL && ! attributeFinded ) {
     if( tableAttributesCopy->name ==
-        columnsOrderCopy.substr(
-            0, columnsOrderCopy.length( ) - ( columnsOrderCopy.length( ) -
-                                              columnsOrderCopy.find( ":" ) ) ) )
+        columnsOrderCopy.substr( 0, columnsOrderCopy.find( ":" ) ) )
       attributeFinded = true;
     else {
       tableAttributesCopy = tableAttributesCopy->next;
@@ -249,19 +245,31 @@ typeRet select( string tableName, string columns, string newTableName ) {
   Tuples tableTuplesCopy = table->tuple;
   while( tableTuplesCopy != NULL ) {
     string values      = "";
-    Tuple tupleRowCopy = tableTuplesCopy->row;
-    while( tupleRowCopy != NULL ) {
-      Tuple newTableAttributes = newTable->attributes;
-      while( newTableAttributes != NULL ) {
-        if( newTableAttributes->name == tupleRowCopy->name ) {
+    string columnsCopy = columns;
+    while( ( position = columnsCopy.find( ":" ) ) != string::npos ) {
+      Tuple tupleRowCopy = tableTuplesCopy->row;
+      while( tupleRowCopy != NULL ) {
+        if( columnsCopy.substr( 0, columnsCopy.find( ":" ) ) ==
+            tupleRowCopy->name ) {
           if( tupleRowCopy->type == typeOfData::STRING )
             values = values + tupleRowCopy->text + ":";
           else
             values = values + to_string( tupleRowCopy->number ) + ":";
         }
-        newTableAttributes = newTableAttributes->next;
+        tupleRowCopy = tupleRowCopy->next;
       }
+      columnsCopy.erase( 0, position + 1 );
+    }
 
+    Tuple tupleRowCopy = tableTuplesCopy->row;
+    while( tupleRowCopy != NULL ) {
+      if( columnsCopy.substr( 0, columnsCopy.find( ":" ) ) ==
+          tupleRowCopy->name ) {
+        if( tupleRowCopy->type == typeOfData::STRING )
+          values = values + tupleRowCopy->text + ":";
+        else
+          values = values + to_string( tupleRowCopy->number ) + ":";
+      }
       tupleRowCopy = tupleRowCopy->next;
     }
 
@@ -283,8 +291,8 @@ int matchColumnIndex( Tables table1, Tables table2 ) {
     while( table2AttributesCopy != NULL && ! attributeFinded ) {
       if( table1AttributesCopy->name == table2AttributesCopy->name &&
           table1AttributesCopy->restriction == typeOfRestriction::PRIMARY_KEY &&
-          table2AttributesCopy->restriction ==
-              typeOfRestriction::PRIMARY_KEY ) {
+          table2AttributesCopy->restriction == typeOfRestriction::PRIMARY_KEY &&
+          table1AttributesCopy->type == table2AttributesCopy->type ) {
         index = counter;
         matchCounter++;
       }
@@ -293,8 +301,6 @@ int matchColumnIndex( Tables table1, Tables table2 ) {
     counter++;
     table1AttributesCopy = table1AttributesCopy->next;
   }
-
-  cout << "";
 
   if( matchCounter == 0 ) return -1;
   if( matchCounter > 1 ) return -2;
@@ -349,29 +355,33 @@ void addJoinColumns( Tables table1, Tables table2, Tables &newTable,
 void addJoinTuples( Tables table1, Tables table2, Tables &newTable,
                     int matchIndex ) {
   string matchingColumn;
-  string columns = "";
-  int counter    = 0;
+  string columns     = "";
+  int counter        = 0;
+  int columnsCounter = 0;
   // set columns order
   Tuple table1AttributesCopy = table1->attributes;
   while( table1AttributesCopy != NULL ) {
-    if( counter != matchIndex )
+    if( counter != matchIndex ) {
       columns = columns + table1AttributesCopy->name + ":";
-    else
+      columnsCounter++;
+    } else
       matchingColumn = table1AttributesCopy->name;
     counter++;
     table1AttributesCopy = table1AttributesCopy->next;
   }
   Tuple table2ttributesCopy = table2->attributes;
   while( table2ttributesCopy->next != NULL ) {
-    columns             = columns + table2ttributesCopy->name + ":";
+    columns = columns + table2ttributesCopy->name + ":";
+    columnsCounter++;
     table2ttributesCopy = table2ttributesCopy->next;
   }
   columns = columns + table2ttributesCopy->name;
+  columnsCounter++;
 
   // add tuples
   Tuples table1TuplesCopy = table1->tuple;
   while( table1TuplesCopy != NULL ) {
-    Tuple matchingRow = nullptr;
+    Tuple matchingRow    = nullptr;
     string values        = "";
     Tuple table1RowsCopy = table1TuplesCopy->row;
     while( table1RowsCopy != NULL ) {
@@ -409,8 +419,17 @@ void addJoinTuples( Tables table1, Tables table2, Tables &newTable,
       if( tupleMatches ) values = values + auxValues;
       table2TuplesCopy = table2TuplesCopy->next;
     }
+    int columnsCounterCopy = columnsCounter;
+    string valuesCopy       = values;
+    while( valuesCopy.substr( 0, valuesCopy.find( ":" ) ).length( ) > 0 ) {
+      columnsCounterCopy--;
+      valuesCopy.erase( 0, valuesCopy.find( ":" ) + 1 );
+    }
 
-    insertInto( newTable->name, columns, values );
+    if( columnsCounterCopy == 0 ) 
+      insertInto( newTable->name, columns,
+                  values.substr( 0, values.length( ) - 1 ) );
+
 
     table1TuplesCopy = table1TuplesCopy->next;
   }
@@ -422,7 +441,7 @@ typeRet join( string table1Name, string table2Name, string newTableName ) {
     return typeRet::ERROR;
   }
 
-  Tables table1 = findTable( tablesList, table1Name);
+  Tables table1 = findTable( tablesList, table1Name );
   if( table1 == NULL ) {
     cout << "ERROR: La tabla '" << table1Name << "' no existe." << endl;
     return typeRet::ERROR;
@@ -463,6 +482,5 @@ typeRet join( string table1Name, string table2Name, string newTableName ) {
   addJoinColumns( table1, table2, newTable, matchIndex );
   addJoinTuples( table1, table2, newTable, matchIndex );
 
-  cout << matchIndex << endl;
   return typeRet::OK;
 }
