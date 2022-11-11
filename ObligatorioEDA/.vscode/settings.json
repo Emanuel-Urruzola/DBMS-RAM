@@ -1,7 +1,8 @@
 {
   "files.associations": {
     "iostream": "cpp",
-    "ostream": "cpp"
+    "ostream": "cpp",
+    "xstring": "cpp"
   },
   "editor.formatOnSave": true,
   "C_Cpp.intelliSenseEngineFallback": "Enabled"

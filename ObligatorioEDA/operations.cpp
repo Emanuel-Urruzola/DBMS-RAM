@@ -94,6 +94,23 @@ typeRet insertText( TreeStr& tree, string value, string row ) {
   }
 }
 
+bool boolInsertText( TreeStr& tree, string value, string row ) {
+  if( tree == NULL ) {
+    TreeStr newTree = newNodeStr( value, row );
+    tree            = newTree;
+    cout << tree->value << " y  " << value << endl << endl;
+    return true;
+  } else {
+    cout << tree->value << " ";
+    if( value.compare( tree->value ) < 0 )
+      return boolInsertText( tree->left, value, row );
+    else if( value.compare( tree->value ) == 0 )
+      return false;
+    else
+      return boolInsertText( tree->right, value, row );
+  }
+}
+
 void showTreeStr( TreeStr tree ) {
   if( tree == NULL ) return;
   showTreeStr( tree->left );

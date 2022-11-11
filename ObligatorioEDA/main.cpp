@@ -6,6 +6,7 @@
 #include "variables.h"
 #include "print.h"
 #include "tests.h"
+#include "test2.h"
 #include "sets.h"
 #include "selects.h"
 
@@ -36,15 +37,15 @@ void seed( ) {
   insertInto( "Professor", "IDPROFESSOR:Name", "2:EDA" );
   insertInto( "Professor", "IDPROFESSOR:Name", "3:KDD" );
 
-  //selectWhere( "Subject", "Credits>7", "mayorASiete" );
-  //select( "Subject", "ID:Name", "SubjectIDName" );
-  //join( "Subject", "Professor", "SubjectProfessor" );
+  // selectWhere( "Subject", "Credits>7", "mayorASiete" );
+  // select( "Subject", "ID:Name", "SubjectIDName" );
+  // join( "Subject", "Professor", "SubjectProfessor" );
 
-  //createSet( "Subject", "Subject2", "SubjectsU", "union" );
-  //createSet( "Subject", "Subject2", "SubjectsM", "minus" );
-  //createSet( "Subject", "Subject2", "SubjectsI", "intersect" );
+  createSet( "Subject", "Subject2", "SubjectsU", "union" );
+  createSet( "Subject", "Subject2", "SubjectsM", "minus" );
+  createSet( "Subject", "Subject2", "SubjectsI", "intersect" );
 
-  //dropTable("Subject");
+  // dropTable("Subject");
 
   printDataTable( "Subject", "\"\"" );
   printDataTable( "Subject2", "\"\"" );
@@ -57,6 +58,7 @@ using namespace std;
 int main( ) {
   string opc;
   seed( );
+  // test2( );
   do {
     cout << "DBMS-RAM > ";
     cin >> opc;

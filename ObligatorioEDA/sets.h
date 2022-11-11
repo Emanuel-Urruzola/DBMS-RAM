@@ -13,9 +13,9 @@ void getStrings( Tuples tuples, string& names, string& values );
 
 bool insertIntoTableIntersection( Tables, string, TreeStr&, string );
 // Delete in a TREE, a node with the following VALUE
-TreeStr deleteNodeTree( TreeStr&, string );
+TreeStr deleteNodeTree( TreeStr, string );
 
-bool insertIntoSet( Tables, string, string, TreeStr );
+bool insertIntoSet( Tables, string tableNmeResult, string, TreeStr& );
 
 bool createTableUnion( Tables, string );
 // Evaluates if TABLE1 and TABLE2 have the same schema

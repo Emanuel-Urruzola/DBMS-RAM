@@ -112,18 +112,22 @@ void getStrings( Tuples tuples, string& names, string& values ) {
   values = values.substr( 0, values.length( ) - 1 );
 }
 bool insertIntoSet( Tables table, string tableNameResult, string type,
-                    TreeStr tree ) {
+                    TreeStr& tree ) {
   Tuples tuples = table->tuple;
   while( tuples != NULL ) {
     string names  = "";
     string values = "";
     getStrings( tuples, names, values );
-    if( type == "union" &&
-        insertInto( tableNameResult, names, values ) == typeRet::ERROR ) {
-      cout << "Hubo un error al ingresar las tuplas en la nueva tabla, revise "
-              "las primary key"
-           << endl;
-      return false;
+    if( type == "union" ) {
+      if( boolInsertText( tree, values, names ) ) {
+        if( insertInto( tableNameResult, names, values ) == typeRet::ERROR ) {
+          cout << "Hubo un error al ingresar las tuplas en la nueva tabla, "
+                  "revise "
+                  "las primary key"
+               << endl;
+          return false;
+        }
+      }
     } else if( type == "minus" ) {
       deleteNodeTree( tree, values );
     }
@@ -154,7 +158,7 @@ bool insertAndCreate( TreeStr& tree, string values, string names,
   }
   switch( values.compare( tree->value ) ) {
     case 0:
-      if( type == "minus" ) deleteNodeTree( tree, values );
+      if( type == "minus" ) tree = deleteNodeTree( tree, values );
       else {
         if( insertInto( tableNameResult, names, values ) == typeRet::ERROR ) {
           cout << "Hubo un error al ingresar las tuplas en la nueva tabla, "
@@ -174,7 +178,7 @@ bool insertAndCreate( TreeStr& tree, string values, string names,
   }
   return true;
 }
-TreeStr deleteNodeTree( TreeStr& tree, string value ) {
+TreeStr deleteNodeTree( TreeStr tree, string value ) {
   if( tree == NULL ) return NULL;
   else if( value < tree->value )
     return deleteNodeTree( tree->left, value );
@@ -182,7 +186,7 @@ TreeStr deleteNodeTree( TreeStr& tree, string value ) {
     return deleteNodeTree( tree->right, value );
   else {
     if( tree->left == NULL && tree->right == NULL ) {
-      delete tree;
+      //delete tree; TODO: fix this
       tree = NULL;
     } else if( tree->left == NULL || tree->right == NULL ) {
       TreeStr aux = tree;

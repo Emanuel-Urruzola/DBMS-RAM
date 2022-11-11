@@ -148,6 +148,7 @@
     <ClCompile Include="selects.cpp" />
     <ClCompile Include="sets.cpp" />
     <ClCompile Include="tables.cpp" />
+    <ClCompile Include="test2.cpp" />
     <ClCompile Include="tests.cpp" />
     <ClCompile Include="tuples.cpp" />
     <ClCompile Include="variables.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="selects.h" />
     <ClInclude Include="sets.h" />
     <ClInclude Include="tables.h" />
+    <ClInclude Include="test2.h" />
     <ClInclude Include="tests.h" />
     <ClInclude Include="tuples.h" />
     <ClInclude Include="variables.h" />
