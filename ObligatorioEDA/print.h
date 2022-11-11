@@ -14,3 +14,5 @@ void loopInRows( Tuples, TreeInt&, TreeStr&, int, typeOfData& );
 void separator( );
 
 typeRet printDataTable( string, string );
+
+typeRet printMetadata( string );
