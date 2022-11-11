@@ -45,6 +45,8 @@ bool validColumns( string columnsOrder, Tables table ) {
 
 typeRet insertInto( string tableName, string columnsOrder,
                     string columnValues ) {
+  // TODO optional: If a primary key is repeated, it is canceled but leaves an
+  // empty row in between
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
     return typeRet::ERROR;
@@ -308,8 +310,15 @@ typeRet findMatches( Tables table, int index, string value, typeOfData type,
     }
     if( rowsToModify->row->type == typeOfData::STRING )
       rowsToModify->row->text = valueModified;
-    else
-      rowsToModify->row->number = stoi( valueModified );
+    else {
+      if( regex_match( valueModified, regExpNumber ) ) {
+        rowsToModify->row->number = stoi( valueModified );
+      } else {
+        cout << "ERROR: Solo se pueden asignar numeros enteros a columna de "
+                "tipo integer";
+        return typeRet::ERROR;
+      }
+    }
     tuple = table->tuple;
   }
   return typeRet::OK;
@@ -321,8 +330,45 @@ typeOfData findTypeColumn( Tables table, int index ) {
   return attributes->type;
 }
 
+int divideCondition( string condition, string& column, string& value,
+                     int& option ) {
+  if( condition.find( '=' ) != string::npos ) {
+    splitCondition( condition, column, value, "=", 1 );
+    option = 0;
+  }
+  if( condition.find( '<' ) != string::npos &&
+      condition.find( '>' ) != string::npos ) {
+    splitCondition( condition, column, value, "<", 2 );
+    option = 1;
+  }
+  if( condition.find( '<' ) != string::npos ) {
+    splitCondition( condition, column, value, "<", 1 );
+    option = 2;
+  }
+  if( condition.find( '>' ) != string::npos ) {
+    splitCondition( condition, column, value, ">", 1 );
+    option = 3;
+  }
+  cout << "ERROR: Debe ingresar un operador valido ('=', '<', '>' o '<>')."
+       << endl;
+  return option;
+}
+
 typeRet update( string tableName, string whereCondition, string columnToModify,
                 string newValue ) {
+  if( ! tableName.length( ) ) {
+    cout << "ERROR: Debe especificar nombre de tabla" << endl;
+    return typeRet::ERROR;
+  }
+  if( ! columnToModify.length( ) ) {
+    cout << "ERROR: Debe especificar nombre de la columna a modificar" << endl;
+    return typeRet::ERROR;
+  }
+  if( ! newValue.length( ) ) {
+    cout << "ERROR: Debe especificar el valor nuevo de la columna a modificar"
+         << endl;
+    return typeRet::ERROR;
+  }
   Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
     cout << "ERROR: La tabla a modificar no existe" << endl;
@@ -337,25 +383,9 @@ typeRet update( string tableName, string whereCondition, string columnToModify,
   // of quotes
   const regex regExpNumber( "^[\\d]+$" );  // Start and end with number
   string column, value;
-  int option;
-  if( whereCondition.find( '=' ) != string::npos ) {
-    splitCondition( whereCondition, column, value, "=", 1 );
-    option = 0;
-  } else if( whereCondition.find( '<' ) != string::npos &&
-             whereCondition.find( '>' ) != string::npos ) {
-    splitCondition( whereCondition, column, value, "<", 2 );
-    option = 1;
-  } else if( whereCondition.find( '<' ) != string::npos ) {
-    splitCondition( whereCondition, column, value, "<", 1 );
-    option = 2;
-  } else if( whereCondition.find( '>' ) != string::npos ) {
-    splitCondition( whereCondition, column, value, ">", 1 );
-    option = 3;
-  } else {
-    cout << "ERROR: Debe ingresar un operador valido ('=', '<', '>' o '<>')."
-         << endl;
+  int option = -1;
+  if( divideCondition( whereCondition, column, value, option ) == -1 )
     return typeRet::ERROR;
-  }
   int index = whereConditionColumn( table,
                                     column );  // Get the position of attribute
   if( index == -1 ) {                          // If the position doesn't found

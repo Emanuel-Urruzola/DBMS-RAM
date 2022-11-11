@@ -206,23 +206,23 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
     newType = typeOfData::STRING;
   }
   // Check if columnName is Primary key and there is more than one column
-  Tuple row               = table->tuple->row;
+  Tuple row               = table->attributes;
   bool minimumTwoElements = ( row->next != NULL );
   for( int i = 1; i < index; i++ ) row = row->next;
   typeOfData type = row->type;  // for condition on primary key later
   if( ( row->restriction == typeOfRestriction::PRIMARY_KEY ) &&
       minimumTwoElements ) {
     cout << "ERROR: La columna'" << row->name
-         << "' es la PRIMARY KEY y la tabla tiene m�s columnas.";
+         << "' es la PRIMARY KEY y la tabla tiene mas columnas." << endl;
     return typeRet::ERROR;
   }
   // Check if newColumnName exist previously (I allow it if it is the same
   // column)
-  row           = table->tuple->row;
+  row           = table->attributes;
   int indexCopy = index;
   while( row != NULL ) {
     indexCopy--;
-    if( row->name == newColumnName && index != 0 ) {
+    if( row->name == newColumnName && indexCopy != 0 ) {
       cout << "ERROR: La columna '" << newColumnName
            << "' ya existe en la tabla '" << tableName << "'." << endl;
       return typeRet::ERROR;
@@ -264,7 +264,7 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
   attributesCopy->type        = newType;
   attributesCopy->restriction = newRestriction;
   attributesCopy->name        = newColumnName;
-  return typeRet::ERROR;
+  return typeRet::OK;
 }
 
 typeRet dropCol( string tableName, string columnName ) {
@@ -363,7 +363,7 @@ typeRet dropCol( string tableName, string columnName ) {
     }
     tableTuplesCopy = tableTuplesCopy->next;
   }
-  return typeRet::ERROR;
+  return typeRet::OK;
 }
 void showColumns( Tables tablesList ) {
   Tables aux = tablesList;
