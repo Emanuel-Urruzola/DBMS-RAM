@@ -4,6 +4,26 @@
 #include "tables.h"
 #include "tuples.h"
 
+void addSelectWhereAttributes( Tables table, Tables &newTable ) {
+  Tuple tableAttributesCopy = table->attributes;
+  while( tableAttributesCopy != NULL ) {
+    Tuple newAttribute        = new nodeElement;
+    newAttribute->name        = tableAttributesCopy->name;
+    newAttribute->type        = tableAttributesCopy->type;
+    newAttribute->restriction = tableAttributesCopy->restriction;
+    newAttribute->next        = NULL;
+
+    if( newTable->attributes == NULL ) newTable->attributes = newAttribute;
+    else {
+      Tuple newTableAttributesCopy = newTable->attributes;
+      while( newTableAttributesCopy->next != NULL )
+        newTableAttributesCopy = newTableAttributesCopy->next;
+      newTableAttributesCopy->next = newAttribute;
+    }
+    tableAttributesCopy = tableAttributesCopy->next;
+  }
+}
+
 void insertRow( Tuples tableTuple, string newTableName ) {
   string columns      = "";
   string values       = "";
@@ -51,23 +71,7 @@ typeRet selectWhere( string tableName, string condition, string newTableName ) {
   createTable( newTableName );
   Tables newTable = findTable( tablesList, newTableName );
 
-  Tuple tableAttributesCopy = table->attributes;
-  while( tableAttributesCopy != NULL ) {
-    Tuple newAttribute        = new nodeElement;
-    newAttribute->name        = tableAttributesCopy->name;
-    newAttribute->type        = tableAttributesCopy->type;
-    newAttribute->restriction = tableAttributesCopy->restriction;
-    newAttribute->next        = NULL;
-
-    if( newTable->attributes == NULL ) newTable->attributes = newAttribute;
-    else {
-      Tuple newTableAttributesCopy = newTable->attributes;
-      while( newTableAttributesCopy->next != NULL )
-        newTableAttributesCopy = newTableAttributesCopy->next;
-      newTableAttributesCopy->next = newAttribute;
-    }
-    tableAttributesCopy = tableAttributesCopy->next;
-  }
+  addSelectWhereAttributes( table, newTable );
 
   if( condition.length( ) == 0 ) {
     Tuples tableTuplesCopy = table->tuple;
@@ -75,38 +79,38 @@ typeRet selectWhere( string tableName, string condition, string newTableName ) {
       insertRow( tableTuplesCopy, newTableName );
       tableTuplesCopy = tableTuplesCopy->next;
     }
-  }
-
-  cout << "";
-
-  string conditionColumn, conditionValue;
-  int option;
-  if( condition.find( '=' ) != string::npos ) {
-    splitCondition( condition, conditionColumn, conditionValue, "=", 1 );
-    option = 0;
-  } else if( condition.find( '<' ) != string::npos &&
-             condition.find( '>' ) != string::npos ) {
-    splitCondition( condition, conditionColumn, conditionValue, "<", 2 );
-    option = 1;
-  } else if( condition.find( '<' ) != string::npos ) {
-    splitCondition( condition, conditionColumn, conditionValue, "<", 1 );
-    option = 2;
-  } else if( condition.find( '>' ) != string::npos ) {
-    splitCondition( condition, conditionColumn, conditionValue, ">", 1 );
-    option = 3;
   } else {
-    cout << "ERROR: Debe ingresar un operador valido ('=', '<', '>' o '<>')."
-         << endl;
-    return typeRet::ERROR;
+    string conditionColumn, conditionValue;
+    int option;
+    if( condition.find( '=' ) != string::npos ) {
+      splitCondition( condition, conditionColumn, conditionValue, "=", 1 );
+      option = 0;
+    } else if( condition.find( '<' ) != string::npos &&
+               condition.find( '>' ) != string::npos ) {
+      splitCondition( condition, conditionColumn, conditionValue, "<", 2 );
+      option = 1;
+    } else if( condition.find( '<' ) != string::npos ) {
+      splitCondition( condition, conditionColumn, conditionValue, "<", 1 );
+      option = 2;
+    } else if( condition.find( '>' ) != string::npos ) {
+      splitCondition( condition, conditionColumn, conditionValue, ">", 1 );
+      option = 3;
+    } else {
+      cout << "ERROR: Debe ingresar un operador valido ('=', '<', '>' o '<>')."
+           << endl;
+      return typeRet::ERROR;
+    }
+
+    Tuples tableTuplesCopy = table->tuple;
+    while( tableTuplesCopy != NULL ) {
+      if( validCondition( newTable, tableTuplesCopy, option, conditionColumn,
+                          conditionValue ) == 0 )
+        insertRow( tableTuplesCopy, newTableName );
+      tableTuplesCopy = tableTuplesCopy->next;
+    }
   }
 
-  Tuples tableTuplesCopy = table->tuple;
-  while( tableTuplesCopy != NULL ) {
-    if( validCondition( newTable, tableTuplesCopy, option, conditionColumn,
-                        conditionValue ) == 0 )
-      insertRow( tableTuplesCopy, newTableName );
-    tableTuplesCopy = tableTuplesCopy->next;
-  }
+  
   return typeRet::OK;
 }
 
@@ -121,7 +125,6 @@ void addNewTableColumns( Tables oldTable, Tables &newTable, string columns ) {
       string columnName = columnsOrderCopy.substr(
           0, columnsOrderCopy.length( ) - ( columnsOrderCopy.length( ) -
                                             columnsOrderCopy.find( ":" ) ) );
-
       if( tableAttributesCopy->name == columnName ) {
         Tuple newAttribute        = new nodeElement;
         newAttribute->name        = tableAttributesCopy->name;

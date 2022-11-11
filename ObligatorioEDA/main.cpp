@@ -41,14 +41,14 @@ void seed( ) {
   insertInto( "tabla2", "CI:Cargo", "8232323:Ingeniero" );
   insertInto( "tabla2", "CI:Cargo", "7777777:Escribano" );
 
-  // join( "tabla1", "tabla2", "tabla3" );
-  // printDataTable( "tabla1", "\"\"" );
-  // printDataTable( "tabla2", "\"\"" );
-  // printDataTable( "tabla3", "\"\"" );
+  join( "tabla1", "tabla2", "tabla3" );
+  printDataTable( "tabla1", "\"\"" );
+  printDataTable( "tabla2", "\"\"" );
+  printDataTable( "tabla3", "\"\"" );
 
-  // selectWhere( "Subject", "Credits>7", "mayorASiete" );
-  // select( "Subject", "ID:Name", "SubjectIDName" );
-  // join( "Subject", "Professor", "SubjectProfessor" );
+  selectWhere( "Subject", "Credits>7", "mayorASiete" );
+  select( "Subject", "ID:Name", "SubjectIDName" );
+  join( "Subject", "Professor", "SubjectProfessor" );
 
   // createSet( "Subject", "Subject2", "SubjectsU", "union" );
   // createSet( "Subject", "Subject2", "SubjectsM", "minus" );
@@ -56,11 +56,11 @@ void seed( ) {
 
   // dropTable( "Subject" );
 
-  //printDataTable( "Subject", "\"\"" );
-  //printDataTable( "Professor", "\"\"" );
-  //printDataTable( "mayorASiete", "\"\"" );
-  //printDataTable( "SubjectIDName", "\"\"" );
-  //printDataTable( "SubjectProfessor", "\"\"" );
+  printDataTable( "Subject", "\"\"" );
+  printDataTable( "Professor", "\"\"" );
+  printDataTable( "mayorASiete", "\"\"" );
+  printDataTable( "SubjectIDName", "\"\"" );
+  printDataTable( "SubjectProfessor", "\"\"" );
 }
 
 using namespace std;
@@ -198,7 +198,7 @@ int main( ) {
       if( response == typeRet::OK )
         cout << "Operacion realizada con exito." << endl;
       else if( response == typeRet::NOT_IMPLEMENTED )
-        cout << "La operacion aun no esta implementada." << endl; 
+        cout << "La operacion aun no esta implementada." << endl;
     } else if( opc.substr( 0, opc.find( "(" ) ) == "union" ) {
       opc                = opc.erase( 0, opc.find( "(" ) + 1 );
       string table1      = opc.substr( 0, opc.find( "," ) );
