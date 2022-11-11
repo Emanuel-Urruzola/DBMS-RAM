@@ -68,8 +68,8 @@ void getLength( Tuples rows, ListInt list ) {
     while( row != NULL ) {
       int maximum = maxlenght( row );
       if( maximum > list_->value ) list_->value = maximum;
-      list_        = list_->next;
-      row          = row->next;
+      list_ = list_->next;
+      row   = row->next;
     }
     rows = rows->next;
   }
@@ -151,4 +151,71 @@ void separator( ) {
   }
   cout << "+";
   cout << endl;
+}
+
+typeRet printMetadata( string tableName ) {
+  if( tableName.length( ) == 0 ) {
+    cout << "ERROR: Especifique el nombre de tabla." << endl;
+    return typeRet::ERROR;
+  }
+  Tables table = findTable( tablesList, tableName );
+  if( table == NULL ) {
+    cout << "ERROR: La tabla '" << tableName << "' no existe." << endl;
+    return typeRet::ERROR;
+  }
+  cout << endl << "Tabla " << table->name << endl;
+  if( table->attributes == NULL )
+    cout << "Esquema vacio, '" << table->name << "' no posee columnas.";
+  else {
+    Tuple tableAttributesCopy = table->attributes;
+    while( tableAttributesCopy != NULL ) {
+      string attribute = tableAttributesCopy->name;
+      attribute.resize( 12, ' ' );
+      cout << " " << attribute << " "
+           << "|";
+
+      tableAttributesCopy = tableAttributesCopy->next;
+    }
+    cout << endl;
+    Tuple tableAttributesCopy2 = table->attributes;
+    while( tableAttributesCopy2 != NULL ) {
+      if( tableAttributesCopy2->type == typeOfData::STRING ) {
+        string type = "STRING";
+        type.resize( 12, ' ' );
+        cout << " " << type << " "
+             << "|";
+      } else {
+        string type = "INT";
+        type.resize( 12, ' ' );
+        cout << " " << type << " "
+             << "|";
+      }
+      tableAttributesCopy2 = tableAttributesCopy2->next;
+    }
+    cout << endl;
+    Tuple tableAttributesCopy3 = table->attributes;
+    while( tableAttributesCopy3 != NULL ) {
+      if( tableAttributesCopy3->restriction ==
+          typeOfRestriction::PRIMARY_KEY ) {
+        string type = "PRIMARY KEY";
+        type.resize( 12, ' ' );
+        cout << " " << type << " "
+             << "|";
+      } else if( tableAttributesCopy3->restriction ==
+                 typeOfRestriction::NOT_EMPTY ) {
+        string type = "NOT EMPTY";
+        type.resize( 12, ' ' );
+        cout << " " << type << " "
+             << "|";
+      } else {
+        string type = "ANY";
+        type.resize( 12, ' ' );
+        cout << " " << type << " "
+             << "|";
+      }
+      tableAttributesCopy3 = tableAttributesCopy3->next;
+    }
+    cout << endl;
+  }
+  return typeRet::OK;
 }
