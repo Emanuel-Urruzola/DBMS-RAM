@@ -20,6 +20,8 @@ typeRet insert( TreeInt&, int, string );
 
 typeRet insertText( TreeStr&, string, string );
 
+bool boolInsertText( TreeStr& , string , string  );
+
 void showTreeStr( TreeStr );
 
 void showTree( TreeInt );

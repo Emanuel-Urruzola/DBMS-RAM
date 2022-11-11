@@ -6,6 +6,7 @@
 #include "variables.h"
 #include "print.h"
 #include "tests.h"
+#include "test2.h"
 #include "sets.h"
 #include "selects.h"
 
@@ -17,6 +18,7 @@ void seed( ) {
   addCol( "Subject", "ID", "integer", "ANY" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
 
@@ -26,6 +28,7 @@ void seed( ) {
   insertInto( "Professor", "IDPROFESSOR:Name", "1:PP" );
   insertInto( "Professor", "IDPROFESSOR:Name", "2:EDA" );
   insertInto( "Professor", "IDPROFESSOR:Name", "3:KDD" );
+
 
   createTable( "tabla1" );
   addCol( "tabla1", "Nombre", "string", "ANY" );
@@ -67,6 +70,7 @@ using namespace std;
 int main( ) {
   string opc;
   seed( );
+  // test2( );
   do {
     cout << "DBMS-RAM > ";
     cin >> opc;

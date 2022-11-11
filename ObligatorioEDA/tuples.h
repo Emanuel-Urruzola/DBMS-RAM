@@ -19,6 +19,8 @@ typeRet findMatches( Tables, int, string, typeOfData, string, string, int );
 
 typeOfData findTypeColumn( Tables, int );
 
+int divideCondition( string, string&, string&, int& );
+
 typeRet update( string, string, string, string );
 
 int columnExists( Tables, string );
