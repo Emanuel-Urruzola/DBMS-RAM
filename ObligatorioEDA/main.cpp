@@ -18,6 +18,7 @@ void seed( ) {
   addCol( "Subject", "ID", "integer", "ANY" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
   insertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
 

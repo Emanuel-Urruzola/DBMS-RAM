@@ -167,7 +167,9 @@ bool insertAndCreate( TreeStr& tree, string values, string names,
           return false;
         }
       }
-      insertAndCreate( tree->right, values, names, tableNameResult, type );
+      if( tree != NULL ) {
+        insertAndCreate( tree->right, values, names, tableNameResult, type );
+      }
       break;
     case -1:
       insertAndCreate( tree->left, values, names, tableNameResult, type );
@@ -181,13 +183,15 @@ bool insertAndCreate( TreeStr& tree, string values, string names,
 TreeStr deleteNodeTree( TreeStr tree, string value ) {
   if( tree == NULL ) return NULL;
   else if( value < tree->value )
-    return deleteNodeTree( tree->left, value );
+    tree->left = deleteNodeTree( tree->left, value );
   else if( value > tree->value )
-    return deleteNodeTree( tree->right, value );
+    tree->right = deleteNodeTree( tree->right, value );
   else {
     if( tree->left == NULL && tree->right == NULL ) {
-      //delete tree; TODO: fix this
-      tree = NULL;
+      TreeStr aux = tree;
+      tree        = NULL;
+      delete aux;  // TODO: fix this
+      return NULL;
     } else if( tree->left == NULL || tree->right == NULL ) {
       TreeStr aux = tree;
       if( tree->left == NULL ) tree = tree->right;
@@ -197,10 +201,11 @@ TreeStr deleteNodeTree( TreeStr tree, string value ) {
     } else {
       TreeStr minimum = findMinimum( tree->right );
       tree->value     = minimum->value;
-      deleteNodeTree( tree->left, tree->value );
+      tree->right     = deleteNodeTree( tree->left, tree->value );
     }
     return tree;
   }
+  return tree;
 }
 int insertSetTreeInTable( TreeStr tree, string tableNameResult ) {
   if( tree == NULL ) return 0;
