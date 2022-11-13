@@ -6,7 +6,8 @@
 #include "columns.h"
 #include "tuples.h"
 #include "operations.h"
-TreeStr sets = NULL;
+TreeStr sets    = NULL;
+int numberTable = 1;
 bool IsEmptyString( string value, string error ) {
   if( value.length( ) != 0 ) return false;
   cout << "ERROR: El nombre de " + error + " debe ser especificado" << endl;
@@ -40,11 +41,13 @@ typeRet createSet( string tableName1, string tableName2, string tableNameResult,
     if( ! insertIntoTableIntersection( table1, tableNameResult, sets, type ) ||
         ! insertIntoTableIntersection( table2, tableNameResult, sets, type ) )
       return typeRet::ERROR;
+    numberTable = 1;
   } else if( type == "minus" ) {
     if( ! insertIntoTableIntersection( table1, tableNameResult, sets, type ) ||
         ! insertIntoSet( table2, tableNameResult, type, sets ) ||
         insertSetTreeInTable( sets, tableNameResult ) )
       return typeRet::ERROR;
+    numberTable = 1;
   } else {
     cout << "Error: tipo incorrecto";
     return typeRet::ERROR;
@@ -147,6 +150,7 @@ bool insertIntoTableIntersection( Tables table, string tableNameResult,
       return false;
     tuples = tuples->next;
   }
+  numberTable++;
   return true;
 }
 bool insertAndCreate( TreeStr& tree, string values, string names,
@@ -158,14 +162,13 @@ bool insertAndCreate( TreeStr& tree, string values, string names,
   }
   switch( values.compare( tree->value ) ) {
     case 0:
-      if( type == "minus" ) tree = deleteNodeTree( tree, values );
-      else {
-        if( insertInto( tableNameResult, names, values ) == typeRet::ERROR ) {
-          cout << "Hubo un error al ingresar las tuplas en la nueva tabla, "
-                  "revise las primary key"
-               << endl;
-          return false;
-        }
+      tree = deleteNodeTree( tree, values );
+      if( ( numberTable == 2 || type == "minus" ) &&
+          insertInto( tableNameResult, names, values ) == typeRet::ERROR ) {
+        cout << "Hubo un error al ingresar las tuplas en la nueva tabla, "
+                "revise las primary key"
+             << endl;
+        return false;
       }
       if( tree != NULL ) {
         insertAndCreate( tree->right, values, names, tableNameResult, type );

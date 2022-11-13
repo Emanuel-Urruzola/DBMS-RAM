@@ -98,10 +98,8 @@ bool boolInsertText( TreeStr& tree, string value, string row ) {
   if( tree == NULL ) {
     TreeStr newTree = newNodeStr( value, row );
     tree            = newTree;
-    cout << tree->value << " y  " << value << endl << endl;
     return true;
   } else {
-    cout << tree->value << " ";
     if( value.compare( tree->value ) < 0 )
       return boolInsertText( tree->left, value, row );
     else if( value.compare( tree->value ) == 0 )

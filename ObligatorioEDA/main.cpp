@@ -30,7 +30,6 @@ void seed( ) {
   insertInto( "Professor", "IDPROFESSOR:Name", "2:EDA" );
   insertInto( "Professor", "IDPROFESSOR:Name", "3:KDD" );
 
-
   createTable( "tabla1" );
   addCol( "tabla1", "Nombre", "string", "ANY" );
   addCol( "tabla1", "CI", "integer", "PRIMARY_KEY" );
@@ -67,10 +66,49 @@ void seed( ) {
   printDataTable( "SubjectProfessor", "\"\"" );
 }
 
+void seedEmanuel( ) {
+  createTable( "Subject" );
+  addCol( "Subject", "Credits", "integer", "ANY" );
+  addCol( "Subject", "Semester", "integer", "ANY" );
+  addCol( "Subject", "Name", "string", "ANY" );
+  addCol( "Subject", "ID", "integer", "ANY" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "1:PP:1:10" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "-1:EDA:2:13" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "3:ARQ:1:7" );
+  insertInto( "Subject", "ID:Name:Semester:Credits", "4:KDD:2:10" );
+
+  createTable( "Subject2" );
+  addCol( "Subject2", "Credits", "integer", "ANY" );
+  addCol( "Subject2", "Semester", "integer", "ANY" );
+  addCol( "Subject2", "Name", "string", "ANY" );
+  addCol( "Subject2", "ID", "integer", "ANY" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "8:HTT:2:24" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "10:AWS:6:20" );
+  insertInto( "Subject2", "ID:Name:Semester:Credits", "4:KDD:2:10" );
+
+  createTable( "Professor" );
+  addCol( "Professor", "IDPROFESSOR", "integer", "ANY" );
+  addCol( "Professor", "Name", "string", "ANY" );
+  insertInto( "Professor", "IDPROFESSOR:Name", "1:PP" );
+  insertInto( "Professor", "IDPROFESSOR:Name", "2:EDA" );
+  insertInto( "Professor", "IDPROFESSOR:Name", "3:KDD" );
+
+  createSet( "Subject", "Subject2", "SubjectsU", "union" );
+  createSet( "Subject", "Subject2", "SubjectsM", "minus" );
+  createSet( "Subject", "Subject2", "SubjectsI", "intersect" );
+
+  printDataTable( "Subject", "\"\"" );
+  printDataTable( "Subject2", "\"\"" );
+  printDataTable( "SubjectsU", "\"\"" );
+  printDataTable( "SubjectsM", "\"\"" );
+  printDataTable( "SubjectsI", "\"\"" );
+}
+
 using namespace std;
 int main( ) {
   string opc;
-  seed( );
+  seedEmanuel( );
   // test2( );
   do {
     cout << "DBMS-RAM > ";
@@ -205,15 +243,14 @@ int main( ) {
       else if( response == typeRet::NOT_IMPLEMENTED )
         cout << "La operacion aun no esta implementada." << endl;
     } else if( opc.substr( 0, opc.find( "(" ) ) == "printMetadata" ) {
-      opc                = opc.erase( 0, opc.find( "(" ) + 1 );
-      string tableName      = opc.substr( 0, opc.find( ")" ) );
-      typeRet response   = printMetadata( tableName );
+      opc              = opc.erase( 0, opc.find( "(" ) + 1 );
+      string tableName = opc.substr( 0, opc.find( ")" ) );
+      typeRet response = printMetadata( tableName );
       if( response == typeRet::OK )
         cout << "Operacion realizada con exito." << endl;
       else if( response == typeRet::NOT_IMPLEMENTED )
         cout << "La operacion aun no esta implementada." << endl;
-    }
-    else if( opc.substr( 0, opc.find( "(" ) ) == "union" ) {
+    } else if( opc.substr( 0, opc.find( "(" ) ) == "union" ) {
       opc                = opc.erase( 0, opc.find( "(" ) + 1 );
       string table1      = opc.substr( 0, opc.find( "," ) );
       opc                = opc.erase( 0, opc.find( "," ) + 1 );
