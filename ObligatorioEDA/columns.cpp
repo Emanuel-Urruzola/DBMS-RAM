@@ -6,9 +6,6 @@
 #include "tuples.h"
 #include "operations.h"
 
-// TODO: Validar el caso de que
-// exista almenos una tupla. Tambien validar que en el caso de que existan
-// tuplas no pueden tener restriction != de ANY
 typeRet addCol( string tableName, string columnName, string columnType,
                 string restriction ) {
   typeOfData colType;
@@ -140,7 +137,6 @@ typeRet pkCondition( typeOfData type, int index, Tuples tuple ) {
   return typeRet::ERROR;
 }
 
-// alterCol (Personas,Name,string,NOT EMPTY, Nombre)
 typeRet alterCol( string tableName, string columnName, string typeOfDataP,
                   string typeOfRestrictionP, string newColumnName ) {
   Tables table = findTable( tablesList, tableName );
@@ -188,7 +184,6 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
   }
 
   Tuple attributes = table->attributes;
-  // TODO Emanuel: ver si change se usa. en linea 190 tambien borrar
   typeOfData newType{ };
   for( int i = 1; i < index; i++ ) attributes = attributes->next;
   if( regex_match( typeOfDataP, regExpInteger ) ||
@@ -258,7 +253,6 @@ typeRet alterCol( string tableName, string columnName, string typeOfDataP,
     rowCopy->name        = newColumnName;
     tuplesCopy           = tuplesCopy->next;
   }
-  // TODO: Delete if we delete attributes list
   Tuple attributesCopy = table->attributes;
   for( int i = 1; i < index; i++ ) attributesCopy = attributesCopy->next;
   attributesCopy->type        = newType;
@@ -333,7 +327,7 @@ typeRet dropCol( string tableName, string columnName ) {
     }
     Tuple attributeCopy = tableAttributesCopy->next;
     if( tableAttributesCopy->next != NULL &&
-        tableAttributesCopy->next->next != NULL )  // fix warning
+        tableAttributesCopy->next->next != NULL )
       tableAttributesCopy->next = tableAttributesCopy->next->next;
     delete attributeCopy;
   }

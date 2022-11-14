@@ -5,8 +5,6 @@
 #include "tuples.h"
 #include "variables.h"
 #include "print.h"
-#include "tests.h"
-#include "test2.h"
 #include "sets.h"
 #include "selects.h"
 
@@ -109,7 +107,6 @@ using namespace std;
 int main( ) {
   string opc;
   seedEmanuel( );
-  // test2( );
   do {
     cout << "DBMS-RAM > ";
     cin >> opc;

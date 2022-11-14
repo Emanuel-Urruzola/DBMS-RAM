@@ -108,7 +108,6 @@ Tables deleteTable( Tables &tablesList, string tableName ) {
         delete aux;
         // tiene dos hijos.
       } else {
-        // deleteMax( tablesList->left );
         Tables temp            = minTable( tablesList->right );
         tablesList->name       = temp->name;
         tablesList->attributes = temp->attributes;

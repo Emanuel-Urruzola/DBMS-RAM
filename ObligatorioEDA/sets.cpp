@@ -56,12 +56,9 @@ typeRet createSet( string tableName1, string tableName2, string tableNameResult,
   return typeRet::OK;
 }
 bool checkSchema( Tables table1, Tables table2 ) {
-  // TODO Emanuel: Check if tables have no attributes previously  ?
   Tuple attributesTable1 = table1->attributes;
   Tuple attributesTable2 = table2->attributes;
-  // To check that the new table does not repeat the primary key
   while( attributesTable1 != NULL && attributesTable2 != NULL ) {
-    // I assign condition on boolean variables: more legible, less efficient
     bool names = attributesTable1->name == attributesTable2->name;
     bool types = attributesTable1->type == attributesTable2->type;
     bool restrictions =
@@ -140,7 +137,6 @@ bool insertIntoSet( Tables table, string tableNameResult, string type,
 }
 bool insertIntoTableIntersection( Tables table, string tableNameResult,
                                   TreeStr& sets, string type ) {
-  // TODO Emanuel: If there are repeated elements within the same table?
   Tuples tuples = table->tuple;
   while( tuples != NULL ) {
     string names  = "";
@@ -193,7 +189,7 @@ TreeStr deleteNodeTree( TreeStr tree, string value ) {
     if( tree->left == NULL && tree->right == NULL ) {
       TreeStr aux = tree;
       tree        = NULL;
-      delete aux;  // TODO: fix this
+      delete aux;
       return NULL;
     } else if( tree->left == NULL || tree->right == NULL ) {
       TreeStr aux = tree;

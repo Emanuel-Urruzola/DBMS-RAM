@@ -18,7 +18,7 @@ string getRowString( Tuple row, int index, typeOfData& type, int& number,
       else
         element = row->text;
     } else {
-      if( row->number == -1 ) element = "EMPTY";  // nc
+      if( row->number == -1 ) element = "EMPTY";
       else
         element = to_string( row->number ) + "";
     }
@@ -95,7 +95,6 @@ void loopInRows( Tuples rows, TreeInt& treeQuerie, TreeStr& treeQuerieStr,
 }
 
 typeRet printDataTable( string tableName, string ordeyBy ) {
-  // TODO: column maximum size and "..." to string more large
   typeOfData type;  // To select type of sort
   Tables table = findTable( tablesList, tableName );
   if( table == NULL ) {
@@ -115,7 +114,6 @@ typeRet printDataTable( string tableName, string ordeyBy ) {
   }
 
   loopInRows( table->tuple, treeQuerie, treeQuerieStr, n, type );
-  // system( "clear" );
   cout << endl << "Tabla " << table->name << ":" << endl;
   separator( );
   Tuple attributes    = table->attributes;

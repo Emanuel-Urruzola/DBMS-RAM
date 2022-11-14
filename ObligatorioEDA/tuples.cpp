@@ -18,7 +18,6 @@ void splitCondition( string condition, string& column, string& value,
 bool validColumns( string columnsOrder, Tables table ) {
   size_t position;
   int userAttributesCounter = 0;
-  // Falla al recortar, al ser una sola columna no tendra el ":"
   while( ( position = columnsOrder.find( ":" ) ) != string::npos ) {
     userAttributesCounter++;
     int counter               = 0;
@@ -45,8 +44,6 @@ bool validColumns( string columnsOrder, Tables table ) {
 
 typeRet insertInto( string tableName, string columnsOrder,
                     string columnValues ) {
-  // TODO optional: If a primary key is repeated, it is canceled but leaves an
-  // empty row in between
   if( tableName.length( ) == 0 ) {
     cout << "ERROR: El nombre de la tabla debe ser especificado." << endl;
     return typeRet::ERROR;

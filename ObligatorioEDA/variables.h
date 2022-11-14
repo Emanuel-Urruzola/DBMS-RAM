@@ -6,7 +6,6 @@ enum class typeOfRestriction { NOT_EMPTY = 0, PRIMARY_KEY = 1, ANY = 2 };
 enum class typeOfData { STRING = 0, INT = 1 };
 enum class typeRet { OK = 0, ERROR = 1, NOT_IMPLEMENTED = 2 };
 
-// template<typename values>  //It doesn't seem to work.
 struct nodeElement {
   string name;
   string text;
